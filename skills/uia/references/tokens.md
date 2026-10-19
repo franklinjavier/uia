@@ -46,6 +46,9 @@ Rules of thumb:
   person, they are probably one decision.
 - Never use `attention` to decorate (badges, highlights, links). It loses its
   meaning the moment it's decorative.
+- Tones escalate: `neutral` (fine) → `warning` (close to a limit, degraded)
+  → `destructive` (over the limit, failed). Don't stop at `warning` when the
+  limit is actually hit.
 - State tones come with words. A dot alone is not enough: `StatusBadge` pairs
   dot + label; `ActionCardStatus` is a pill with text.
 - Charts use `--chart-1…5` (from the shadcn theme), not semantic tones.

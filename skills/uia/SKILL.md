@@ -62,6 +62,17 @@ to compose the existing pieces so the result looks like the designer built it.
   `PartTransition`.
 - **Errors point at what is missing**, in one quiet line, without painting
   fields red.
+- **Say each fact once.** If the meter already reads "86% used", the label,
+  the meta line and the alert don't repeat it; each says something new
+  (what's left, when it resets, what to do). Repetition is noise that
+  competes with the one line that matters.
+- **Tone escalates with severity.** `neutral` → `warning` (getting close) →
+  `destructive` (over, failed, blocked). Each step changes the colour *and*
+  the words; two states with the same tone read as the same state.
+- **Speak the user's language and locale.** Copy, currency, dates and number
+  formats follow the product's audience (e.g. pt-BR → "R$ 1.287,05",
+  "20 de out."), not the model's defaults. If it isn't clear, follow the
+  language the request was written in.
 
 ## Generative UI inside a chat
 
