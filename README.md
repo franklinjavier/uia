@@ -90,10 +90,20 @@ npx shadcn@latest add @uia/chat
 | Chat | `agent-chat`, `chat-thread`, `chat-turn`, `turn-actions`, `composer`, `chat-empty`, `chat-status` |
 | Bundles | `uia`, `chat`, `hitl` |
 | Lib | `motion`, `ai`, `url`, `highlighter` |
+| Agent skill | `skill` |
 
 ```bash
 npx shadcn@latest list franklinjavier/uia       # browse
 npx shadcn@latest view franklinjavier/uia/chat  # inspect before installing
+```
+
+### Agent skill
+
+`skills/uia/` teaches coding agents to build with uia the way it was designed
+(patterns, tokens, HITL copy, pitfalls). It comes with the `uia` bundle, or:
+
+```bash
+npx shadcn@latest add franklinjavier/uia/skill   # → .claude/skills/uia/
 ```
 
 ### Rendering your own tools

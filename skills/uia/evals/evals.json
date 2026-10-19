@@ -1,0 +1,23 @@
+{
+  "skill_name": "uia",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Nosso assistente precisa poder cancelar assinaturas de clientes. Quando o agente decidir cancelar, quero que o usuário veja o que vai acontecer (plano, valor reembolsado, data de término) e aprove antes. Cria a UI disso no chat.",
+      "expected_output": "A tool entry in a defineTools registry with needsApproval flow: Confirmation/ActionCard asking state (title 'Assistant wants to cancel…', attention pill, fields panel, trust note, verb buttons), running TranscriptEvent, ResolvedRow resolved/denied (muted), wrapped in PartTransition; honest follow-up copy.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Make a Knowledge base widget: shows how many docs are indexed, how fresh the index is, the last sync, and a button to re-sync. Fits next to the other widgets.",
+      "expected_output": "Widget shell with WidgetHeader/WidgetPanel/WidgetFooter, Stat with eyebrow labels and light numbers, StatusBadge for freshness, TickMeter or similar, brand CTA, tokens only, no bold, works in dark.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Quando o agente for agendar uma reunião, ele deve oferecer 3 horários possíveis e a pessoa escolhe um (ou pede outros). Depois de escolhido, fica registrado no chat.",
+      "expected_output": "A client tool composed from ActionCard parts (not a Confirmation): options in a panel, one primary action, 'Suggest other times' secondary; resolved as ResolvedRow with the chosen slot; PartTransition; addOutput with the choice.",
+      "files": []
+    }
+  ]
+}

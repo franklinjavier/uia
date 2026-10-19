@@ -1,0 +1,203 @@
+# Components
+
+What to reach for, by job. Paths are the default shadcn aliases (`@/components/…`).
+Install anything missing with:
+
+```bash
+npx shadcn@latest add franklinjavier/uia/<item>          # one piece (deps come along)
+npx shadcn@latest add franklinjavier/uia/chat franklinjavier/uia/hitl   # bundles
+```
+
+Use `--overwrite` if the project already has stock `button`, `select`, … —
+uia ships tuned versions. Then make sure `typeset.css` is imported after
+Tailwind and the app is wrapped in `TooltipProvider`.
+
+Every component accepts `className` and passes props through; every part has a
+`data-slot` you can target from a parent (`*:data-[slot=…]:…`) instead of
+forking the component.
+
+## Contents
+
+1. System pieces (`ds/`)
+2. Generative-UI parts (`ai-elements/`)
+3. Chat kit (`chat/`)
+4. Primitives (`ui/`)
+5. Bundles and item names
+
+---
+
+## 1. System pieces — `@/components/ds/*`
+
+### Widget (`widget`)
+A self-contained tool surface: shell → header → panels → footer.
+
+```tsx
+<Widget className="max-w-[620px]">
+  <WidgetHeader>
+    <AgentOrb phase="idle" />
+    <WidgetTitle>Knowledge base</WidgetTitle>
+    <WidgetActions><Segmented …/></WidgetActions>
+  </WidgetHeader>
+  <WidgetPanel>…main content…</WidgetPanel>
+  <WidgetPanel className="p-0">…secondary block, e.g. composer…</WidgetPanel>
+  <WidgetFooter className="pl-5"><WidgetMeta>Synced 2m ago</WidgetMeta></WidgetFooter>
+</Widget>
+```
+
+- `Widget`: `rounded-3xl bg-surface p-1 shadow-widget`, children gap 1.
+- `WidgetPanel`: `rounded-2xl bg-card p-5` hairline ring. Use several panels
+  rather than dividers inside one.
+- `WidgetHeader`/`WidgetFooter`: `min-h-16`, sit on the shell (no card).
+- `WidgetDescription` for one muted line under the title; `WidgetMeta` is
+  eyebrow-styled.
+
+### Stat (`stat`)
+`Stat` > `StatLabel` (eyebrow) · `StatValue size="lg|sm"` (light, tabular) ·
+`StatUnit` · `StatMeta` (mono, faint). Big numbers, never bold.
+
+### Segmented (`segmented`)
+Base UI toggle group with a moving thumb. `variant="mono"` (eyebrow labels,
+for ranges like 1D/1W/1M) or `"sans"` (view switches).
+
+```tsx
+<Segmented value={range} onValueChange={setRange} variant="mono">
+  <SegmentedItem value="7d">7D</SegmentedItem>
+  <SegmentedItem value="30d">30D</SegmentedItem>
+</Segmented>
+```
+
+### Status (`status`)
+`StatusDot tone` and `StatusBadge tone` with tones `neutral | success | warning |
+info | destructive | brand | attention`. Pulse only for live states.
+
+### TickMeter (`tick-meter`)
+Progress as hairline ticks: `<TickMeter value={0.62} className="text-brand" />`.
+Colour = `currentColor`.
+
+### NumberTicker (`number-ticker`)
+Animated number: `<NumberTicker value={n} format={(v) => v.toFixed(1)} />`.
+
+### AgentOrb (`agent-orb`)
+The agent's presence. `phase`: `idle | connecting | thinking | searching |
+working | composing | waiting`; `size` 20/32/64; `active` (false = paused,
+dimmed). It is **the** working indicator — one per live turn, plus optionally
+one in the header/empty state. Don't add spinners next to it.
+
+### ModelIcon (`model-icons`)
+`<ModelIcon family="claude|openai|gemini|meta|grok" />`, monochrome,
+`currentColor`. For model pickers and attributions.
+
+---
+
+## 2. Generative-UI parts — `@/components/ai-elements/*`
+
+Read `hitl.md` for when to use which. Summary:
+
+| Component | Item | Job |
+| --- | --- | --- |
+| `ActionCard` + parts | `action-card` | The shape of every HITL moment. Compose your own cards from it. |
+| `ResolvedRow` | `action-card` | A settled moment: one line, expandable record, `muted` when it didn't go ahead. |
+| `TranscriptEvent` | `action-card` | Small centred line for in-progress or system events ("Creating 4 issues…"). |
+| `AskUser` / `AskUserAnswered` / `AnswerKey` | `ask-user` | Clarifying questions → answered record. |
+| `Confirmation` | `confirmation` | Ready-made approval gate (Allow / Always allow / Deny). |
+| `DraftCard` / `DraftCardResolved` | `draft-card` | Editable draft that is its own approval. |
+| `PartTransition` | `part-transition` | Animates a part between states (height + crossfade). |
+| `ToolLine` + `toolPhase()` | `tool-line` | A tool call as a quiet trace line; expandable when done. |
+| `Reasoning` | `reasoning` | "Thinking…/Thought 3s" collapsible. |
+| `SourcesGrid` | `sources` | Source cards with favicon + host. |
+| `SearchResults` | `search-results` | Result list inside an expanded ToolLine. |
+| `Markdown` | `markdown` | Assistant prose with typeset + shiki code blocks. |
+
+### ActionCard anatomy
+
+```tsx
+<ActionCard>
+  <ActionCardHeader>
+    <ActionCardTitle>Assistant wants to archive 12 threads</ActionCardTitle>
+    <ActionCardStatus tone="approval">Approval needed</ActionCardStatus>
+  </ActionCardHeader>
+  <ActionCardDescription>Older than 90 days, no replies.</ActionCardDescription>
+  <ActionCardDisclosure show="Show the threads" hide="Hide the threads">
+    <ActionCardPanel>…list…</ActionCardPanel>
+  </ActionCardDisclosure>
+  <ActionCardPanel>
+    <ActionCardFields fields={[{ label: "From", value: "Inbox" }, { label: "To", value: "Archive" }]} />
+  </ActionCardPanel>
+  <ActionCardNote>You can restore them from Archive.</ActionCardNote>
+  <ActionCardActions>
+    <Button size="sm">Archive</Button>
+    <Button size="sm" variant="secondary">Not now</Button>
+  </ActionCardActions>
+</ActionCard>
+```
+
+`ActionCardStatus tone`: `approval` / `action` (attention + spinner, waiting on
+the person), `ready`, `done`, `error`, `neutral`.
+`ActionCardFields size="sm"` for dense key/value rows.
+
+### ToolLine
+
+```tsx
+<Trace>
+  <ToolLine
+    part={part}
+    titles={{ running: "Reading the changelog", done: "Read the changelog", error: "Couldn't read the changelog", denied: "Skipped the changelog" }}
+    description={part.output ? `${part.output.items.length} entries` : undefined}
+  >
+    {part.output && <MyDetails items={part.output.items} />}
+  </ToolLine>
+</Trace>
+```
+
+Present tense while running, past tense when done. No icon. Children make it
+expandable.
+
+---
+
+## 3. Chat kit — `@/components/chat/*`
+
+| Export | Item | Job |
+| --- | --- | --- |
+| `useAgentChat` | `agent-chat` | `useChat` + `busy`, `waiting`, `phase`, `activeIndex`, `state`; auto-continues after client tools/approvals. |
+| `defineTools`, `ToolContext` | `agent-chat` | Typed tool → UI registry. |
+| `ChatThread`, `ChatThreadItem` | `chat-thread` | Scrolling transcript with anchoring and scroll-to-bottom. |
+| `ChatTurn`, `UserTurn`, `AssistantTurn`, `ChatParts` | `chat-turn` | Renders a message: text, reasoning, sources, and your tools. |
+| `TurnActions`, `TurnAction`, `TurnActionsRow` | `turn-actions` | Copy / vote row under a finished turn. |
+| `Composer` + `ComposerInput`, `ComposerToolbar`, `ComposerAttach`, `ComposerMic`, `ComposerModelSelect`, `ComposerSubmit`, `ComposerButton` | `composer` | The prompt box. |
+| `ChatEmpty`, `ChatSuggestion` | `chat-empty` | Empty state: orb, greeting, suggestion pills. |
+| `ChatStatus` | `chat-status` | Dot + mono status line (for widget footers). |
+
+Wiring is in `chat.md`.
+
+---
+
+## 4. Primitives — `@/components/ui/*`
+
+Standard shadcn (Base UI flavour). uia tunes: `button` (adds `brand` variant),
+`select` (card trigger, padded list), `bubble` (slimmer user bubble),
+`code-block` (light inset), `questionnaire` (denser), `spinner` (thin arc),
+`message-scroller` (fade edges). Also used: `message`, `trace`, `input-group`,
+`empty`, `item`, `collapsible`, `tooltip`, `kbd`, `separator`.
+
+Button language:
+
+| Role | Variant | Size in cards |
+| --- | --- | --- |
+| Primary (the thing the card is for) | `default` | `sm` |
+| Secondary (alternative, cancel, deny) | `secondary` | `sm` |
+| Tertiary (discard, more) | `ghost`, pushed right with `ml-auto` | `sm` |
+| Widget main CTA | `brand` | default |
+| Icon-only | `ghost` + `size="icon-sm"`/`"icon-xs"` + `aria-label` | — |
+
+---
+
+## 5. Item names
+
+Foundation: `theme`, `font-inter`, `font-geist-mono`, `typeset`.
+Primitives: `button`, `select`, `bubble`, `code-block`, `questionnaire`, `spinner`, `message-scroller`.
+System: `widget`, `stat`, `segmented`, `status`, `tick-meter`, `number-ticker`, `agent-orb`, `model-icons`.
+Generative UI: `action-card`, `ask-user`, `confirmation`, `draft-card`, `part-transition`, `tool-line`, `reasoning`, `sources`, `search-results`, `markdown`.
+Chat: `agent-chat`, `chat-thread`, `chat-turn`, `turn-actions`, `composer`, `chat-empty`, `chat-status`.
+Lib: `motion`, `ai`, `url`, `highlighter`.
+Bundles: `uia` (everything), `chat`, `hitl`.
+Skill: `skill` (this file set).

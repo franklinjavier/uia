@@ -275,6 +275,17 @@ const typeset = {
   docs: 'Import it after Tailwind in your main CSS file: @import "./typeset.css";',
 }
 
+// The agent skill: lands in the project's .claude/skills so any agent working
+// there builds with uia the way the designer would.
+const SKILL_FILES = ["SKILL.md", "references/tokens.md", "references/components.md", "references/hitl.md", "references/chat.md", "references/pitfalls.md"]
+const skill = {
+  name: "skill",
+  type: "registry:file",
+  title: "uia skill",
+  description: "Agent skill that teaches coding agents to build chat, generative UI and human-in-the-loop interfaces with uia.",
+  files: SKILL_FILES.map((f) => ({ path: `skills/uia/${f}`, type: "registry:file", target: `~/.claude/skills/uia/${f}` })),
+}
+
 /* ------------------------------ output ----------------------------- */
 
 const items = [
@@ -296,6 +307,7 @@ const items = [
     }
   }),
   ...BUNDLES,
+  skill,
   {
     name: "uia",
     type: "registry:base",
@@ -306,7 +318,7 @@ const items = [
       "font-inter", "font-geist-mono", "theme", "typeset",
       ...UI_OVERRIDES.map(([n]) => n),
       "widget", "stat", "segmented", "status", "tick-meter", "number-ticker", "agent-orb", "model-icons",
-      "hitl", "reasoning", "sources", "search-results", "markdown", "chat",
+      "hitl", "reasoning", "sources", "search-results", "markdown", "chat", "skill",
     ].map((n) => `${NS}/${n}`),
   },
 ]

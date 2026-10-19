@@ -29,7 +29,8 @@
     "franklinjavier/uia/sources",
     "franklinjavier/uia/search-results",
     "franklinjavier/uia/markdown",
-    "franklinjavier/uia/chat"
+    "franklinjavier/uia/chat",
+    "franklinjavier/uia/skill"
   ],
   "type": "registry:base"
 }

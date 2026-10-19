@@ -193,9 +193,8 @@ function Session({
           {header}
         </header>
         <div className="relative min-h-0 flex-1">{conversation}</div>
-        <div className={cn(column, "shrink-0 px-6 pb-3")}>
+        <div className={cn(column, "shrink-0 px-6 pb-6")}>
           <div className="rounded-2xl border border-border bg-card shadow-xs">{composer}</div>
-          <div className="flex h-10 items-center gap-3 px-1">{status}</div>
         </div>
       </div>
     )
