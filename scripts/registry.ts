@@ -197,7 +197,7 @@ function block(selector: string) {
   )
 }
 const themeInline = block("@theme inline")
-const OURS = /^(color-(canvas|surface|faint-foreground|brand|brand-foreground|attention|attention-foreground|success|warning|info)|shadow-widget|ease-out-quint)$/
+const OURS = /^(color-(surface|faint-foreground|brand|brand-foreground|attention|attention-foreground|success|warning|info)|shadow-widget|ease-out-quint)$/
 const themeVars = Object.fromEntries(Object.entries(themeInline).filter(([k]) => OURS.test(k)))
 themeVars["animate-spin-slow"] = "spin 2.4s linear infinite"
 
@@ -217,7 +217,7 @@ const themeItem = {
       "font-variant-numeric": "tabular-nums",
     },
     "@layer base": {
-      body: { "background-color": "var(--canvas)", "-webkit-font-smoothing": "antialiased" },
+      body: { "background-color": "var(--background)", "-webkit-font-smoothing": "antialiased" },
       html: { "font-feature-settings": '"cv11", "ss03"' },
     },
     ".typeset-chat": {

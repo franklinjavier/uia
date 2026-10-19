@@ -43,7 +43,6 @@
     --color-foreground: var(--foreground);
     --color-background: var(--background);
     /* uia: extra semantic tokens */
-    --color-canvas: var(--canvas);
     --color-surface: var(--surface);
     --color-faint-foreground: var(--faint-foreground);
     --color-brand: var(--brand);
@@ -69,14 +68,11 @@
 }
 
 /*
- * Light: cool zinc greys. canvas (page) < surface (widget shell) < card.
+ * Light: cool zinc greys. The page is plain `background` (white); a widget
+ * shell (`surface`) is the only grey layer, holding card-level panels.
  * Dark: pure neutral greys (no hue). Card sits darker than the shell.
- * `background` stays the card-level surface because shadcn primitives
- * (outline buttons, inputs) paint bg-background inside cards. The page
- * itself uses `canvas`.
  */
 :root {
-    --canvas: oklch(0.963 0.005 286);
     --background: oklch(0.995 0 0);
     --foreground: oklch(0.18 0.005 286);
     --surface: oklch(0.948 0.006 286);
@@ -124,7 +120,6 @@
 }
 
 .dark {
-    --canvas: oklch(0.218 0 0);
     --background: oklch(0.183 0 0);
     --foreground: oklch(0.97 0 0);
     --surface: oklch(0.2 0 0);
@@ -199,7 +194,7 @@
     @apply border-border outline-ring/50;
     }
   body {
-    @apply bg-canvas text-foreground antialiased;
+    @apply bg-background text-foreground antialiased;
     }
   button:not(:disabled), [role="button"]:not(:disabled) {
     cursor: pointer;

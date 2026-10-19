@@ -5,7 +5,6 @@
   "description": "uia tokens: cool zinc light, neutral dark, ink brand, attention, semantic tones.",
   "cssVars": {
     "theme": {
-      "color-canvas": "var(--canvas)",
       "color-surface": "var(--surface)",
       "color-faint-foreground": "var(--faint-foreground)",
       "color-brand": "var(--brand)",
@@ -20,7 +19,6 @@
       "animate-spin-slow": "spin 2.4s linear infinite"
     },
     "light": {
-      "canvas": "oklch(0.963 0.005 286)",
       "background": "oklch(0.995 0 0)",
       "foreground": "oklch(0.18 0.005 286)",
       "surface": "oklch(0.948 0.006 286)",
@@ -65,7 +63,6 @@
       "sidebar-ring": "oklch(0.705 0.015 286)"
     },
     "dark": {
-      "canvas": "oklch(0.218 0 0)",
       "background": "oklch(0.183 0 0)",
       "foreground": "oklch(0.97 0 0)",
       "surface": "oklch(0.2 0 0)",
@@ -120,7 +117,7 @@
     },
     "@layer base": {
       "body": {
-        "background-color": "var(--canvas)",
+        "background-color": "var(--background)",
         "-webkit-font-smoothing": "antialiased"
       },
       "html": {

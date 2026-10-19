@@ -9,9 +9,8 @@ doesn't need it.
 
 | Token | Utility | Meaning |
 | --- | --- | --- |
-| `--canvas` | `bg-canvas` | The page. Body default. Slightly cool grey in light, neutral in dark. |
-| `--surface` | `bg-surface` | A widget's shell (`Widget`). Sits on canvas, holds panels. |
-| `--background` / `--card` | `bg-background`, `bg-card` | Card level: panels, the composer, resolved rows. shadcn primitives paint `bg-background`, which is why it is card-white, not the page. |
+| `--surface` | `bg-surface` | A widget's shell (`Widget`). The only grey layer; sits on the page, holds panels. |
+| `--background` / `--card` | `bg-background`, `bg-card` | The page (body default) and card level: panels, the composer, resolved rows. Plain white in light. Don't add a grey page behind widgets. |
 | `--muted` | `bg-muted`, `bg-muted/60` | Inset or pending: ActionCard body, hover, code blocks (`bg-muted/25`). Use translucent steps rather than new greys. |
 | `--popover` | `bg-popover` | Menus and select popups. |
 

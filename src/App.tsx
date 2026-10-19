@@ -1,7 +1,6 @@
 import * as React from "react"
 import { MoonIcon, SunIcon } from "lucide-react"
 
-import { cn } from "@/lib/utils"
 import { useTheme } from "@/components/theme-provider"
 import { Button } from "@/components/ui/button"
 import { Segmented, SegmentedItem } from "@/components/ds/segmented"
@@ -35,21 +34,7 @@ export function App() {
   const full = WIDGETS[active].full
 
   return (
-    <div className={cn("relative min-h-svh overflow-hidden", full ? "bg-background" : "bg-canvas")}>
-      {!full && (
-        <>
-          {/* Backdrop: hairline diagonal stripes + dashed column guides */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 [background-image:repeating-linear-gradient(135deg,color-mix(in_oklch,var(--foreground)_5%,transparent)_0_1px,transparent_1px_14px)]"
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-y-0 left-1/2 w-[600px] -translate-x-1/2 border-x border-dashed border-foreground/10"
-          />
-        </>
-      )}
-
+    <div className="relative min-h-svh bg-background">
       <header className="pointer-events-none absolute inset-x-0 top-0 z-10 flex h-16 items-center justify-center gap-2 px-4 *:pointer-events-auto">
         <Segmented
           variant="sans"

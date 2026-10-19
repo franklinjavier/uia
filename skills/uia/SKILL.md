@@ -1,6 +1,6 @@
 ---
 name: uia
-description: Build AI-product interfaces with the uia design system (shadcn + Base UI) — chat UIs, generative-UI parts rendered inside a conversation, human-in-the-loop moments (clarifying questions, editable drafts, approvals, resolved records), agent status, widgets and dashboards. Use this whenever the project has uia components (src/components/{ds,parts,chat}, `franklinjavier/uia` in registry deps, tokens like --attention/--surface/--canvas) or the user asks for a chat, assistant, agent, tool-call UI, approval card, prompt box, AI widget or any screen in such a project — even if they never say "uia" or "design system". Also use it to review or polish UI built with uia.
+description: Build AI-product interfaces with the uia design system (shadcn + Base UI) — chat UIs, generative-UI parts rendered inside a conversation, human-in-the-loop moments (clarifying questions, editable drafts, approvals, resolved records), agent status, widgets and dashboards. Use this whenever the project has uia components (src/components/{ds,parts,chat}, `franklinjavier/uia` in registry deps, tokens like --attention/--surface/--faint-foreground) or the user asks for a chat, assistant, agent, tool-call UI, approval card, prompt box, AI widget or any screen in such a project — even if they never say "uia" or "design system". Also use it to review or polish UI built with uia.
 ---
 
 # uia
@@ -43,8 +43,9 @@ to compose the existing pieces so the result looks like the designer built it.
 - **Mono uppercase `eyebrow` is the second voice**: labels, units, meta lines,
   provider names, counters (`<span className="eyebrow text-muted-foreground">`).
   It carries metadata so body text can stay plain.
-- **Surfaces nest**: `canvas` (page) → `surface` (widget shell, `Widget`) →
-  `card` (panels). Inside a message, cards use `bg-muted/60` (ActionCard) or
+- **Surfaces nest**: the page is plain `background` (white) → `surface`
+  (widget shell, `Widget`) → `card` (panels). No grey page, no decorative
+  backdrop behind widgets. Inside a message, cards use `bg-muted/60` (ActionCard) or
   `bg-card` with a hairline `border`. Prefer hairline borders over filled
   blocks; solid grey fills read as heavy (the user asked for minimalism).
 - **One indicator per meaning.** The `AgentOrb` is the only thing that moves
