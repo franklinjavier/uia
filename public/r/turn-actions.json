@@ -1,0 +1,25 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "turn-actions",
+  "title": "Turn Actions",
+  "author": "uia",
+  "description": "Copy / good / bad row under a finished turn.",
+  "dependencies": [
+    "lucide-react"
+  ],
+  "registryDependencies": [
+    "@uia/button",
+    "@uia/theme",
+    "message",
+    "tooltip"
+  ],
+  "files": [
+    {
+      "path": "src/components/chat/turn-actions.tsx",
+      "content": "import * as React from \"react\"\nimport { CheckIcon, CopyIcon, ThumbsDownIcon, ThumbsUpIcon } from \"lucide-react\"\n\nimport { cn } from \"@/lib/utils\"\nimport { Button } from \"@/components/ui/button\"\nimport { MessageFooter } from \"@/components/ui/message\"\nimport { Tooltip, TooltipContent, TooltipTrigger } from \"@/components/ui/tooltip\"\n\n// The quiet row under a finished assistant turn. Use <TurnActions> for the\n// default set (copy, good, bad) or compose your own row from <TurnAction>.\n\nfunction TurnAction({\n  label,\n  className,\n  ...props\n}: React.ComponentProps<typeof Button> & { label: string }) {\n  return (\n    <Tooltip>\n      <TooltipTrigger\n        render={\n          <Button\n            data-slot=\"turn-action\"\n            variant=\"ghost\"\n            size=\"icon-xs\"\n            aria-label={label}\n            className={cn(\"text-muted-foreground aria-pressed:text-foreground\", className)}\n            {...props}\n          />\n        }\n      />\n      <TooltipContent>{label}</TooltipContent>\n    </Tooltip>\n  )\n}\n\nfunction TurnActionsRow({ className, ...props }: React.ComponentProps<typeof MessageFooter>) {\n  return (\n    <MessageFooter\n      data-slot=\"turn-actions\"\n      className={cn(\"-ml-1.5 gap-0.5 px-0\", className)}\n      {...props}\n    />\n  )\n}\n\nfunction TurnActions({\n  text,\n  onVote,\n  children,\n  className,\n}: {\n  /** What Copy puts on the clipboard. */\n  text: string\n  onVote?: (vote: \"up\" | \"down\" | null) => void\n  /** Extra actions appended after the defaults. */\n  children?: React.ReactNode\n  className?: string\n}) {\n  const [copied, setCopied] = React.useState(false)\n  const [vote, setVote] = React.useState<\"up\" | \"down\" | null>(null)\n\n  React.useEffect(() => {\n    if (!copied) return\n    const t = window.setTimeout(() => setCopied(false), 2000)\n    return () => window.clearTimeout(t)\n  }, [copied])\n\n  const cast = (v: \"up\" | \"down\") => {\n    const next = vote === v ? null : v\n    setVote(next)\n    onVote?.(next)\n  }\n\n  return (\n    <TurnActionsRow className={className}>\n      <TurnAction\n        label={copied ? \"Copied\" : \"Copy\"}\n        onClick={() =>\n          navigator.clipboard\n            ?.writeText(text)\n            .then(() => setCopied(true))\n            .catch(() => {})\n        }\n      >\n        {copied ? <CheckIcon className=\"text-success\" /> : <CopyIcon />}\n      </TurnAction>\n      <TurnAction label=\"Good response\" aria-pressed={vote === \"up\"} onClick={() => cast(\"up\")}>\n        <ThumbsUpIcon />\n      </TurnAction>\n      <TurnAction label=\"Bad response\" aria-pressed={vote === \"down\"} onClick={() => cast(\"down\")}>\n        <ThumbsDownIcon />\n      </TurnAction>\n      {children}\n    </TurnActionsRow>\n  )\n}\n\nexport { TurnAction, TurnActions, TurnActionsRow }\n",
+      "type": "registry:component",
+      "target": "@components/chat/turn-actions.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "tool-line",
+  "title": "Tool Line",
+  "author": "uia",
+  "description": "A tool call as a trace line, expandable with details.",
+  "dependencies": [
+    "ai"
+  ],
+  "registryDependencies": [
+    "@uia/theme",
+    "trace"
+  ],
+  "files": [
+    {
+      "path": "src/components/ai-elements/tool-line.tsx",
+      "content": "import * as React from \"react\"\nimport type { ToolUIPart } from \"ai\"\n\nimport {\n  TraceCollapsible,\n  TraceCollapsibleContent,\n  TraceCollapsibleTrigger,\n  TraceDescription,\n  TraceLine,\n  TraceTitle,\n} from \"@/components/ui/trace\"\n\n// One tool call as a Trace line. Titles follow the AI Elements convention:\n// present tense while running, past tense when done.\n//\n//   input-streaming / input-available → running   \"Searching …\"\n//   output-available                  → done      \"Searched the web\"\n//   output-error                      → error     \"Search failed\"\n//   output-denied / denied response   → muted     \"Search skipped\"\n//\n// No icon: the verb names the tool, and every trace line (reasoning\n// included) starts on the same column. Pass `children` to make a finished\n// line expandable with its details (results, output…).\n\ntype Titles = { running: string; done: string; error: string; denied: string }\n\nexport function toolPhase(part: Pick<ToolUIPart, \"state\"> & { approval?: { approved?: boolean } }) {\n  if (\n    part.state === \"output-denied\" ||\n    (part.state === \"approval-responded\" && part.approval?.approved === false)\n  )\n    return \"denied\" as const\n  if (part.state === \"output-error\") return \"error\" as const\n  if (part.state === \"output-available\") return \"done\" as const\n  return \"running\" as const\n}\n\nexport function ToolLine({\n  part,\n  titles,\n  description,\n  children,\n}: {\n  part: Pick<ToolUIPart, \"state\"> & { approval?: { approved?: boolean } }\n  titles: Titles\n  description?: React.ReactNode\n  children?: React.ReactNode\n}) {\n  const phase = toolPhase(part)\n\n  const line = (\n    <TraceLine\n      status={phase === \"running\" ? \"running\" : phase === \"error\" ? \"error\" : undefined}\n    >\n      <TraceTitle>{titles[phase]}</TraceTitle>\n      {description && phase !== \"running\" && (\n        <TraceDescription>{description}</TraceDescription>\n      )}\n    </TraceLine>\n  )\n\n  if (!children || phase !== \"done\") return line\n\n  return (\n    <TraceCollapsible>\n      <TraceCollapsibleTrigger>{line}</TraceCollapsibleTrigger>\n      <TraceCollapsibleContent>{children}</TraceCollapsibleContent>\n    </TraceCollapsible>\n  )\n}\n",
+      "type": "registry:component",
+      "target": "@components/ai-elements/tool-line.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "segmented",
+  "title": "Segmented",
+  "author": "uia",
+  "description": "Single-choice pill group with a sliding indicator.",
+  "dependencies": [
+    "@base-ui/react",
+    "motion"
+  ],
+  "registryDependencies": [
+    "@uia/motion",
+    "@uia/theme"
+  ],
+  "files": [
+    {
+      "path": "src/components/ds/segmented.tsx",
+      "content": "import * as React from \"react\"\nimport { Toggle as TogglePrimitive } from \"@base-ui/react/toggle\"\nimport { ToggleGroup as ToggleGroupPrimitive } from \"@base-ui/react/toggle-group\"\nimport { motion } from \"motion/react\"\nimport { cn } from \"@/lib/utils\"\nimport { springSnappy } from \"@/lib/motion\"\n\n// Segmented control: single-choice pill group with a sliding indicator.\n// `variant=\"mono\"` uses eyebrow type (filters, modes); `sans` for tabs.\n\ntype SegmentedContextValue = {\n  value: string\n  indicatorId: string\n  variant: \"mono\" | \"sans\"\n}\n\nconst SegmentedContext = React.createContext<SegmentedContextValue | null>(\n  null\n)\n\nfunction Segmented({\n  value,\n  onValueChange,\n  variant = \"mono\",\n  className,\n  children,\n  ...props\n}: Omit<ToggleGroupPrimitive.Props, \"value\" | \"onValueChange\"> & {\n  value: string\n  onValueChange: (value: string) => void\n  variant?: \"mono\" | \"sans\"\n}) {\n  const indicatorId = React.useId()\n\n  return (\n    <ToggleGroupPrimitive\n      data-slot=\"segmented\"\n      data-variant={variant}\n      value={[value]}\n      onValueChange={(next) => {\n        if (next[0]) onValueChange(next[0])\n      }}\n      className={cn(\n        \"inline-flex items-center rounded-full border border-border bg-muted/60 p-0.5 dark:bg-transparent\",\n        className\n      )}\n      {...props}\n    >\n      <SegmentedContext.Provider value={{ value, indicatorId, variant }}>\n        {children}\n      </SegmentedContext.Provider>\n    </ToggleGroupPrimitive>\n  )\n}\n\nfunction SegmentedItem({\n  value,\n  className,\n  children,\n  ...props\n}: Omit<TogglePrimitive.Props, \"value\"> & { value: string }) {\n  const context = React.useContext(SegmentedContext)\n  if (!context) throw new Error(\"SegmentedItem must be used within Segmented\")\n  const active = context.value === value\n\n  return (\n    <TogglePrimitive\n      data-slot=\"segmented-item\"\n      value={value}\n      className={cn(\n        \"relative inline-flex h-7 items-center gap-1.5 rounded-full px-3 text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/30 data-pressed:text-foreground\",\n        context.variant === \"mono\" ? \"eyebrow\" : \"text-sm\",\n        className\n      )}\n      {...props}\n    >\n      {active && (\n        <motion.span\n          layoutId={context.indicatorId}\n          transition={springSnappy}\n          className=\"absolute inset-0 rounded-full bg-card shadow-sm ring-1 ring-border/60 dark:bg-accent dark:ring-0\"\n        />\n      )}\n      <span className=\"relative z-10 inline-flex items-center gap-1.5\">\n        {children}\n      </span>\n    </TogglePrimitive>\n  )\n}\n\nexport { Segmented, SegmentedItem }\n",
+      "type": "registry:component",
+      "target": "@components/ds/segmented.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

@@ -1,0 +1,1005 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "uia",
+  "homepage": "https://github.com/OWNER/uia",
+  "items": [
+    {
+      "name": "font-inter",
+      "type": "registry:font",
+      "title": "Inter",
+      "description": "Inter Variable as --font-sans.",
+      "font": {
+        "family": "'Inter Variable', sans-serif",
+        "provider": "google",
+        "import": "Inter",
+        "variable": "--font-sans",
+        "subsets": [
+          "latin"
+        ],
+        "dependency": "@fontsource-variable/inter"
+      }
+    },
+    {
+      "name": "font-geist-mono",
+      "type": "registry:font",
+      "title": "Geist Mono",
+      "description": "Geist Mono Variable as --font-mono (eyebrows, numbers, code).",
+      "font": {
+        "family": "'Geist Mono Variable', ui-monospace, monospace",
+        "provider": "google",
+        "import": "Geist_Mono",
+        "variable": "--font-mono",
+        "subsets": [
+          "latin"
+        ],
+        "selector": "code, kbd, pre, samp",
+        "dependency": "@fontsource-variable/geist-mono"
+      }
+    },
+    {
+      "name": "theme",
+      "type": "registry:theme",
+      "title": "Theme",
+      "description": "uia tokens: cool zinc light, neutral dark, ink brand, attention, semantic tones.",
+      "cssVars": {
+        "theme": {
+          "color-canvas": "var(--canvas)",
+          "color-surface": "var(--surface)",
+          "color-faint-foreground": "var(--faint-foreground)",
+          "color-brand": "var(--brand)",
+          "color-brand-foreground": "var(--brand-foreground)",
+          "color-attention": "var(--attention)",
+          "color-attention-foreground": "var(--attention-foreground)",
+          "color-success": "var(--success)",
+          "color-warning": "var(--warning)",
+          "color-info": "var(--info)",
+          "shadow-widget": "var(--widget-shadow)",
+          "ease-out-quint": "cubic-bezier(0.22, 1, 0.36, 1)",
+          "animate-spin-slow": "spin 2.4s linear infinite"
+        },
+        "light": {
+          "canvas": "oklch(0.963 0.005 286)",
+          "background": "oklch(0.995 0 0)",
+          "foreground": "oklch(0.18 0.005 286)",
+          "surface": "oklch(0.948 0.006 286)",
+          "card": "oklch(0.995 0 0)",
+          "card-foreground": "oklch(0.18 0.005 286)",
+          "popover": "oklch(0.995 0 0)",
+          "popover-foreground": "oklch(0.18 0.005 286)",
+          "primary": "oklch(0.18 0.005 286)",
+          "primary-foreground": "oklch(0.985 0 0)",
+          "secondary": "oklch(0.955 0.004 286)",
+          "secondary-foreground": "oklch(0.18 0.005 286)",
+          "muted": "oklch(0.955 0.004 286)",
+          "muted-foreground": "oklch(0.55 0.012 286)",
+          "faint-foreground": "oklch(0.7 0.01 286)",
+          "accent": "oklch(0.955 0.004 286)",
+          "accent-foreground": "oklch(0.18 0.005 286)",
+          "destructive": "oklch(0.577 0.215 22)",
+          "border": "oklch(0.915 0.005 286)",
+          "input": "oklch(0.9 0.005 286)",
+          "ring": "oklch(0.705 0.015 286)",
+          "brand": "oklch(0.18 0.005 286)",
+          "brand-foreground": "oklch(0.99 0 0)",
+          "attention": "oklch(0.65 0.19 37)",
+          "attention-foreground": "oklch(0.99 0 0)",
+          "success": "oklch(0.64 0.16 152)",
+          "warning": "oklch(0.7 0.16 60)",
+          "info": "oklch(0.55 0.2 270)",
+          "chart-1": "oklch(0.55 0.2 270)",
+          "chart-2": "oklch(0.63 0.13 168)",
+          "chart-3": "oklch(0.55 0.21 300)",
+          "chart-4": "oklch(0.56 0.19 355)",
+          "chart-5": "oklch(0.65 0.19 37)",
+          "radius": "0.625rem",
+          "widget-shadow": "0 0 0 1px oklch(0.18 0.01 286 / 0.06), 0 1px 2px oklch(0.18 0.01 286 / 0.04), 0 24px 48px -16px oklch(0.25 0.02 286 / 0.18)",
+          "sidebar": "oklch(0.985 0 0)",
+          "sidebar-foreground": "oklch(0.18 0.005 286)",
+          "sidebar-primary": "oklch(0.18 0.005 286)",
+          "sidebar-primary-foreground": "oklch(0.985 0 0)",
+          "sidebar-accent": "oklch(0.955 0.004 286)",
+          "sidebar-accent-foreground": "oklch(0.18 0.005 286)",
+          "sidebar-border": "oklch(0.915 0.005 286)",
+          "sidebar-ring": "oklch(0.705 0.015 286)"
+        },
+        "dark": {
+          "canvas": "oklch(0.218 0 0)",
+          "background": "oklch(0.183 0 0)",
+          "foreground": "oklch(0.97 0 0)",
+          "surface": "oklch(0.2 0 0)",
+          "card": "oklch(0.183 0 0)",
+          "card-foreground": "oklch(0.97 0 0)",
+          "popover": "oklch(0.21 0 0)",
+          "popover-foreground": "oklch(0.97 0 0)",
+          "primary": "oklch(0.97 0 0)",
+          "primary-foreground": "oklch(0.18 0 0)",
+          "secondary": "oklch(0.24 0 0)",
+          "secondary-foreground": "oklch(0.97 0 0)",
+          "muted": "oklch(0.225 0 0)",
+          "muted-foreground": "oklch(0.66 0 0)",
+          "faint-foreground": "oklch(0.5 0 0)",
+          "accent": "oklch(0.25 0 0)",
+          "accent-foreground": "oklch(0.97 0 0)",
+          "destructive": "oklch(0.66 0.21 22)",
+          "border": "oklch(1 0 0 / 9%)",
+          "input": "oklch(1 0 0 / 12%)",
+          "ring": "oklch(0.55 0 0)",
+          "brand": "oklch(0.97 0 0)",
+          "brand-foreground": "oklch(0.16 0 0)",
+          "attention": "oklch(0.68 0.19 37)",
+          "attention-foreground": "oklch(0.15 0 0)",
+          "success": "oklch(0.8 0.22 145)",
+          "warning": "oklch(0.78 0.15 65)",
+          "info": "oklch(0.7 0.14 275)",
+          "chart-1": "oklch(0.7 0.14 275)",
+          "chart-2": "oklch(0.72 0.13 168)",
+          "chart-3": "oklch(0.68 0.17 300)",
+          "chart-4": "oklch(0.68 0.17 355)",
+          "chart-5": "oklch(0.66 0.2 35)",
+          "widget-shadow": "0 0 0 1px oklch(1 0 0 / 0.06), 0 24px 48px -16px oklch(0 0 0 / 0.5)",
+          "sidebar": "oklch(0.2 0 0)",
+          "sidebar-foreground": "oklch(0.97 0 0)",
+          "sidebar-primary": "oklch(0.97 0 0)",
+          "sidebar-primary-foreground": "oklch(0.18 0 0)",
+          "sidebar-accent": "oklch(0.25 0 0)",
+          "sidebar-accent-foreground": "oklch(0.97 0 0)",
+          "sidebar-border": "oklch(1 0 0 / 8%)",
+          "sidebar-ring": "oklch(0.55 0 0)"
+        }
+      },
+      "css": {
+        "@utility eyebrow": {
+          "font-family": "var(--font-mono)",
+          "font-size": "11px",
+          "line-height": "16px",
+          "letter-spacing": "0.08em",
+          "text-transform": "uppercase",
+          "font-variant-numeric": "tabular-nums"
+        },
+        "@layer base": {
+          "body": {
+            "background-color": "var(--canvas)",
+            "-webkit-font-smoothing": "antialiased"
+          },
+          "html": {
+            "font-feature-settings": "\"cv11\", \"ss03\""
+          }
+        },
+        ".typeset-chat": {
+          "--typeset-font-body": "var(--font-sans)",
+          "--typeset-font-heading": "var(--font-sans)",
+          "--typeset-font-mono": "var(--font-mono)",
+          "--typeset-size": "14px",
+          "--typeset-leading": "1.65",
+          "--typeset-flow": "0.85em"
+        },
+        ".typeset.typeset-chat": {
+          "font-size": "var(--typeset-size)"
+        }
+      }
+    },
+    {
+      "name": "typeset",
+      "type": "registry:file",
+      "title": "Typeset",
+      "description": "shadcn/typeset, tuned for streaming chat (no tabular-nums on tables).",
+      "files": [
+        {
+          "path": "src/typeset.css",
+          "type": "registry:file",
+          "target": "~/src/typeset.css"
+        }
+      ],
+      "docs": "Import it after Tailwind in your main CSS file: @import \"./typeset.css\";"
+    },
+    {
+      "name": "button",
+      "type": "registry:ui",
+      "title": "Button",
+      "description": "Button with the `brand` variant and calmer disabled states.",
+      "author": "uia",
+      "dependencies": [
+        "@base-ui/react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/ui/button.tsx",
+          "type": "registry:ui",
+          "target": "@ui/button.tsx"
+        }
+      ]
+    },
+    {
+      "name": "select",
+      "type": "registry:ui",
+      "title": "Select",
+      "description": "Select with the outlined pill trigger.",
+      "author": "uia",
+      "dependencies": [
+        "@base-ui/react",
+        "cn",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "@uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/ui/select.tsx",
+          "type": "registry:ui",
+          "target": "@ui/select.tsx"
+        }
+      ]
+    },
+    {
+      "name": "bubble",
+      "type": "registry:ui",
+      "title": "Bubble",
+      "description": "Bubble with chat density (38px single line).",
+      "author": "uia",
+      "dependencies": [
+        "@base-ui/react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/ui/bubble.tsx",
+          "type": "registry:ui",
+          "target": "@ui/bubble.tsx"
+        }
+      ]
+    },
+    {
+      "name": "code-block",
+      "type": "registry:ui",
+      "title": "Code Block",
+      "description": "Code block with hairline surface and compact `sm` size.",
+      "author": "uia",
+      "dependencies": [
+        "class-variance-authority",
+        "cn",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "@uia/button",
+        "@uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/ui/code-block.tsx",
+          "type": "registry:ui",
+          "target": "@ui/code-block.tsx"
+        }
+      ]
+    },
+    {
+      "name": "questionnaire",
+      "type": "registry:ui",
+      "title": "Questionnaire",
+      "description": "Questionnaire with chat density and calm validation.",
+      "author": "uia",
+      "dependencies": [
+        "@shadcn/react",
+        "cn",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "@uia/button",
+        "@uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/ui/questionnaire.tsx",
+          "type": "registry:ui",
+          "target": "@ui/questionnaire.tsx"
+        }
+      ]
+    },
+    {
+      "name": "spinner",
+      "type": "registry:ui",
+      "title": "Spinner",
+      "description": "Thin-arc spinner that inherits currentColor.",
+      "author": "uia",
+      "dependencies": [
+        "cn"
+      ],
+      "registryDependencies": [
+        "@uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/ui/spinner.tsx",
+          "type": "registry:ui",
+          "target": "@ui/spinner.tsx"
+        }
+      ]
+    },
+    {
+      "name": "message-scroller",
+      "type": "registry:ui",
+      "title": "Message Scroller",
+      "description": "Message scroller fading at both edges.",
+      "author": "uia",
+      "dependencies": [
+        "@shadcn/react",
+        "cn",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "@uia/button",
+        "@uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/ui/message-scroller.tsx",
+          "type": "registry:ui",
+          "target": "@ui/message-scroller.tsx"
+        }
+      ]
+    },
+    {
+      "name": "motion",
+      "type": "registry:lib",
+      "title": "Motion",
+      "description": "Shared motion vocabulary (springs, easings).",
+      "author": "uia",
+      "dependencies": [
+        "motion"
+      ],
+      "files": [
+        {
+          "path": "src/lib/motion.ts",
+          "type": "registry:lib",
+          "target": "@lib/motion.ts"
+        }
+      ]
+    },
+    {
+      "name": "url",
+      "type": "registry:lib",
+      "title": "Url",
+      "description": "URL helpers.",
+      "author": "uia",
+      "files": [
+        {
+          "path": "src/lib/url.ts",
+          "type": "registry:lib",
+          "target": "@lib/url.ts"
+        }
+      ]
+    },
+    {
+      "name": "ai",
+      "type": "registry:lib",
+      "title": "Ai",
+      "description": "AI SDK helpers: createChat re-export, getMessageText.",
+      "author": "uia",
+      "dependencies": [
+        "@shadcn/helpers",
+        "ai"
+      ],
+      "files": [
+        {
+          "path": "src/lib/ai.ts",
+          "type": "registry:lib",
+          "target": "@lib/ai.ts"
+        }
+      ]
+    },
+    {
+      "name": "highlighter",
+      "type": "registry:lib",
+      "title": "Highlighter",
+      "description": "Lazy shiki highlighter that streams line by line.",
+      "author": "uia",
+      "dependencies": [
+        "shiki"
+      ],
+      "files": [
+        {
+          "path": "src/lib/highlighter.tsx",
+          "type": "registry:lib",
+          "target": "@lib/highlighter.tsx"
+        },
+        {
+          "path": "src/hooks/use-highlighted-code.ts",
+          "type": "registry:lib",
+          "target": "@hooks/use-highlighted-code.ts"
+        }
+      ]
+    },
+    {
+      "name": "widget",
+      "type": "registry:component",
+      "title": "Widget",
+      "description": "Card-in-card shell: Widget, header, panels, footer.",
+      "author": "uia",
+      "registryDependencies": [
+        "@uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/ds/widget.tsx",
+          "type": "registry:component",
+          "target": "@components/ds/widget.tsx"
+        }
+      ]
+    },
+    {
+      "name": "stat",
+      "type": "registry:component",
+      "title": "Stat",
+      "description": "Eyebrow label, large value, unit and meta line.",
+      "author": "uia",
+      "registryDependencies": [
+        "@uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/ds/stat.tsx",
+          "type": "registry:component",
+          "target": "@components/ds/stat.tsx"
+        }
+      ]
+    },
+    {
+      "name": "segmented",
+      "type": "registry:component",
+      "title": "Segmented",
+      "description": "Single-choice pill group with a sliding indicator.",
+      "author": "uia",
+      "dependencies": [
+        "@base-ui/react",
+        "motion"
+      ],
+      "registryDependencies": [
+        "@uia/motion",
+        "@uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/ds/segmented.tsx",
+          "type": "registry:component",
+          "target": "@components/ds/segmented.tsx"
+        }
+      ]
+    },
+    {
+      "name": "status",
+      "type": "registry:component",
+      "title": "Status",
+      "description": "StatusDot and StatusBadge with semantic tones.",
+      "author": "uia",
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "@uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/ds/status.tsx",
+          "type": "registry:component",
+          "target": "@components/ds/status.tsx"
+        }
+      ]
+    },
+    {
+      "name": "tick-meter",
+      "type": "registry:component",
+      "title": "Tick Meter",
+      "description": "Progress as a row of hairline ticks.",
+      "author": "uia",
+      "registryDependencies": [
+        "@uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/ds/tick-meter.tsx",
+          "type": "registry:component",
+          "target": "@components/ds/tick-meter.tsx"
+        }
+      ]
+    },
+    {
+      "name": "number-ticker",
+      "type": "registry:component",
+      "title": "Number Ticker",
+      "description": "Numbers that animate between values.",
+      "author": "uia",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "@uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/ds/number-ticker.tsx",
+          "type": "registry:component",
+          "target": "@components/ds/number-ticker.tsx"
+        }
+      ]
+    },
+    {
+      "name": "agent-orb",
+      "type": "registry:component",
+      "title": "Agent Orb",
+      "description": "The assistant's presence; one animated state per agent phase.",
+      "author": "uia",
+      "dependencies": [
+        "thinking-orbs"
+      ],
+      "registryDependencies": [
+        "@uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/ds/agent-orb.tsx",
+          "type": "registry:component",
+          "target": "@components/ds/agent-orb.tsx"
+        }
+      ]
+    },
+    {
+      "name": "action-card",
+      "type": "registry:component",
+      "title": "Action Card",
+      "description": "One shape for every human-in-the-loop moment, plus ResolvedRow and TranscriptEvent.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react",
+        "motion"
+      ],
+      "registryDependencies": [
+        "@uia/motion",
+        "@uia/spinner",
+        "@uia/theme",
+        "collapsible"
+      ],
+      "files": [
+        {
+          "path": "src/components/ai-elements/action-card.tsx",
+          "type": "registry:component",
+          "target": "@components/ai-elements/action-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "ask-user",
+      "type": "registry:component",
+      "title": "Ask User",
+      "description": "Clarifying questions (A/B/C keys) and their answered states.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react",
+        "motion"
+      ],
+      "registryDependencies": [
+        "@uia/action-card",
+        "@uia/button",
+        "@uia/motion",
+        "@uia/questionnaire",
+        "@uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/ai-elements/ask-user.tsx",
+          "type": "registry:component",
+          "target": "@components/ai-elements/ask-user.tsx"
+        }
+      ]
+    },
+    {
+      "name": "confirmation",
+      "type": "registry:component",
+      "title": "Confirmation",
+      "description": "Approval gate before a tool with side effects runs.",
+      "author": "uia",
+      "registryDependencies": [
+        "@uia/action-card",
+        "@uia/button",
+        "@uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/ai-elements/confirmation.tsx",
+          "type": "registry:component",
+          "target": "@components/ai-elements/confirmation.tsx"
+        }
+      ]
+    },
+    {
+      "name": "draft-card",
+      "type": "registry:component",
+      "title": "Draft Card",
+      "description": "Editable draft that is its own approval; resolves to an expandable row.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "@uia/action-card",
+        "@uia/button",
+        "@uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/ai-elements/draft-card.tsx",
+          "type": "registry:component",
+          "target": "@components/ai-elements/draft-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "part-transition",
+      "type": "registry:component",
+      "title": "Part Transition",
+      "description": "Height + crossfade transition when a part resolves.",
+      "author": "uia",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "@uia/motion",
+        "@uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/ai-elements/part-transition.tsx",
+          "type": "registry:component",
+          "target": "@components/ai-elements/part-transition.tsx"
+        }
+      ]
+    },
+    {
+      "name": "tool-line",
+      "type": "registry:component",
+      "title": "Tool Line",
+      "description": "A tool call as a trace line, expandable with details.",
+      "author": "uia",
+      "dependencies": [
+        "ai"
+      ],
+      "registryDependencies": [
+        "@uia/theme",
+        "trace"
+      ],
+      "files": [
+        {
+          "path": "src/components/ai-elements/tool-line.tsx",
+          "type": "registry:component",
+          "target": "@components/ai-elements/tool-line.tsx"
+        }
+      ]
+    },
+    {
+      "name": "reasoning",
+      "type": "registry:component",
+      "title": "Reasoning",
+      "description": "Thinking / Thought trace line with measured duration.",
+      "author": "uia",
+      "registryDependencies": [
+        "@uia/theme",
+        "trace"
+      ],
+      "files": [
+        {
+          "path": "src/components/ai-elements/reasoning.tsx",
+          "type": "registry:component",
+          "target": "@components/ai-elements/reasoning.tsx"
+        }
+      ]
+    },
+    {
+      "name": "sources",
+      "type": "registry:component",
+      "title": "Sources",
+      "description": "Cited sources as a 2-up grid of cards.",
+      "author": "uia",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "@uia/motion",
+        "@uia/theme",
+        "@uia/url"
+      ],
+      "files": [
+        {
+          "path": "src/components/ai-elements/sources.tsx",
+          "type": "registry:component",
+          "target": "@components/ai-elements/sources.tsx"
+        }
+      ]
+    },
+    {
+      "name": "search-results",
+      "type": "registry:component",
+      "title": "Search Results",
+      "description": "Everything a search returned, as a compact list.",
+      "author": "uia",
+      "registryDependencies": [
+        "@uia/theme",
+        "@uia/url"
+      ],
+      "files": [
+        {
+          "path": "src/components/ai-elements/search-results.tsx",
+          "type": "registry:component",
+          "target": "@components/ai-elements/search-results.tsx"
+        }
+      ]
+    },
+    {
+      "name": "markdown",
+      "type": "registry:component",
+      "title": "Markdown",
+      "description": "Assistant prose with typeset and highlighted code blocks.",
+      "author": "uia",
+      "dependencies": [
+        "react-markdown",
+        "remark-gfm"
+      ],
+      "registryDependencies": [
+        "@uia/code-block",
+        "@uia/highlighter",
+        "@uia/theme",
+        "@uia/typeset"
+      ],
+      "files": [
+        {
+          "path": "src/components/ai-elements/markdown.tsx",
+          "type": "registry:component",
+          "target": "@components/ai-elements/markdown.tsx"
+        },
+        {
+          "path": "src/components/markdown-code.tsx",
+          "type": "registry:component",
+          "target": "@components/markdown-code.tsx"
+        }
+      ]
+    },
+    {
+      "name": "agent-chat",
+      "type": "registry:hook",
+      "title": "Agent Chat",
+      "description": "useAgentChat, the tool registry types and pure transcript reads.",
+      "author": "uia",
+      "dependencies": [
+        "@ai-sdk/react",
+        "ai"
+      ],
+      "registryDependencies": [
+        "@uia/agent-orb"
+      ],
+      "files": [
+        {
+          "path": "src/components/chat/use-agent-chat.ts",
+          "type": "registry:hook",
+          "target": "@components/chat/use-agent-chat.ts"
+        },
+        {
+          "path": "src/components/chat/tool-registry.ts",
+          "type": "registry:hook",
+          "target": "@components/chat/tool-registry.ts"
+        },
+        {
+          "path": "src/components/chat/chat-state.ts",
+          "type": "registry:hook",
+          "target": "@components/chat/chat-state.ts"
+        }
+      ]
+    },
+    {
+      "name": "chat-thread",
+      "type": "registry:component",
+      "title": "Chat Thread",
+      "description": "Scrolling transcript that follows the stream.",
+      "author": "uia",
+      "dependencies": [
+        "ai"
+      ],
+      "registryDependencies": [
+        "@uia/message-scroller",
+        "@uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/chat/chat-thread.tsx",
+          "type": "registry:component",
+          "target": "@components/chat/chat-thread.tsx"
+        }
+      ]
+    },
+    {
+      "name": "chat-turn",
+      "type": "registry:component",
+      "title": "Chat Turn",
+      "description": "UserTurn, AssistantTurn, ChatParts; tools render via the registry.",
+      "author": "uia",
+      "dependencies": [
+        "ai"
+      ],
+      "registryDependencies": [
+        "@uia/agent-chat",
+        "@uia/agent-orb",
+        "@uia/ai",
+        "@uia/bubble",
+        "@uia/markdown",
+        "@uia/reasoning",
+        "@uia/sources",
+        "@uia/theme",
+        "@uia/tool-line",
+        "@uia/turn-actions",
+        "message",
+        "trace"
+      ],
+      "files": [
+        {
+          "path": "src/components/chat/chat-turn.tsx",
+          "type": "registry:component",
+          "target": "@components/chat/chat-turn.tsx"
+        }
+      ]
+    },
+    {
+      "name": "turn-actions",
+      "type": "registry:component",
+      "title": "Turn Actions",
+      "description": "Copy / good / bad row under a finished turn.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "@uia/button",
+        "@uia/theme",
+        "message",
+        "tooltip"
+      ],
+      "files": [
+        {
+          "path": "src/components/chat/turn-actions.tsx",
+          "type": "registry:component",
+          "target": "@components/chat/turn-actions.tsx"
+        }
+      ]
+    },
+    {
+      "name": "composer",
+      "type": "registry:component",
+      "title": "Composer",
+      "description": "Prompt box as parts: input, toolbar, attach, model select, submit.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "@uia/select",
+        "@uia/theme",
+        "input-group"
+      ],
+      "files": [
+        {
+          "path": "src/components/chat/composer.tsx",
+          "type": "registry:component",
+          "target": "@components/chat/composer.tsx"
+        }
+      ]
+    },
+    {
+      "name": "chat-empty",
+      "type": "registry:component",
+      "title": "Chat Empty",
+      "description": "First screen: resting orb, greeting, suggestions.",
+      "author": "uia",
+      "registryDependencies": [
+        "@uia/agent-orb",
+        "@uia/button",
+        "@uia/theme",
+        "empty"
+      ],
+      "files": [
+        {
+          "path": "src/components/chat/chat-empty.tsx",
+          "type": "registry:component",
+          "target": "@components/chat/chat-empty.tsx"
+        }
+      ]
+    },
+    {
+      "name": "chat-status",
+      "type": "registry:component",
+      "title": "Chat Status",
+      "description": "One-line conversation status.",
+      "author": "uia",
+      "registryDependencies": [
+        "@uia/agent-chat",
+        "@uia/status",
+        "@uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/chat/chat-status.tsx",
+          "type": "registry:component",
+          "target": "@components/chat/chat-status.tsx"
+        }
+      ]
+    },
+    {
+      "name": "chat",
+      "type": "registry:block",
+      "title": "Chat",
+      "description": "Everything to build an agent chat.",
+      "author": "uia",
+      "registryDependencies": [
+        "@uia/agent-chat",
+        "@uia/chat-thread",
+        "@uia/chat-turn",
+        "@uia/turn-actions",
+        "@uia/composer",
+        "@uia/chat-empty",
+        "@uia/chat-status"
+      ]
+    },
+    {
+      "name": "hitl",
+      "type": "registry:block",
+      "title": "Hitl",
+      "description": "All human-in-the-loop parts.",
+      "author": "uia",
+      "registryDependencies": [
+        "@uia/action-card",
+        "@uia/ask-user",
+        "@uia/confirmation",
+        "@uia/draft-card",
+        "@uia/part-transition",
+        "@uia/tool-line"
+      ]
+    },
+    {
+      "name": "uia",
+      "type": "registry:base",
+      "title": "uia",
+      "description": "The whole design system: fonts, theme, typeset, ds, hitl and chat.",
+      "author": "uia",
+      "registryDependencies": [
+        "@uia/font-inter",
+        "@uia/font-geist-mono",
+        "@uia/theme",
+        "@uia/typeset",
+        "@uia/button",
+        "@uia/select",
+        "@uia/bubble",
+        "@uia/code-block",
+        "@uia/questionnaire",
+        "@uia/spinner",
+        "@uia/message-scroller",
+        "@uia/widget",
+        "@uia/stat",
+        "@uia/segmented",
+        "@uia/status",
+        "@uia/tick-meter",
+        "@uia/number-ticker",
+        "@uia/agent-orb",
+        "@uia/hitl",
+        "@uia/reasoning",
+        "@uia/sources",
+        "@uia/search-results",
+        "@uia/markdown",
+        "@uia/chat"
+      ]
+    }
+  ]
+}

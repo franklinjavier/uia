@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "part-transition",
+  "title": "Part Transition",
+  "author": "uia",
+  "description": "Height + crossfade transition when a part resolves.",
+  "dependencies": [
+    "motion"
+  ],
+  "registryDependencies": [
+    "@uia/motion",
+    "@uia/theme"
+  ],
+  "files": [
+    {
+      "path": "src/components/ai-elements/part-transition.tsx",
+      "content": "import * as React from \"react\"\nimport { AnimatePresence, motion } from \"motion/react\"\n\nimport { springSoft } from \"@/lib/motion\"\n\n// PartTransition: how a human-in-the-loop part closes after the person\n// acts (question → answered, draft → sent, approval → done).\n//\n// The outgoing state fades out with a slight shrink and blur while the\n// incoming one fades in, and the wrapper's height eases from one to the\n// other so the transcript below glides instead of jumping. Change `state`\n// to trigger it; the first render never animates (the parts have their\n// own entrance).\n//\n// Local height animation only — no layout projection, which would drag\n// the part around while the transcript streams under it.\nexport function PartTransition({\n  state,\n  children,\n}: {\n  state: string\n  children: React.ReactNode\n}) {\n  const inner = React.useRef<HTMLDivElement>(null)\n  const [height, setHeight] = React.useState<number | \"auto\">(\"auto\")\n\n  React.useLayoutEffect(() => {\n    const el = inner.current\n    if (!el) return\n    const ro = new ResizeObserver(([entry]) => {\n      setHeight(entry.borderBoxSize?.[0]?.blockSize ?? entry.contentRect.height)\n    })\n    ro.observe(el)\n    return () => ro.disconnect()\n  }, [])\n\n  return (\n    <motion.div\n      data-slot=\"part-transition\"\n      initial={false}\n      animate={{ height }}\n      transition={springSoft}\n      // -mb-1/pb-1 keeps the cards' small shadow from being clipped.\n      className=\"relative -mb-1 overflow-hidden\"\n    >\n      <div ref={inner} className=\"pb-1\">\n        <AnimatePresence mode=\"popLayout\" initial={false}>\n          <motion.div\n            key={state}\n            initial={{ opacity: 0, filter: \"blur(2px)\" }}\n            animate={{ opacity: 1, filter: \"blur(0px)\" }}\n            exit={{ opacity: 0, scale: 0.98, filter: \"blur(2px)\" }}\n            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}\n            style={{ transformOrigin: \"top center\" }}\n          >\n            {children}\n          </motion.div>\n        </AnimatePresence>\n      </div>\n    </motion.div>\n  )\n}\n",
+      "type": "registry:component",
+      "target": "@components/ai-elements/part-transition.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

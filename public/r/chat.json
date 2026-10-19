@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "chat",
+  "title": "Chat",
+  "author": "uia",
+  "description": "Everything to build an agent chat.",
+  "registryDependencies": [
+    "@uia/agent-chat",
+    "@uia/chat-thread",
+    "@uia/chat-turn",
+    "@uia/turn-actions",
+    "@uia/composer",
+    "@uia/chat-empty",
+    "@uia/chat-status"
+  ],
+  "type": "registry:block"
+}

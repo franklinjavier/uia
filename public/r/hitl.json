@@ -1,0 +1,16 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "hitl",
+  "title": "Hitl",
+  "author": "uia",
+  "description": "All human-in-the-loop parts.",
+  "registryDependencies": [
+    "@uia/action-card",
+    "@uia/ask-user",
+    "@uia/confirmation",
+    "@uia/draft-card",
+    "@uia/part-transition",
+    "@uia/tool-line"
+  ],
+  "type": "registry:block"
+}

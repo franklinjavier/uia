@@ -1,0 +1,22 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "agent-orb",
+  "title": "Agent Orb",
+  "author": "uia",
+  "description": "The assistant's presence; one animated state per agent phase.",
+  "dependencies": [
+    "thinking-orbs"
+  ],
+  "registryDependencies": [
+    "@uia/theme"
+  ],
+  "files": [
+    {
+      "path": "src/components/ds/agent-orb.tsx",
+      "content": "import { ThinkingOrb, type OrbState } from \"thinking-orbs\"\n\nimport { cn } from \"@/lib/utils\"\n\n// The assistant's presence. One phase per thing the agent can be doing, each\n// mapped to a thinking-orbs state. Monochrome on purpose: the attention\n// colour stays the only hue, and the dotted ink matches the eyebrow/tick\n// language.\n//\n// Only the active turn animates (`active`); past turns hold a still frame,\n// so the moving orb always marks who is speaking now.\n\nexport type AgentPhase =\n  | \"idle\" // nothing in flight\n  | \"connecting\" // request sent, no token yet\n  | \"thinking\" // reasoning streams\n  | \"searching\" // a search tool runs\n  | \"working\" // any other tool runs\n  | \"composing\" // answer text streams\n  | \"waiting\" // paused on the person (question, draft, approval)\n\nconst STATE: Record<AgentPhase, OrbState> = {\n  idle: \"breathing\",\n  connecting: \"connecting\",\n  thinking: \"solving\",\n  searching: \"searching\",\n  working: \"working\",\n  composing: \"composing\",\n  waiting: \"listening\",\n}\n\nconst LABEL: Record<AgentPhase, string> = {\n  idle: \"Assistant\",\n  connecting: \"Assistant is connecting\",\n  thinking: \"Assistant is thinking\",\n  searching: \"Assistant is searching\",\n  working: \"Assistant is working\",\n  composing: \"Assistant is writing\",\n  waiting: \"Assistant is waiting for you\",\n}\n\nexport function AgentOrb({\n  phase = \"idle\",\n  size = 20,\n  active = true,\n  className,\n}: {\n  phase?: AgentPhase\n  size?: 20 | 32 | 64\n  active?: boolean\n  className?: string\n}) {\n  return (\n    <ThinkingOrb\n      data-slot=\"agent-orb\"\n      data-phase={phase}\n      state={STATE[phase]}\n      size={size}\n      paused={!active}\n      aria-label={LABEL[phase]}\n      className={cn(\"shrink-0\", !active && \"opacity-60\", className)}\n    />\n  )\n}\n",
+      "type": "registry:component",
+      "target": "@components/ds/agent-orb.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "number-ticker",
+  "title": "Number Ticker",
+  "author": "uia",
+  "description": "Numbers that animate between values.",
+  "dependencies": [
+    "motion"
+  ],
+  "registryDependencies": [
+    "@uia/theme"
+  ],
+  "files": [
+    {
+      "path": "src/components/ds/number-ticker.tsx",
+      "content": "import * as React from \"react\"\nimport { motion, useSpring, useTransform } from \"motion/react\"\nimport { cn } from \"@/lib/utils\"\n\n// Animates between numeric values instead of swapping them.\nfunction NumberTicker({\n  value,\n  format = (v) => Math.round(v).toLocaleString(\"en-US\"),\n  className,\n}: {\n  value: number\n  format?: (value: number) => string\n  className?: string\n}) {\n  const spring = useSpring(value, { stiffness: 140, damping: 24 })\n  const display = useTransform(spring, format)\n\n  React.useEffect(() => {\n    spring.set(value)\n  }, [spring, value])\n\n  return (\n    <motion.span\n      data-slot=\"number-ticker\"\n      className={cn(\"tabular-nums\", className)}\n    >\n      {display}\n    </motion.span>\n  )\n}\n\nexport { NumberTicker }\n",
+      "type": "registry:component",
+      "target": "@components/ds/number-ticker.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

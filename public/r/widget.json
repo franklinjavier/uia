@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "widget",
+  "title": "Widget",
+  "author": "uia",
+  "description": "Card-in-card shell: Widget, header, panels, footer.",
+  "registryDependencies": [
+    "@uia/theme"
+  ],
+  "files": [
+    {
+      "path": "src/components/ds/widget.tsx",
+      "content": "import * as React from \"react\"\nimport { cn } from \"@/lib/utils\"\n\n// Widget: the floating \"card-in-card\" shell every surface is built from.\n// Anatomy: Widget > WidgetHeader > WidgetPanel(s) > WidgetFooter.\n// The shell is `surface`, panels are `card`, separated by a 4px gutter.\n\nfunction Widget({ className, ...props }: React.ComponentProps<\"section\">) {\n  return (\n    <section\n      data-slot=\"widget\"\n      className={cn(\n        \"flex w-full flex-col gap-1 rounded-3xl bg-surface p-1 text-card-foreground shadow-widget\",\n        className\n      )}\n      {...props}\n    />\n  )\n}\n\nfunction WidgetHeader({ className, ...props }: React.ComponentProps<\"header\">) {\n  return (\n    <header\n      data-slot=\"widget-header\"\n      className={cn(\"flex min-h-16 items-center gap-2 pr-3 pl-5\", className)}\n      {...props}\n    />\n  )\n}\n\nfunction WidgetTitle({ className, ...props }: React.ComponentProps<\"h2\">) {\n  return (\n    <h2\n      data-slot=\"widget-title\"\n      className={cn(\"text-base leading-6 tracking-[-0.011em]\", className)}\n      {...props}\n    />\n  )\n}\n\nfunction WidgetDescription({\n  className,\n  ...props\n}: React.ComponentProps<\"span\">) {\n  return (\n    <span\n      data-slot=\"widget-description\"\n      className={cn(\"text-sm text-muted-foreground\", className)}\n      {...props}\n    />\n  )\n}\n\nfunction WidgetActions({ className, ...props }: React.ComponentProps<\"div\">) {\n  return (\n    <div\n      data-slot=\"widget-actions\"\n      className={cn(\"ml-auto flex items-center gap-1\", className)}\n      {...props}\n    />\n  )\n}\n\nfunction WidgetPanel({ className, ...props }: React.ComponentProps<\"div\">) {\n  return (\n    <div\n      data-slot=\"widget-panel\"\n      className={cn(\n        \"rounded-2xl bg-card p-5 ring-1 ring-border/70 dark:ring-border\",\n        className\n      )}\n      {...props}\n    />\n  )\n}\n\nfunction WidgetFooter({ className, ...props }: React.ComponentProps<\"footer\">) {\n  return (\n    <footer\n      data-slot=\"widget-footer\"\n      className={cn(\"flex min-h-16 items-center gap-3 pr-3 pl-3\", className)}\n      {...props}\n    />\n  )\n}\n\nfunction WidgetMeta({ className, ...props }: React.ComponentProps<\"span\">) {\n  return (\n    <span\n      data-slot=\"widget-meta\"\n      className={cn(\"eyebrow truncate text-muted-foreground\", className)}\n      {...props}\n    />\n  )\n}\n\nexport {\n  Widget,\n  WidgetActions,\n  WidgetDescription,\n  WidgetFooter,\n  WidgetHeader,\n  WidgetMeta,\n  WidgetPanel,\n  WidgetTitle,\n}\n",
+      "type": "registry:component",
+      "target": "@components/ds/widget.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "url",
+  "title": "Url",
+  "author": "uia",
+  "description": "URL helpers.",
+  "files": [
+    {
+      "path": "src/lib/url.ts",
+      "content": "/** Hostname without \"www.\", or the input unchanged if it isn't a URL. */\nexport function hostname(url: string) {\n  try {\n    return new URL(url).hostname.replace(/^www\\./, \"\")\n  } catch {\n    return url\n  }\n}\n",
+      "type": "registry:lib",
+      "target": "@lib/url.ts"
+    }
+  ],
+  "type": "registry:lib"
+}

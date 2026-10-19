@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "reasoning",
+  "title": "Reasoning",
+  "author": "uia",
+  "description": "Thinking / Thought trace line with measured duration.",
+  "registryDependencies": [
+    "@uia/theme",
+    "trace"
+  ],
+  "files": [
+    {
+      "path": "src/components/ai-elements/reasoning.tsx",
+      "content": "import * as React from \"react\"\n\nimport {\n  TraceCollapsible,\n  TraceCollapsibleContent,\n  TraceCollapsibleTrigger,\n  TraceDescription,\n  TraceLine,\n  TraceTitle,\n} from \"@/components/ui/trace\"\n\n// \"Thinking\" while it streams (open), \"Thought 3s\" once done (closed),\n// unless the person toggled it. Duration is measured on the client.\nexport function Reasoning({ text, running }: { text: string; running: boolean }) {\n  const [open, setOpen] = React.useState<boolean>()\n  const startedAt = React.useRef<number | null>(null)\n  const [duration, setDuration] = React.useState<number>()\n\n  React.useEffect(() => {\n    if (running && startedAt.current === null) startedAt.current = Date.now()\n    if (!running && startedAt.current !== null && duration === undefined) {\n      setDuration(Math.max(1, Math.round((Date.now() - startedAt.current) / 1000)))\n    }\n  }, [running, duration])\n\n  return (\n    <TraceCollapsible open={open ?? running} onOpenChange={setOpen}>\n      <TraceCollapsibleTrigger>\n        <TraceLine status={running ? \"running\" : undefined}>\n          {/* No icon: the agent orb beside it already says \"thinking\".\n              Tool lines keep theirs because they name the tool. */}\n          <TraceTitle>{running ? \"Thinking\" : \"Thought\"}</TraceTitle>\n          {!running && duration !== undefined && (\n            <TraceDescription>{duration}s</TraceDescription>\n          )}\n        </TraceLine>\n      </TraceCollapsibleTrigger>\n      <TraceCollapsibleContent className=\"whitespace-pre-wrap\">\n        {text}\n      </TraceCollapsibleContent>\n    </TraceCollapsible>\n  )\n}\n",
+      "type": "registry:component",
+      "target": "@components/ai-elements/reasoning.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

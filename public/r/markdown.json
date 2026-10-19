@@ -1,0 +1,32 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "markdown",
+  "title": "Markdown",
+  "author": "uia",
+  "description": "Assistant prose with typeset and highlighted code blocks.",
+  "dependencies": [
+    "react-markdown",
+    "remark-gfm"
+  ],
+  "registryDependencies": [
+    "@uia/code-block",
+    "@uia/highlighter",
+    "@uia/theme",
+    "@uia/typeset"
+  ],
+  "files": [
+    {
+      "path": "src/components/ai-elements/markdown.tsx",
+      "content": "import ReactMarkdown from \"react-markdown\"\nimport remarkGfm from \"remark-gfm\"\n\nimport { cn } from \"@/lib/utils\"\nimport { MarkdownPre } from \"@/components/markdown-code\"\n\n// Assistant prose. Typeset owns the rhythm; fenced code goes to Code Block.\nexport function Markdown({\n  children,\n  className,\n}: {\n  children: string\n  className?: string\n}) {\n  return (\n    <div data-slot=\"markdown\" className={cn(\"typeset typeset-chat\", className)}>\n      <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ pre: MarkdownPre }}>\n        {children}\n      </ReactMarkdown>\n    </div>\n  )\n}\n",
+      "type": "registry:component",
+      "target": "@components/ai-elements/markdown.tsx"
+    },
+    {
+      "path": "src/components/markdown-code.tsx",
+      "content": "\"use client\"\n\nimport * as React from \"react\"\nimport { type ExtraProps } from \"react-markdown\"\n\nimport { useHighlightedCode } from \"@/hooks/use-highlighted-code\"\nimport {\n  CodeBlock,\n  CodeBlockActions,\n  CodeBlockContent,\n  CodeBlockCopyButton,\n  CodeBlockHeader,\n  CodeBlockLine,\n  CodeBlockTitle,\n} from \"@/components/ui/code-block\"\n\n// Fenced code arrives as <pre><code>, so read it from the hast node.\nexport function MarkdownPre({\n  node,\n  children,\n  ...props\n}: React.ComponentProps<\"pre\"> & ExtraProps) {\n  const element = node?.children[0]\n\n  if (element?.type !== \"element\" || element.tagName !== \"code\") {\n    return <pre {...props}>{children}</pre>\n  }\n\n  const language =\n    /language-([^\\s,]+)/.exec(\n      String(element.properties.className ?? \"\")\n    )?.[1] ?? \"\"\n  const code = element.children\n    .map((child) => (child.type === \"text\" ? child.value : \"\"))\n    .join(\"\")\n    .replace(/\\n$/, \"\")\n\n  return <MarkdownCodeBlock code={code} language={language} />\n}\n\nfunction MarkdownCodeBlock({\n  code,\n  language,\n}: {\n  code: string\n  language: string\n}) {\n  const lines = useHighlightedCode(code, language)\n\n  return (\n    <CodeBlock size=\"sm\" className=\"not-typeset mt-(--typeset-flow)\">\n      <CodeBlockHeader>\n        <CodeBlockTitle>{language || \"text\"}</CodeBlockTitle>\n        <CodeBlockActions>\n          <CodeBlockCopyButton value={code} />\n        </CodeBlockActions>\n      </CodeBlockHeader>\n      <CodeBlockContent>\n        {lines.map((line, index) => (\n          <CodeBlockLine key={index}>{line}</CodeBlockLine>\n        ))}\n      </CodeBlockContent>\n    </CodeBlock>\n  )\n}\n",
+      "type": "registry:component",
+      "target": "@components/markdown-code.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

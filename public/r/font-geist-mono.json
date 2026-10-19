@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "font-geist-mono",
+  "title": "Geist Mono",
+  "description": "Geist Mono Variable as --font-mono (eyebrows, numbers, code).",
+  "type": "registry:font",
+  "font": {
+    "family": "'Geist Mono Variable', ui-monospace, monospace",
+    "provider": "google",
+    "import": "Geist_Mono",
+    "variable": "--font-mono",
+    "subsets": [
+      "latin"
+    ],
+    "selector": "code, kbd, pre, samp",
+    "dependency": "@fontsource-variable/geist-mono"
+  }
+}
