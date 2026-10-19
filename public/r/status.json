@@ -8,7 +8,7 @@
     "class-variance-authority"
   ],
   "registryDependencies": [
-    "@uia/theme"
+    "franklinjavier/uia/theme"
   ],
   "files": [
     {

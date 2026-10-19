@@ -9,10 +9,10 @@
     "motion"
   ],
   "registryDependencies": [
-    "@uia/motion",
-    "@uia/spinner",
-    "@uia/theme",
-    "collapsible"
+    "collapsible",
+    "franklinjavier/uia/motion",
+    "franklinjavier/uia/spinner",
+    "franklinjavier/uia/theme"
   ],
   "files": [
     {

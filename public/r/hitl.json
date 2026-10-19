@@ -5,12 +5,12 @@
   "author": "uia",
   "description": "All human-in-the-loop parts.",
   "registryDependencies": [
-    "@uia/action-card",
-    "@uia/ask-user",
-    "@uia/confirmation",
-    "@uia/draft-card",
-    "@uia/part-transition",
-    "@uia/tool-line"
+    "franklinjavier/uia/action-card",
+    "franklinjavier/uia/ask-user",
+    "franklinjavier/uia/confirmation",
+    "franklinjavier/uia/draft-card",
+    "franklinjavier/uia/part-transition",
+    "franklinjavier/uia/tool-line"
   ],
   "type": "registry:block"
 }

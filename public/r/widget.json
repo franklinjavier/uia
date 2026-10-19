@@ -5,7 +5,7 @@
   "author": "uia",
   "description": "Card-in-card shell: Widget, header, panels, footer.",
   "registryDependencies": [
-    "@uia/theme"
+    "franklinjavier/uia/theme"
   ],
   "files": [
     {

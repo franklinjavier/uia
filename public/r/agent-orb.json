@@ -8,7 +8,7 @@
     "thinking-orbs"
   ],
   "registryDependencies": [
-    "@uia/theme"
+    "franklinjavier/uia/theme"
   ],
   "files": [
     {

@@ -15,7 +15,7 @@ src/components/
   ui/            shadcn primitives (owned; a few tuned: button, select, bubble,
                  code-block, questionnaire, spinner, message-scroller)
   ds/            system pieces: Widget, Stat, Segmented, Status, TickMeter,
-                 NumberTicker, AgentOrb
+                 NumberTicker, AgentOrb, ModelIcon
   ai-elements/   generative-UI parts: ActionCard*, ResolvedRow, TranscriptEvent,
                  AskUser, Confirmation, DraftCard, PartTransition, ToolLine,
                  Reasoning, Sources, SearchResults, Markdown
@@ -43,36 +43,41 @@ To add a new component: create the file, add one line to `ITEMS` in
 
 ### Use it in a project
 
-1. Point the `@uia` namespace at the built JSON in the project's
-   `components.json`:
+Install straight from GitHub. No server, no config: dependencies (other
+pieces, tokens, npm packages, upstream shadcn primitives) come along.
 
-   ```json
-   {
-     "registries": {
-       "@uia": "http://localhost:5173/r/{name}.json"
-     }
-   }
-   ```
+```bash
+npx shadcn@latest add franklinjavier/uia/uia           # everything
+npx shadcn@latest add franklinjavier/uia/chat          # chat kit
+npx shadcn@latest add franklinjavier/uia/hitl          # human-in-the-loop parts
+npx shadcn@latest add franklinjavier/uia/confirmation  # one piece
+```
 
-   Local: run `bun run dev` here. Hosted: any static URL serving `public/r`,
-   e.g. a deploy of this repo, or
-   `https://raw.githubusercontent.com/<owner>/uia/main/public/r/{name}.json`.
+- **Private repo:** run `gh auth login` once; the CLI reads the repo through
+  your `gh` credentials. In CI, set `GH_TOKEN` (fine-grained, Contents: read).
+- **Pin a version:** append a tag or commit, e.g. `franklinjavier/uia/chat#v0.1.0`.
+- Use `--overwrite` when the project already has `button`, `select`, … so our
+  tuned versions replace the stock ones.
+- Then import `typeset.css` after Tailwind in your main CSS
+  (`@import "./typeset.css";`) and wrap the app in `TooltipProvider`.
 
-2. Install what you need. Dependencies (other pieces, tokens, npm packages,
-   upstream shadcn primitives) come along automatically.
+#### Alternative: hosted JSON under a namespace
 
-   ```bash
-   npx shadcn@latest add @uia/uia          # everything
-   npx shadcn@latest add @uia/chat         # chat kit
-   npx shadcn@latest add @uia/hitl         # human-in-the-loop parts
-   npx shadcn@latest add @uia/confirmation # one piece
-   ```
+For a static host (or `bun run dev` here, serving `public/r`), build with a
+namespace and point projects at it:
 
-   Use `--overwrite` when the project already has `button`, `select`, … so our
-   tuned versions replace the stock ones.
+```bash
+UIA_REGISTRY=@uia bun run registry:build
+```
 
-3. Import `typeset.css` after Tailwind in your main CSS
-   (`@import "./typeset.css";`) and wrap the app in `TooltipProvider`.
+```json
+// components.json of the consuming project
+{ "registries": { "@uia": "https://your-host/r/{name}.json" } }
+```
+
+```bash
+npx shadcn@latest add @uia/chat
+```
 
 ### Items
 
@@ -80,15 +85,15 @@ To add a new component: create the file, add one line to `ITEMS` in
 | --- | --- |
 | Foundation | `theme`, `font-inter`, `font-geist-mono`, `typeset` |
 | Primitives (tuned) | `button`, `select`, `bubble`, `code-block`, `questionnaire`, `spinner`, `message-scroller` |
-| System | `widget`, `stat`, `segmented`, `status`, `tick-meter`, `number-ticker`, `agent-orb` |
+| System | `widget`, `stat`, `segmented`, `status`, `tick-meter`, `number-ticker`, `agent-orb`, `model-icons` |
 | Generative UI | `action-card`, `ask-user`, `confirmation`, `draft-card`, `part-transition`, `tool-line`, `reasoning`, `sources`, `search-results`, `markdown` |
 | Chat | `agent-chat`, `chat-thread`, `chat-turn`, `turn-actions`, `composer`, `chat-empty`, `chat-status` |
 | Bundles | `uia`, `chat`, `hitl` |
 | Lib | `motion`, `ai`, `url`, `highlighter` |
 
 ```bash
-npx shadcn@latest list @uia      # browse
-npx shadcn@latest view @uia/chat # inspect before installing
+npx shadcn@latest list franklinjavier/uia       # browse
+npx shadcn@latest view franklinjavier/uia/chat  # inspect before installing
 ```
 
 ### Rendering your own tools

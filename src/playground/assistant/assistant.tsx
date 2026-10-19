@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button"
 import { Kbd } from "@/components/ui/kbd"
 import { Separator } from "@/components/ui/separator"
 import { AgentOrb } from "@/components/ds/agent-orb"
+import { ModelIcon } from "@/components/ds/model-icons"
 import { Widget, WidgetFooter, WidgetHeader, WidgetPanel, WidgetTitle } from "@/components/ds/widget"
 import { ChatEmpty, ChatSuggestion } from "@/components/chat/chat-empty"
 import { ChatStatus } from "@/components/chat/chat-status"
@@ -42,11 +43,11 @@ import { tools } from "@/playground/assistant/tools"
 const SCENARIO_ICONS = { globe: GlobeIcon, pen: PenLineIcon, code: CodeIcon }
 
 const MODELS = {
-  claude: { name: "Claude", provider: "Anthropic" },
-  gpt: { name: "GPT", provider: "OpenAI" },
-  gemini: { name: "Gemini", provider: "Google" },
-  llama: { name: "Llama", provider: "Meta" },
-  grok: { name: "Grok", provider: "xAI" },
+  claude: { name: "Claude", provider: "Anthropic", icon: <ModelIcon family="claude" /> },
+  gpt: { name: "GPT", provider: "OpenAI", icon: <ModelIcon family="openai" /> },
+  gemini: { name: "Gemini", provider: "Google", icon: <ModelIcon family="gemini" /> },
+  llama: { name: "Llama", provider: "Meta", icon: <ModelIcon family="meta" /> },
+  grok: { name: "Grok", provider: "xAI", icon: <ModelIcon family="grok" /> },
 }
 
 export type AssistantLayout = "widget" | "full"

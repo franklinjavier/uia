@@ -5,7 +5,7 @@
   "author": "uia",
   "description": "Progress as a row of hairline ticks.",
   "registryDependencies": [
-    "@uia/theme"
+    "franklinjavier/uia/theme"
   ],
   "files": [
     {

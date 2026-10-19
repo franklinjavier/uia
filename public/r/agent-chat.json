@@ -9,7 +9,7 @@
     "ai"
   ],
   "registryDependencies": [
-    "@uia/agent-orb"
+    "franklinjavier/uia/agent-orb"
   ],
   "files": [
     {

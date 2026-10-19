@@ -5,9 +5,9 @@
   "author": "uia",
   "description": "One-line conversation status.",
   "registryDependencies": [
-    "@uia/agent-chat",
-    "@uia/status",
-    "@uia/theme"
+    "franklinjavier/uia/agent-chat",
+    "franklinjavier/uia/status",
+    "franklinjavier/uia/theme"
   ],
   "files": [
     {

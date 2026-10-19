@@ -9,11 +9,11 @@
     "motion"
   ],
   "registryDependencies": [
-    "@uia/action-card",
-    "@uia/button",
-    "@uia/motion",
-    "@uia/questionnaire",
-    "@uia/theme"
+    "franklinjavier/uia/action-card",
+    "franklinjavier/uia/button",
+    "franklinjavier/uia/motion",
+    "franklinjavier/uia/questionnaire",
+    "franklinjavier/uia/theme"
   ],
   "files": [
     {

@@ -8,7 +8,7 @@
     "motion"
   ],
   "registryDependencies": [
-    "@uia/theme"
+    "franklinjavier/uia/theme"
   ],
   "files": [
     {

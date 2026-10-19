@@ -5,10 +5,10 @@
   "author": "uia",
   "description": "First screen: resting orb, greeting, suggestions.",
   "registryDependencies": [
-    "@uia/agent-orb",
-    "@uia/button",
-    "@uia/theme",
-    "empty"
+    "empty",
+    "franklinjavier/uia/agent-orb",
+    "franklinjavier/uia/button",
+    "franklinjavier/uia/theme"
   ],
   "files": [
     {

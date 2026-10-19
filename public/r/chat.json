@@ -5,13 +5,13 @@
   "author": "uia",
   "description": "Everything to build an agent chat.",
   "registryDependencies": [
-    "@uia/agent-chat",
-    "@uia/chat-thread",
-    "@uia/chat-turn",
-    "@uia/turn-actions",
-    "@uia/composer",
-    "@uia/chat-empty",
-    "@uia/chat-status"
+    "franklinjavier/uia/agent-chat",
+    "franklinjavier/uia/chat-thread",
+    "franklinjavier/uia/chat-turn",
+    "franklinjavier/uia/turn-actions",
+    "franklinjavier/uia/composer",
+    "franklinjavier/uia/chat-empty",
+    "franklinjavier/uia/chat-status"
   ],
   "type": "registry:block"
 }

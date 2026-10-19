@@ -10,7 +10,7 @@
     "lucide-react"
   ],
   "registryDependencies": [
-    "@uia/theme"
+    "franklinjavier/uia/theme"
   ],
   "files": [
     {

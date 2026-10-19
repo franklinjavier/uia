@@ -9,10 +9,10 @@
     "remark-gfm"
   ],
   "registryDependencies": [
-    "@uia/code-block",
-    "@uia/highlighter",
-    "@uia/theme",
-    "@uia/typeset"
+    "franklinjavier/uia/code-block",
+    "franklinjavier/uia/highlighter",
+    "franklinjavier/uia/theme",
+    "franklinjavier/uia/typeset"
   ],
   "files": [
     {

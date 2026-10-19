@@ -8,8 +8,8 @@
     "ai"
   ],
   "registryDependencies": [
-    "@uia/message-scroller",
-    "@uia/theme"
+    "franklinjavier/uia/message-scroller",
+    "franklinjavier/uia/theme"
   ],
   "files": [
     {

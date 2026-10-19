@@ -5,8 +5,11 @@
  *   bun run registry          # writes registry.json
  *   bun run registry:build    # registry.json → public/r/*.json (shadcn build)
  *
+ * Items reference each other as `franklinjavier/uia/<item>` (GitHub registry)
+ * unless UIA_REGISTRY is set (e.g. `@uia` for a namespace).
+ *
  * - Each item lists its files; dependencies are read from their imports:
- *   npm packages → `dependencies`, our files → `@uia/<item>`, official
+ *   npm packages → `dependencies`, our files → `<NS>/<item>`, official
  *   shadcn primitives we did not change → bare names (e.g. "tooltip").
  * - Theme tokens are read from src/index.css (:root, .dark, @theme inline).
  *
@@ -15,7 +18,12 @@
  */
 import { readFileSync, writeFileSync } from "node:fs"
 
-const NS = "@uia"
+// How items reference each other. Default: GitHub addresses, so
+// `npx shadcn add franklinjavier/uia/<item>` resolves everything from the
+// repo (private repos work through `gh` credentials). For a hosted/local
+// JSON registry under a namespace: UIA_REGISTRY=@uia bun run registry:build
+const REPO = "franklinjavier/uia"
+const NS = process.env.UIA_REGISTRY ?? REPO
 const AUTHOR = "uia"
 
 type Item = {
@@ -65,6 +73,7 @@ const ITEMS: Item[] = [
   item("status", "registry:component", "StatusDot and StatusBadge with semantic tones.", ["src/components/ds/status.tsx"]),
   item("tick-meter", "registry:component", "Progress as a row of hairline ticks.", ["src/components/ds/tick-meter.tsx"]),
   item("number-ticker", "registry:component", "Numbers that animate between values.", ["src/components/ds/number-ticker.tsx"]),
+  item("model-icons", "registry:component", "Monochrome marks of the major LLM families (Claude, OpenAI, Gemini, Meta, Grok).", ["src/components/ds/model-icons.tsx"]),
   item("agent-orb", "registry:component", "The assistant's presence; one animated state per agent phase.", ["src/components/ds/agent-orb.tsx"]),
 
   // ai-elements
@@ -296,7 +305,7 @@ const items = [
     registryDependencies: [
       "font-inter", "font-geist-mono", "theme", "typeset",
       ...UI_OVERRIDES.map(([n]) => n),
-      "widget", "stat", "segmented", "status", "tick-meter", "number-ticker", "agent-orb",
+      "widget", "stat", "segmented", "status", "tick-meter", "number-ticker", "agent-orb", "model-icons",
       "hitl", "reasoning", "sources", "search-results", "markdown", "chat",
     ].map((n) => `${NS}/${n}`),
   },
@@ -305,7 +314,7 @@ const items = [
 const registry = {
   $schema: "https://ui.shadcn.com/schema/registry.json",
   name: "uia",
-  homepage: "https://github.com/OWNER/uia",
+  homepage: `https://github.com/${REPO}`,
   items,
 }
 

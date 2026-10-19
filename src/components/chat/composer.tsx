@@ -164,9 +164,9 @@ function ComposerSubmit({
   )
 }
 
-export type ComposerModel = { name: string; provider?: string }
+export type ComposerModel = { name: string; provider?: string; icon?: React.ReactNode }
 
-/** Model picker: name in the trigger, provider in mono on each option. */
+/** Model picker: icon + name in the trigger, provider in mono on each option. */
 function ComposerModelSelect<K extends string>({
   models,
   value,
@@ -186,11 +186,19 @@ function ComposerModelSelect<K extends string>({
         aria-label="Model"
         className={cn("rounded-full shadow-none", className)}
       >
-        <SelectValue>{(v: K) => models[v]?.name}</SelectValue>
+        <SelectValue>
+          {(v: K) => (
+            <>
+              {models[v]?.icon}
+              {models[v]?.name}
+            </>
+          )}
+        </SelectValue>
       </SelectTrigger>
       <SelectContent align="start" alignItemWithTrigger={false} className="min-w-48">
         {keys.map((key) => (
           <SelectItem key={key} value={key}>
+            {models[key].icon}
             <span className="flex-1">{models[key].name}</span>
             {models[key].provider && (
               <span className="eyebrow text-faint-foreground">{models[key].provider}</span>

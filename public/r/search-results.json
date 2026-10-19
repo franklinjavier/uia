@@ -5,8 +5,8 @@
   "author": "uia",
   "description": "Everything a search returned, as a compact list.",
   "registryDependencies": [
-    "@uia/theme",
-    "@uia/url"
+    "franklinjavier/uia/theme",
+    "franklinjavier/uia/url"
   ],
   "files": [
     {

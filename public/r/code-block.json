@@ -10,8 +10,8 @@
     "lucide-react"
   ],
   "registryDependencies": [
-    "@uia/button",
-    "@uia/theme"
+    "franklinjavier/uia/button",
+    "franklinjavier/uia/theme"
   ],
   "files": [
     {

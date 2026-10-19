@@ -5,9 +5,9 @@
   "author": "uia",
   "description": "Approval gate before a tool with side effects runs.",
   "registryDependencies": [
-    "@uia/action-card",
-    "@uia/button",
-    "@uia/theme"
+    "franklinjavier/uia/action-card",
+    "franklinjavier/uia/button",
+    "franklinjavier/uia/theme"
   ],
   "files": [
     {

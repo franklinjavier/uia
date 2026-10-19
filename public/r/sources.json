@@ -8,9 +8,9 @@
     "motion"
   ],
   "registryDependencies": [
-    "@uia/motion",
-    "@uia/theme",
-    "@uia/url"
+    "franklinjavier/uia/motion",
+    "franklinjavier/uia/theme",
+    "franklinjavier/uia/url"
   ],
   "files": [
     {
