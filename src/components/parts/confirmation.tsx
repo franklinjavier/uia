@@ -11,7 +11,7 @@ import {
   ActionCardPanel,
   ActionCardStatus,
   ActionCardTitle,
-} from "@/components/ai-elements/action-card"
+} from "@/components/parts/action-card"
 
 // Approval gate before a tool with side effects runs (AI SDK
 // `approval-requested`). A ready-made composition of ActionCard parts:

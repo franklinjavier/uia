@@ -1,18 +1,18 @@
 import { BanIcon, ListChecksIcon } from "lucide-react"
 
 import { Trace } from "@/components/ui/trace"
-import { TranscriptEvent, ResolvedRow } from "@/components/ai-elements/action-card"
-import { AskUser, AskUserAnswered } from "@/components/ai-elements/ask-user"
-import { Confirmation } from "@/components/ai-elements/confirmation"
-import { DraftCard } from "@/components/ai-elements/draft-card"
-import { PartTransition } from "@/components/ai-elements/part-transition"
-import { SearchResults } from "@/components/ai-elements/search-results"
-import { ToolLine, toolPhase } from "@/components/ai-elements/tool-line"
+import { TranscriptEvent, ResolvedRow } from "@/components/parts/action-card"
+import { AskUser, AskUserAnswered } from "@/components/parts/ask-user"
+import { Confirmation } from "@/components/parts/confirmation"
+import { DraftCard } from "@/components/parts/draft-card"
+import { PartTransition } from "@/components/parts/part-transition"
+import { SearchResults } from "@/components/parts/search-results"
+import { ToolLine, toolPhase } from "@/components/parts/tool-line"
 import { defineTools } from "@/components/chat/tool-registry"
 import type { ChatMessage } from "@/playground/assistant/scripts"
 
 // How the demo app renders its tools. This is exactly what a consuming app
-// writes: one entry per tool, built from ai-elements.
+// writes: one entry per tool, built from parts.
 
 export const tools = defineTools<ChatMessage>()({
   // Server tool: a quiet trace line that expands to the results.

@@ -28,7 +28,7 @@ import {
   ActionCardHeader,
   ActionCardPanel,
   ResolvedRow,
-} from "@/components/ai-elements/action-card"
+} from "@/components/parts/action-card"
 
 export type Question = { id: string; question: string; choices: string[] }
 

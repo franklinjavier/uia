@@ -20,7 +20,7 @@ import {
   ActionCardStatus,
   ActionCardTitle,
   ResolvedRow,
-} from "@/components/ai-elements/action-card"
+} from "@/components/parts/action-card"
 
 // Anything that goes out under the person's name: an email, a post, a
 // thread. The fields and verbs come with the draft, so one card serves

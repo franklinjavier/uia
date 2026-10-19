@@ -19,7 +19,7 @@ forking the component.
 ## Contents
 
 1. System pieces (`ds/`)
-2. Generative-UI parts (`ai-elements/`)
+2. Generative-UI parts (`parts/`)
 3. Chat kit (`chat/`)
 4. Primitives (`ui/`)
 5. Bundles and item names
@@ -89,7 +89,7 @@ one in the header/empty state. Don't add spinners next to it.
 
 ---
 
-## 2. Generative-UI parts — `@/components/ai-elements/*`
+## 2. Generative-UI parts — `@/components/parts/*`
 
 Read `hitl.md` for when to use which. Summary:
 

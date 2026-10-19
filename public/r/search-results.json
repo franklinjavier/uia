@@ -10,10 +10,10 @@
   ],
   "files": [
     {
-      "path": "src/components/ai-elements/search-results.tsx",
+      "path": "src/components/parts/search-results.tsx",
       "content": "import * as React from \"react\"\n\nimport { cn } from \"@/lib/utils\"\nimport { hostname } from \"@/lib/url\"\n\nexport type SearchResult = { title: string; url: string }\n\n// Everything a search returned, as a compact list (title · domain). Meant to\n// sit inside an expandable ToolLine; the SourcesGrid below an answer shows\n// only what was cited.\nexport function SearchResults({\n  query,\n  results,\n  className,\n  ...props\n}: Omit<React.ComponentProps<\"div\">, \"results\"> & { query?: string; results: SearchResult[] }) {\n  return (\n    <div data-slot=\"search-results\" className={cn(\"flex flex-col gap-1.5\", className)} {...props}>\n      {query && <span className=\"eyebrow text-faint-foreground\">“{query}”</span>}\n      <ul className=\"flex flex-col gap-1\">\n        {results.map((r) => (\n          <li key={r.url}>\n            <a\n              href={r.url}\n              target=\"_blank\"\n              rel=\"noreferrer\"\n              className=\"flex min-w-0 items-baseline gap-2 rounded-md transition-colors hover:text-foreground\"\n            >\n              <span className=\"truncate text-foreground/90\">{r.title}</span>\n              <span className=\"shrink-0 text-xs text-faint-foreground\">{hostname(r.url)}</span>\n              <span className=\"sr-only\"> (opens in a new tab)</span>\n            </a>\n          </li>\n        ))}\n      </ul>\n    </div>\n  )\n}\n",
       "type": "registry:component",
-      "target": "@components/ai-elements/search-results.tsx"
+      "target": "@components/parts/search-results.tsx"
     }
   ],
   "type": "registry:component"

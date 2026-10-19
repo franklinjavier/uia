@@ -1,6 +1,6 @@
 ---
 name: uia
-description: Build AI-product interfaces with the uia design system (shadcn + Base UI) — chat UIs, generative-UI parts rendered inside a conversation, human-in-the-loop moments (clarifying questions, editable drafts, approvals, resolved records), agent status, widgets and dashboards. Use this whenever the project has uia components (src/components/{ds,ai-elements,chat}, `franklinjavier/uia` in registry deps, tokens like --attention/--surface/--canvas) or the user asks for a chat, assistant, agent, tool-call UI, approval card, prompt box, AI widget or any screen in such a project — even if they never say "uia" or "design system". Also use it to review or polish UI built with uia.
+description: Build AI-product interfaces with the uia design system (shadcn + Base UI) — chat UIs, generative-UI parts rendered inside a conversation, human-in-the-loop moments (clarifying questions, editable drafts, approvals, resolved records), agent status, widgets and dashboards. Use this whenever the project has uia components (src/components/{ds,parts,chat}, `franklinjavier/uia` in registry deps, tokens like --attention/--surface/--canvas) or the user asks for a chat, assistant, agent, tool-call UI, approval card, prompt box, AI widget or any screen in such a project — even if they never say "uia" or "design system". Also use it to review or polish UI built with uia.
 ---
 
 # uia
@@ -12,11 +12,13 @@ to compose the existing pieces so the result looks like the designer built it.
 
 ## How to work
 
-1. **Find what exists.** Read `src/components/{ui,ds,ai-elements,chat}` in the
+1. **Find what exists.** Read `src/components/{ui,ds,parts,chat}` in the
    project. If a piece you need is missing, install it from the registry
    before writing anything (`npx shadcn@latest add franklinjavier/uia/<item>`,
    items listed in `references/components.md`). Writing a lookalike by hand is
-   how systems drift.
+   how systems drift. Check the setup once: the main CSS imports
+   `./typeset.css` after Tailwind, and the app is wrapped in
+   `TooltipProvider`; add whichever is missing.
 2. **Pick the pattern before the pixels.** Is this a widget, a chat, or a
    moment inside a chat? For anything where the agent needs the person, read
    `references/hitl.md` first; the pattern decides the components.

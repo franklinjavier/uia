@@ -113,7 +113,7 @@ holding the composer, and an optional `WidgetFooter` with `ChatStatus`.
 
 **Embedded parts only** — when the host app already has its chat and you only
 add tool UIs, you only need the registry entries (`render`) and the
-ai-elements; match the host's container width and keep cards full-width of
+parts; match the host's container width and keep cards full-width of
 the message column.
 
 ## Models

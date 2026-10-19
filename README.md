@@ -16,7 +16,7 @@ src/components/
                  code-block, questionnaire, spinner, message-scroller)
   ds/            system pieces: Widget, Stat, Segmented, Status, TickMeter,
                  NumberTicker, AgentOrb, ModelIcon
-  ai-elements/   generative-UI parts: ActionCard*, ResolvedRow, TranscriptEvent,
+  parts/         generative-UI parts: ActionCard*, ResolvedRow, TranscriptEvent,
                  AskUser, Confirmation, DraftCard, PartTransition, ToolLine,
                  Reasoning, Sources, SearchResults, Markdown
   chat/          chat kit: useAgentChat, tool registry, ChatThread, ChatTurn,

@@ -586,9 +586,9 @@
       ],
       "files": [
         {
-          "path": "src/components/ai-elements/action-card.tsx",
+          "path": "src/components/parts/action-card.tsx",
           "type": "registry:component",
-          "target": "@components/ai-elements/action-card.tsx"
+          "target": "@components/parts/action-card.tsx"
         }
       ]
     },
@@ -611,9 +611,9 @@
       ],
       "files": [
         {
-          "path": "src/components/ai-elements/ask-user.tsx",
+          "path": "src/components/parts/ask-user.tsx",
           "type": "registry:component",
-          "target": "@components/ai-elements/ask-user.tsx"
+          "target": "@components/parts/ask-user.tsx"
         }
       ]
     },
@@ -630,9 +630,9 @@
       ],
       "files": [
         {
-          "path": "src/components/ai-elements/confirmation.tsx",
+          "path": "src/components/parts/confirmation.tsx",
           "type": "registry:component",
-          "target": "@components/ai-elements/confirmation.tsx"
+          "target": "@components/parts/confirmation.tsx"
         }
       ]
     },
@@ -652,9 +652,9 @@
       ],
       "files": [
         {
-          "path": "src/components/ai-elements/draft-card.tsx",
+          "path": "src/components/parts/draft-card.tsx",
           "type": "registry:component",
-          "target": "@components/ai-elements/draft-card.tsx"
+          "target": "@components/parts/draft-card.tsx"
         }
       ]
     },
@@ -673,9 +673,9 @@
       ],
       "files": [
         {
-          "path": "src/components/ai-elements/part-transition.tsx",
+          "path": "src/components/parts/part-transition.tsx",
           "type": "registry:component",
-          "target": "@components/ai-elements/part-transition.tsx"
+          "target": "@components/parts/part-transition.tsx"
         }
       ]
     },
@@ -694,9 +694,9 @@
       ],
       "files": [
         {
-          "path": "src/components/ai-elements/tool-line.tsx",
+          "path": "src/components/parts/tool-line.tsx",
           "type": "registry:component",
-          "target": "@components/ai-elements/tool-line.tsx"
+          "target": "@components/parts/tool-line.tsx"
         }
       ]
     },
@@ -712,9 +712,9 @@
       ],
       "files": [
         {
-          "path": "src/components/ai-elements/reasoning.tsx",
+          "path": "src/components/parts/reasoning.tsx",
           "type": "registry:component",
-          "target": "@components/ai-elements/reasoning.tsx"
+          "target": "@components/parts/reasoning.tsx"
         }
       ]
     },
@@ -734,9 +734,9 @@
       ],
       "files": [
         {
-          "path": "src/components/ai-elements/sources.tsx",
+          "path": "src/components/parts/sources.tsx",
           "type": "registry:component",
-          "target": "@components/ai-elements/sources.tsx"
+          "target": "@components/parts/sources.tsx"
         }
       ]
     },
@@ -752,9 +752,9 @@
       ],
       "files": [
         {
-          "path": "src/components/ai-elements/search-results.tsx",
+          "path": "src/components/parts/search-results.tsx",
           "type": "registry:component",
-          "target": "@components/ai-elements/search-results.tsx"
+          "target": "@components/parts/search-results.tsx"
         }
       ]
     },
@@ -776,9 +776,9 @@
       ],
       "files": [
         {
-          "path": "src/components/ai-elements/markdown.tsx",
+          "path": "src/components/parts/markdown.tsx",
           "type": "registry:component",
-          "target": "@components/ai-elements/markdown.tsx"
+          "target": "@components/parts/markdown.tsx"
         },
         {
           "path": "src/components/markdown-code.tsx",

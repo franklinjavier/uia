@@ -1,8 +1,8 @@
 import type { UIMessage } from "ai"
 
 import { createChat } from "@/lib/ai"
-import type { Question } from "@/components/ai-elements/ask-user"
-import type { Draft } from "@/components/ai-elements/draft-card"
+import type { Question } from "@/components/parts/ask-user"
+import type { Draft } from "@/components/parts/draft-card"
 
 // Typed parts shared by the scripts and the renderer.
 type Tools = {

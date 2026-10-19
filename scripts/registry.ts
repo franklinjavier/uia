@@ -76,19 +76,19 @@ const ITEMS: Item[] = [
   item("model-icons", "registry:component", "Monochrome marks of the major LLM families (Claude, OpenAI, Gemini, Meta, Grok).", ["src/components/ds/model-icons.tsx"]),
   item("agent-orb", "registry:component", "The assistant's presence; one animated state per agent phase.", ["src/components/ds/agent-orb.tsx"]),
 
-  // ai-elements
-  item("action-card", "registry:component", "One shape for every human-in-the-loop moment, plus ResolvedRow and TranscriptEvent.", ["src/components/ai-elements/action-card.tsx"]),
-  item("ask-user", "registry:component", "Clarifying questions (A/B/C keys) and their answered states.", ["src/components/ai-elements/ask-user.tsx"]),
-  item("confirmation", "registry:component", "Approval gate before a tool with side effects runs.", ["src/components/ai-elements/confirmation.tsx"]),
-  item("draft-card", "registry:component", "Editable draft that is its own approval; resolves to an expandable row.", ["src/components/ai-elements/draft-card.tsx"]),
-  item("part-transition", "registry:component", "Height + crossfade transition when a part resolves.", ["src/components/ai-elements/part-transition.tsx"]),
-  item("tool-line", "registry:component", "A tool call as a trace line, expandable with details.", ["src/components/ai-elements/tool-line.tsx"]),
-  item("reasoning", "registry:component", "Thinking / Thought trace line with measured duration.", ["src/components/ai-elements/reasoning.tsx"]),
-  item("sources", "registry:component", "Cited sources as a 2-up grid of cards.", ["src/components/ai-elements/sources.tsx"]),
-  item("search-results", "registry:component", "Everything a search returned, as a compact list.", ["src/components/ai-elements/search-results.tsx"]),
+  // parts
+  item("action-card", "registry:component", "One shape for every human-in-the-loop moment, plus ResolvedRow and TranscriptEvent.", ["src/components/parts/action-card.tsx"]),
+  item("ask-user", "registry:component", "Clarifying questions (A/B/C keys) and their answered states.", ["src/components/parts/ask-user.tsx"]),
+  item("confirmation", "registry:component", "Approval gate before a tool with side effects runs.", ["src/components/parts/confirmation.tsx"]),
+  item("draft-card", "registry:component", "Editable draft that is its own approval; resolves to an expandable row.", ["src/components/parts/draft-card.tsx"]),
+  item("part-transition", "registry:component", "Height + crossfade transition when a part resolves.", ["src/components/parts/part-transition.tsx"]),
+  item("tool-line", "registry:component", "A tool call as a trace line, expandable with details.", ["src/components/parts/tool-line.tsx"]),
+  item("reasoning", "registry:component", "Thinking / Thought trace line with measured duration.", ["src/components/parts/reasoning.tsx"]),
+  item("sources", "registry:component", "Cited sources as a 2-up grid of cards.", ["src/components/parts/sources.tsx"]),
+  item("search-results", "registry:component", "Everything a search returned, as a compact list.", ["src/components/parts/search-results.tsx"]),
   {
     ...item("markdown", "registry:component", "Assistant prose with typeset and highlighted code blocks.", [
-      "src/components/ai-elements/markdown.tsx",
+      "src/components/parts/markdown.tsx",
       "src/components/markdown-code.tsx",
     ]),
     registryDependencies: [`${NS}/typeset`],

@@ -16,10 +16,10 @@
   ],
   "files": [
     {
-      "path": "src/components/ai-elements/markdown.tsx",
+      "path": "src/components/parts/markdown.tsx",
       "content": "import ReactMarkdown from \"react-markdown\"\nimport remarkGfm from \"remark-gfm\"\n\nimport { cn } from \"@/lib/utils\"\nimport { MarkdownPre } from \"@/components/markdown-code\"\n\n// Assistant prose. Typeset owns the rhythm; fenced code goes to Code Block.\nexport function Markdown({\n  children,\n  className,\n}: {\n  children: string\n  className?: string\n}) {\n  return (\n    <div data-slot=\"markdown\" className={cn(\"typeset typeset-chat\", className)}>\n      <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ pre: MarkdownPre }}>\n        {children}\n      </ReactMarkdown>\n    </div>\n  )\n}\n",
       "type": "registry:component",
-      "target": "@components/ai-elements/markdown.tsx"
+      "target": "@components/parts/markdown.tsx"
     },
     {
       "path": "src/components/markdown-code.tsx",
