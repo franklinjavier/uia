@@ -1,6 +1,7 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
 
 // Colour is reserved for state. A tone names the state, never a hue.
 const toneText = {
@@ -38,18 +39,24 @@ function StatusDot({
   )
 }
 
+// StatusBadge is the shadcn Badge (outline) with a tone layer on top: an
+// eyebrow label, a hairline in the tone and a 10% wash. `statusBadgeVariants`
+// is that tone layer, merged over `badgeVariants` by Badge's own `cn`.
 const statusBadgeVariants = cva(
-  "eyebrow inline-flex h-5 shrink-0 items-center gap-1.5 rounded-full px-2 whitespace-nowrap ring-1 ring-inset",
+  // Badge ships text-xs/font-medium, a transparent 1px border and gap-1; the
+  // eyebrow is 11px/16px regular, so restate those (cn can't see inside the
+  // custom `eyebrow` utility) and take the border out of the padding.
+  "gap-1.5 rounded-full px-1.75 eyebrow text-[11px]/4 font-normal",
   {
     variants: {
       tone: {
-        neutral: "bg-muted text-muted-foreground ring-border",
-        success: "bg-success/10 text-success ring-success/20",
-        warning: "bg-warning/10 text-warning ring-warning/25",
-        info: "bg-info/10 text-info ring-info/20",
-        destructive: "bg-destructive/10 text-destructive ring-destructive/20",
-        brand: "bg-brand/10 text-brand ring-brand/25",
-        attention: "bg-attention/10 text-attention ring-attention/25",
+        neutral: "border-border bg-muted text-muted-foreground",
+        success: "border-success/20 bg-success/10 text-success",
+        warning: "border-warning/25 bg-warning/10 text-warning",
+        info: "border-info/20 bg-info/10 text-info",
+        destructive: "border-destructive/20 bg-destructive/10 text-destructive",
+        brand: "border-brand/25 bg-brand/10 text-brand",
+        attention: "border-attention/25 bg-attention/10 text-attention",
       },
     },
     defaultVariants: { tone: "neutral" },
@@ -62,17 +69,18 @@ function StatusBadge({
   className,
   children,
   ...props
-}: React.ComponentProps<"span"> &
+}: React.ComponentProps<typeof Badge> &
   VariantProps<typeof statusBadgeVariants> & { dot?: boolean }) {
   return (
-    <span
+    <Badge
       data-slot="status-badge"
+      variant="outline"
       className={cn(statusBadgeVariants({ tone }), className)}
       {...props}
     >
       {dot && <span className="size-1.5 rounded-full bg-current" />}
       {children}
-    </span>
+    </Badge>
   )
 }
 

@@ -4,6 +4,7 @@ import { ChevronRightIcon, ChevronsUpDownIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { enter, springSoft } from "@/lib/motion"
+import { Marker, MarkerContent, MarkerIcon } from "@/components/ui/marker"
 import { Spinner } from "@/components/ui/spinner"
 import {
   Collapsible,
@@ -306,20 +307,29 @@ function TranscriptEvent({
   className?: string
   children: React.ReactNode
 }) {
+  // shadcn's Marker, centred and a step smaller, fading in on arrival.
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={enter}
+    <Marker
+      render={
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={enter}
+        />
+      }
       data-slot="transcript-event"
       className={cn(
-        "not-typeset flex items-center justify-center gap-1.5 py-1 text-xs text-muted-foreground [&_svg]:size-3.5",
+        "not-typeset justify-center gap-1.5 py-1 text-xs [&_svg:not([class*='size-'])]:size-3.5",
         className
       )}
     >
-      {icon}
-      {children}
-    </motion.div>
+      {icon && (
+        <MarkerIcon className="flex size-3.5 items-center justify-center [&_svg:not([class*='size-'])]:size-3.5">
+          {icon}
+        </MarkerIcon>
+      )}
+      <MarkerContent>{children}</MarkerContent>
+    </Marker>
   )
 }
 

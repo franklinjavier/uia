@@ -4,6 +4,7 @@ import { CheckIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { enter } from "@/lib/motion"
+import { Alert } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 
@@ -22,6 +23,12 @@ import { Spinner } from "@/components/ui/spinner"
 //   />
 
 export type ConnectState = "ask" | "connecting" | "connected" | "failed"
+
+// The shadcn Alert laid out as one docked row (flex instead of its icon
+// grid), with the success tone as a className: Alert has no success variant.
+// role="status" instead of Alert's role="alert": it's a polite ask, and the
+// connected line is announced without interrupting.
+const MotionAlert = motion.create(Alert)
 
 function ConnectPrompt({
   app,
@@ -44,16 +51,19 @@ function ConnectPrompt({
 }) {
   const connected = state === "connected"
   return (
-    <motion.div
+    <MotionAlert
       data-slot="connect-prompt"
       data-state={state}
+      role="status"
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 6 }}
       transition={enter}
       className={cn(
-        "flex min-h-11 items-center gap-2.5 rounded-2xl border px-3 py-1.5 text-sm shadow-xs transition-colors duration-300 [&_svg]:size-4 [&_svg]:shrink-0",
-        connected ? "border-success/25 bg-success/10 text-success" : "border-border bg-card",
+        "flex min-h-11 items-center gap-2.5 rounded-2xl border px-3 py-1.5 shadow-xs transition-colors duration-300 [&_svg]:size-4 [&_svg]:shrink-0",
+        connected
+          ? "border-success/25 bg-success/10 text-success"
+          : "border-border bg-card text-foreground",
         className
       )}
     >
@@ -69,7 +79,7 @@ function ConnectPrompt({
           {connected ? <CheckIcon /> : icon}
           <span className="min-w-0 truncate">
             {connected
-              ? done ?? `${app} connected`
+              ? (done ?? `${app} connected`)
               : state === "failed"
                 ? `Couldn't connect ${app}. Try again?`
                 : reason}
@@ -95,7 +105,7 @@ function ConnectPrompt({
           )}
         </Button>
       )}
-    </motion.div>
+    </MotionAlert>
   )
 }
 

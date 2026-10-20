@@ -15,6 +15,7 @@ import {
 import { cn } from "@/lib/utils"
 import { enter, springSoft } from "@/lib/motion"
 import { Button } from "@/components/ui/button"
+import { Sheet, SheetClose, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import { Switch } from "@/components/ui/switch"
 import type { AgentPhase } from "@/components/ds/agent-orb"
 import { ModelIcon } from "@/components/ds/model-icons"
@@ -69,7 +70,7 @@ import {
 //   Projects  state to look at when you want, never because you must.
 //   Decided   what davinci decided for you, with undo: the trust surface.
 //   Rules     decisions that became policy.
-// Deep dives open in a side panel (a sheet on phones), not inline.
+// Deep dives open in a side panel (a sheet below lg), not inline.
 
 export type View =
   "inbox" | `thread:${Project}` | "projects" | "decided" | "rules"
@@ -142,6 +143,19 @@ const THREADS: Record<Project, UIMessage[]> = {
   ],
 }
 
+// lg and up: the panel is a third column; below, a sheet.
+const WIDE = "(min-width: 64rem)"
+function useWide() {
+  return React.useSyncExternalStore(
+    (onChange) => {
+      const mq = window.matchMedia(WIDE)
+      mq.addEventListener("change", onChange)
+      return () => mq.removeEventListener("change", onChange)
+    },
+    () => window.matchMedia(WIDE).matches
+  )
+}
+
 /**
  * Pass `view` and `onViewChange` to drive the view from your router (each
  * view its own route); leave them out and it keeps the view itself.
@@ -171,6 +185,7 @@ export function DavinciInbox({
   const view = viewProp ?? ownView
   const setView = (v: View) => (onViewChange ? onViewChange(v) : setOwnView(v))
   const [panel, setPanel] = React.useState<Panel>(null)
+  const wide = useWide()
   const [answers, setAnswers] = React.useState<Record<string, Answer>>({})
   const [rules, setRules] = React.useState<(Rule & { off?: boolean })[]>(RULES)
   const [decided, setDecided] =
@@ -288,6 +303,56 @@ export function DavinciInbox({
     onHome: () => go("inbox"),
   }
 
+  // The sheet animates out after `panel` is null: keep the last one shown.
+  const [shown, setShown] = React.useState<Panel>(panel)
+  if (panel && panel !== shown) setShown(panel)
+  const panelTitle = (p: NonNullable<Panel>) =>
+    p.kind === "diff"
+      ? `${RISKY_DIFF.key} · diff`
+      : p.kind === "preview"
+        ? "BLOG-5 · before / after"
+        : p.key
+  const panelBody = (p: NonNullable<Panel>) => (
+      <div className="min-h-0 flex-1 overflow-y-auto p-4">
+        {p.kind === "diff" && (
+          <DiffCard
+            diff={RISKY_DIFF}
+            state={
+              answers["q-diff"]
+                ? answers["q-diff"].label === "Approve"
+                  ? "approved"
+                  : "returned"
+                : "open"
+            }
+            onDecide={(ok) =>
+              answer(
+                QUEUE.find((q) => q.id === "q-diff")!,
+                ok ? "Approve" : "Return",
+                ok
+              )
+            }
+          />
+        )}
+        {p.kind === "preview" && (
+          <div className="flex flex-col gap-4">
+            {[false, true].map((after) => (
+              <figure key={String(after)} className="flex flex-col gap-2">
+                <figcaption className="eyebrow text-muted-foreground">
+                  {after ? "After" : "Before"} · 400 and 1440 px
+                </figcaption>
+                <div className="aspect-[16/10] overflow-hidden rounded-xl border border-border/70 bg-card">
+                  <BlogPreview after={after} />
+                </div>
+              </figure>
+            ))}
+          </div>
+        )}
+        {p.kind === "task" && (
+          <TaskPath state={factory} taskKey={p.key} />
+        )}
+      </div>
+  )
+
   return (
     <div
       data-slot="davinci-inbox"
@@ -378,25 +443,21 @@ export function DavinciInbox({
         )}
       </main>
 
-      {/* Deep dives: a side panel on wide screens, a sheet on phones. */}
+      {/* Deep dives: a third column on wide screens, beside the inbox; a
+          full-screen sheet below lg (focus trap, Esc, scroll lock). */}
       <AnimatePresence>
-        {panel && (
+        {wide && panel && (
           <motion.aside
             key={panel.kind}
+            aria-label={panelTitle(panel)}
             initial={{ opacity: 0, x: 12 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 12 }}
             transition={enter}
-            className="fixed inset-0 z-[60] flex min-h-0 flex-col bg-background lg:static lg:z-auto lg:border-l lg:border-border/70"
+            className="flex min-h-0 flex-col border-l border-border/70 bg-background"
           >
             <div className="flex h-14 shrink-0 items-center gap-2 border-b border-border/70 px-4">
-              <span className="text-[15px]">
-                {panel.kind === "diff"
-                  ? `${RISKY_DIFF.key} · diff`
-                  : panel.kind === "preview"
-                    ? "BLOG-5 · before / after"
-                    : panel.key}
-              </span>
+              <span className="text-[15px]">{panelTitle(panel)}</span>
               <Button
                 variant="ghost"
                 size="icon-sm"
@@ -407,47 +468,46 @@ export function DavinciInbox({
                 <XIcon />
               </Button>
             </div>
-            <div className="min-h-0 flex-1 overflow-y-auto p-4">
-              {panel.kind === "diff" && (
-                <DiffCard
-                  diff={RISKY_DIFF}
-                  state={
-                    answers["q-diff"]
-                      ? answers["q-diff"].label === "Approve"
-                        ? "approved"
-                        : "returned"
-                      : "open"
-                  }
-                  onDecide={(ok) =>
-                    answer(
-                      QUEUE.find((q) => q.id === "q-diff")!,
-                      ok ? "Approve" : "Return",
-                      ok
-                    )
-                  }
-                />
-              )}
-              {panel.kind === "preview" && (
-                <div className="flex flex-col gap-4">
-                  {[false, true].map((after) => (
-                    <figure key={String(after)} className="flex flex-col gap-2">
-                      <figcaption className="eyebrow text-muted-foreground">
-                        {after ? "After" : "Before"} · 400 and 1440 px
-                      </figcaption>
-                      <div className="aspect-[16/10] overflow-hidden rounded-xl border border-border/70 bg-card">
-                        <BlogPreview after={after} />
-                      </div>
-                    </figure>
-                  ))}
-                </div>
-              )}
-              {panel.kind === "task" && (
-                <TaskPath state={factory} taskKey={panel.key} />
-              )}
-            </div>
+            {panelBody(panel)}
           </motion.aside>
         )}
       </AnimatePresence>
+      <Sheet
+        open={!wide && !!panel}
+        onOpenChange={(o) => {
+          if (!o) setPanel(null)
+        }}
+      >
+        <SheetContent
+          side="right"
+          showCloseButton={false}
+          className="z-[60] bg-background text-base text-foreground shadow-none duration-[280ms] ease-[cubic-bezier(0.22,1,0.36,1)] data-[side=right]:w-full data-[side=right]:border-l-0 data-[side=right]:sm:max-w-none data-[side=right]:data-ending-style:translate-x-3 data-[side=right]:data-starting-style:translate-x-3"
+        >
+          {/* Keeps its content through the exit, after `panel` is null. */}
+          {shown && (
+            <>
+              <div className="flex h-14 shrink-0 items-center gap-2 border-b border-border/70 px-4">
+                <SheetTitle className="font-sans text-[15px] font-normal">
+                  {panelTitle(shown)}
+                </SheetTitle>
+                <SheetClose
+                  render={
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      aria-label="Close"
+                      className="ml-auto text-muted-foreground"
+                    />
+                  }
+                >
+                  <XIcon />
+                </SheetClose>
+              </div>
+              {panelBody(shown)}
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   )
 }

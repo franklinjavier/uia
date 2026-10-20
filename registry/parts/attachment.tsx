@@ -1,13 +1,24 @@
 import * as React from "react"
-import { PreviewCard } from "@base-ui/react/preview-card"
 import { SparklesIcon, XIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import {
+  Attachment,
+  AttachmentAction,
+  AttachmentActions,
+  AttachmentTitle,
+} from "@/components/ui/attachment"
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
 
 // Attachments: files the person hands the agent.
 //
 //   <AttachmentChip name="q3-board-deck.pdf" />                 on a sent message
 //   <AttachmentChip name="…" onRemove={…} />                    in the composer
+//   <AttachmentChip name="…" state="uploading" />               idle · uploading · processing · error · done
 //   <AttachmentPreview file={{ name, meta: "PDF · 4.2 MB · 24 pages", summary }}>
 //     <AttachmentChip name="…" />
 //   </AttachmentPreview>                                        hover for the gist
@@ -48,32 +59,43 @@ function FileBadge({ name, className }: { name: string; className?: string }) {
 function AttachmentChip({
   name,
   onRemove,
+  state = "done",
   className,
   ...props
-}: React.ComponentProps<"span"> & { name: string; onRemove?: () => void }) {
+}: Omit<React.ComponentProps<typeof Attachment>, "size" | "orientation"> & {
+  name: string
+  onRemove?: () => void
+}) {
+  // shadcn's Attachment, pressed into a pill: one line, type badge + name.
+  // `state` drives it: idle is dashed, uploading/processing shimmer the
+  // name, error turns the border destructive.
   return (
-    <span
+    <Attachment
       data-slot="attachment-chip"
+      state={state}
+      size="xs"
       className={cn(
-        "inline-flex h-7 max-w-full items-center gap-1.5 rounded-full border border-border bg-card pr-2.5 pl-1.5 text-xs shadow-xs",
+        "inline-flex h-7 max-w-full min-w-0 shrink flex-nowrap items-center gap-1.5 rounded-full border-border pr-2.5 pl-1.5 shadow-xs focus-within:ring-0",
         onRemove && "pr-1",
         className
       )}
       {...props}
     >
       <FileBadge name={name} />
-      <span className="min-w-0 truncate">{name}</span>
+      <AttachmentTitle className="font-normal">{name}</AttachmentTitle>
       {onRemove && (
-        <button
-          type="button"
-          aria-label={`Remove ${name}`}
-          onClick={onRemove}
-          className="flex size-5 shrink-0 items-center justify-center rounded-full text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/30"
-        >
-          <XIcon className="size-3" />
-        </button>
+        <AttachmentActions>
+          <AttachmentAction
+            type="button"
+            aria-label={`Remove ${name}`}
+            onClick={onRemove}
+            className="size-5 rounded-full text-muted-foreground focus-visible:border-transparent active:not-aria-[haspopup]:translate-y-0 dark:hover:bg-muted"
+          >
+            <XIcon className="size-3" />
+          </AttachmentAction>
+        </AttachmentActions>
       )}
-    </span>
+    </Attachment>
   )
 }
 
@@ -97,43 +119,55 @@ function AttachmentPreview({
   // preview card alone never opens there), and tapping outside dismisses.
   const [open, setOpen] = React.useState(false)
   return (
-    <PreviewCard.Root open={open} onOpenChange={setOpen}>
-      <PreviewCard.Trigger
+    <HoverCard open={open} onOpenChange={setOpen}>
+      <HoverCardTrigger
         delay={250}
         onClick={(e) => {
           e.preventDefault()
           // A mouse already opened it on hover; clicking shouldn't close it.
-          if ((e.nativeEvent as PointerEvent).pointerType === "mouse") return setOpen(true)
+          if ((e.nativeEvent as PointerEvent).pointerType === "mouse")
+            return setOpen(true)
           setOpen((o) => !o)
         }}
-        render={<span tabIndex={0} role="button" aria-expanded={open} className="inline-flex max-w-full cursor-pointer rounded-full outline-none focus-visible:ring-3 focus-visible:ring-ring/30" />}
+        render={
+          <span
+            tabIndex={0}
+            role="button"
+            aria-expanded={open}
+            className="inline-flex max-w-full cursor-pointer rounded-full outline-none focus-visible:ring-3 focus-visible:ring-ring/30"
+          />
+        }
       >
         {children}
-      </PreviewCard.Trigger>
-      <PreviewCard.Portal>
-        <PreviewCard.Positioner side="bottom" align="end" sideOffset={6} className="isolate z-50">
-          <PreviewCard.Popup
-            data-slot="attachment-preview"
-            className="w-72 origin-(--transform-origin) rounded-2xl border border-border bg-popover p-3 text-sm text-popover-foreground shadow-lg transition-[opacity,scale] duration-150 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0"
-          >
-            <div className="flex items-center gap-2">
-              <FileBadge name={file.name} />
-              <span className="min-w-0 truncate font-medium">{file.name}</span>
+      </HoverCardTrigger>
+      <HoverCardContent
+        side="bottom"
+        align="end"
+        sideOffset={6}
+        alignOffset={0}
+        data-slot="attachment-preview"
+        className="rounded-2xl border border-border p-3 ring-0 transition-[opacity,scale] duration-150 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0 dark:ring-0 data-open:animate-none data-closed:animate-none"
+      >
+        <div className="flex items-center gap-2">
+          <FileBadge name={file.name} />
+          <span className="min-w-0 truncate font-medium">{file.name}</span>
+        </div>
+        {file.meta && (
+          <div className="mt-1 eyebrow text-muted-foreground">{file.meta}</div>
+        )}
+        {file.summary && (
+          <div className="mt-2.5 rounded-xl bg-muted/50 p-2.5">
+            <div className="flex items-center gap-1.5 eyebrow text-muted-foreground">
+              <SparklesIcon className="size-3" />
+              Summary
             </div>
-            {file.meta && <div className="mt-1 eyebrow text-muted-foreground">{file.meta}</div>}
-            {file.summary && (
-              <div className="mt-2.5 rounded-xl bg-muted/50 p-2.5">
-                <div className="flex items-center gap-1.5 eyebrow text-muted-foreground">
-                  <SparklesIcon className="size-3" />
-                  Summary
-                </div>
-                <p className="mt-1 text-xs leading-relaxed text-pretty text-muted-foreground">{file.summary}</p>
-              </div>
-            )}
-          </PreviewCard.Popup>
-        </PreviewCard.Positioner>
-      </PreviewCard.Portal>
-    </PreviewCard.Root>
+            <p className="mt-1 text-xs leading-relaxed text-pretty text-muted-foreground">
+              {file.summary}
+            </p>
+          </div>
+        )}
+      </HoverCardContent>
+    </HoverCard>
   )
 }
 

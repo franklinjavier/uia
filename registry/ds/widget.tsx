@@ -93,7 +93,7 @@ function WidgetPanel({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="widget-panel"
       className={cn(
-        "rounded-2xl bg-card p-5 ring-1 ring-border/70 group-data-[size=sm]/widget:p-3.5 dark:ring-border",
+        "rounded-2xl bg-card p-5 ring-1 ring-border/70 dark:ring-border group-data-[size=sm]/widget:border group-data-[size=sm]/widget:border-border/70 group-data-[size=sm]/widget:p-3.5 group-data-[size=sm]/widget:ring-0 dark:group-data-[size=sm]/widget:border-border",
         className
       )}
       {...props}
