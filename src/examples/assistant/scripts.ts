@@ -3,6 +3,9 @@ import type { UIMessage } from "ai"
 import { createChat } from "@/lib/ai"
 import type { Question } from "@/components/parts/ask-user"
 import type { Draft } from "@/components/parts/draft-card"
+import type { Finding } from "@/components/parts/findings"
+import type { PlanStep } from "@/components/parts/plan"
+import type { BarDatum } from "@/components/ds/bar-series"
 
 // Typed parts shared by the scripts and the renderer.
 type Tools = {
@@ -22,8 +25,23 @@ type Tools = {
     input: { tracker: string; issues: { title: string; owner: string }[] }
     output: { ids: string[] }
   }
+  queryAnalytics: {
+    input: { metric: string; range: string }
+    output: { title: string; series: BarDatum[]; total: number; change: number; median: number; peak: number }
+  }
+  connectApp: {
+    input: { app: "Slack"; reason: string; done: string }
+    output: { connected: boolean }
+  }
+  readFile: {
+    input: { name: string; pages: number }
+    output: { title: string; findings: Finding[] }
+  }
 }
-export type ChatMessage = UIMessage<unknown, Record<string, never>, Tools>
+type Data = {
+  plan: { title: string; steps: PlanStep[] }
+}
+export type ChatMessage = UIMessage<unknown, Data, Tools>
 
 /* ---------------- Research: search → answer → sources ---------------- */
 
@@ -234,10 +252,117 @@ const code = createChat<ChatMessage>()
     )
   })
 
+/* ------- Metrics: chart → plan → connect an app → error and retry ------- */
+
+const WEEKS: BarDatum[] = [812, 845, 790, 868, 902, 880, 931, 958, 1001, 1012, 1048, 1110, 1244].map((value, i) => ({
+  label: `W${27 + i}`,
+  value,
+}))
+
+const DIGEST_STEPS = [
+  "Create saved query for the three metrics",
+  "Schedule for Mondays at 09:00",
+  "Render the chart as an image",
+  "Post to #product via Slack",
+]
+
+const steps = (done: number, last: PlanStep["status"] = "running"): PlanStep[] =>
+  DIGEST_STEPS.map((label, i) => ({ label, status: i < done ? "done" : i === done ? last : "todo" }))
+
+const metrics = createChat<ChatMessage>()
+  .user("How did weekly signups trend this quarter?")
+  .sleep(400)
+  .assistant(({ writer }) => {
+    writer.reasoning("Weekly signups for Q3, from the product analytics warehouse. A bar per week shows the trend and the outlier.")
+    writer.sleep(200)
+    writer
+      .tool("queryAnalytics", { input: { metric: "signups", range: "Q3 by week" } })
+      .sleep(1100)
+      .output({ title: "Weekly signups", series: WEEKS, total: 13009, change: 0.532, median: 931, peak: 1244 })
+    writer.text(
+      "Signups grew steadily through the quarter, finishing **53% above** the first week. The only dips were W29 and W32, both summer weeks."
+    )
+  })
+  .user("Set up a weekly digest of these metrics for the team")
+  .sleep(400)
+  .assistant(({ writer }) => {
+    writer.reasoning("Four steps: a saved query, a schedule, a rendered chart, and a post. Posting needs Slack, which isn't connected.")
+    writer.sleep(200)
+    writer.text("I'll schedule a Monday 09:00 digest with signups, activation and open incidents.")
+    const plan = (s: PlanStep[]) => writer.data({ type: "data-plan", id: "digest", data: { title: "Weekly metrics digest", steps: s } })
+    plan(steps(0)).sleep(900)
+    plan(steps(1)).sleep(800)
+    plan(steps(2)).sleep(900)
+    plan(steps(3, "waiting"))
+    writer.tool("connectApp", {
+      input: {
+        app: "Slack",
+        reason: "Connect Slack to post the digest",
+        done: "Slack connected · first digest Monday 09:00",
+      },
+    })
+  })
+  .assistant(({ writer, toolCall }) => {
+    const connected = toolCall?.name === "connectApp" && toolCall.output?.connected
+    const plan = (s: PlanStep[]) => writer.data({ type: "data-plan", id: "digest", data: { title: "Weekly metrics digest", steps: s } })
+    if (!connected) {
+      plan(steps(3, "failed"))
+      writer.text("Okay, I left Slack out. The digest is scheduled; it just won't post until Slack is connected.")
+      return
+    }
+    plan(steps(3, "running")).sleep(900)
+    plan(steps(4))
+    writer.text("Done. The first digest goes out **Monday at 09:00** in #product.")
+  })
+  .user("Translate the digest into German and Japanese")
+  .sleep(500)
+  .assistant(({ writer }) => {
+    writer.sleep(300)
+    writer.text(
+      "Done: both translations are attached to the digest as alternate versions. German keeps the numbers in the original format; Japanese uses full-width digits to match the team's convention."
+    )
+  })
+
+/* --------------- Deck: attachment → read → findings --------------- */
+
+export const FILES = {
+  "q3-board-deck.pdf": {
+    meta: "PDF · 4.2 MB · 24 pages",
+    summary:
+      "Q3 board review: revenue up 14% QoQ on enterprise expansion, gross margin steady at 71%. Hiring paused in support; two enterprise renewals slipped to Q4.",
+  },
+} as const
+
+const deck = createChat<ChatMessage>()
+  .user("Summarize the risks flagged in this deck", {
+    files: [{ mediaType: "application/pdf", filename: "q3-board-deck.pdf", url: "https://files.halden.example/q3-board-deck.pdf" }],
+  })
+  .sleep(400)
+  .assistant(({ writer }) => {
+    writer.reasoning("Read the deck, pull every risk with its page, rank by revenue impact.")
+    writer.sleep(200)
+    writer
+      .tool("readFile", { input: { name: "q3-board-deck.pdf", pages: 24 } })
+      .sleep(1500)
+      .output({
+        title: "Risks in q3-board-deck.pdf",
+        findings: [
+          { text: "Two enterprise renewals slipped to Q4 (≈ $410k ARR)", severity: "high", ref: "P. 12" },
+          { text: "Support hiring paused while ticket volume is up 22%", severity: "high", ref: "P. 15" },
+          { text: "EU data residency asked for by three prospects", severity: "medium", ref: "P. 18" },
+          { text: "Infra cost per seat up 6% after region expansion", severity: "medium", ref: "P. 20" },
+          { text: "SOC 2 renewal audit lands in the same month as launch", severity: "low", ref: "P. 23" },
+        ],
+      })
+    writer.text("The deck flags five risks. Two are rated high and both relate to Q4 renewals, so I'd start there.")
+  })
+
 export const SCENARIOS = {
   research: { label: "What shipped in the last release?", icon: "globe", turns: 3, chat: research },
   draft: { label: "Draft a launch announcement", icon: "pen", turns: 1, chat: draft },
   code: { label: "Write a debounce hook", icon: "code", turns: 1, chat: code },
+  metrics: { label: "How did weekly signups trend?", icon: "chart", turns: 3, chat: metrics },
+  deck: { label: "Summarize the risks in a deck", icon: "file", turns: 1, chat: deck },
 } as const
 
 export type ScenarioKey = keyof typeof SCENARIOS
@@ -245,3 +370,30 @@ export type ScenarioKey = keyof typeof SCENARIOS
 export const transports = Object.fromEntries(
   Object.entries(SCENARIOS).map(([key, s]) => [key, s.chat.transport({ delayMs: 22 })])
 ) as Record<ScenarioKey, ReturnType<typeof research.transport>>
+
+/**
+ * The first request for a message containing `match` fails like an
+ * overloaded provider would; the retry goes through. Lives in the transport
+ * (not the script) so `regenerate()` behaves as it does against a real API.
+ */
+export function failOnce<T extends { sendMessages: (o: never) => Promise<unknown> }>(
+  transport: T,
+  match: string,
+  message: string
+): T {
+  let failed = false
+  return {
+    ...transport,
+    sendMessages: async (options: { messages: ChatMessage[] }) => {
+      const last = options.messages.findLast((m) => m.role === "user")
+      const text = last?.parts.map((p) => (p.type === "text" ? p.text : "")).join("") ?? ""
+      if (!failed && text.includes(match)) {
+        failed = true
+        await new Promise((r) => setTimeout(r, 700))
+        throw new Error(message)
+      }
+      return transport.sendMessages(options as never)
+    },
+  }
+}
+

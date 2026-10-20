@@ -78,9 +78,15 @@ const ITEMS: Item[] = [
   item("meter-bar", "registry:component", "A value against its limit: segments, threshold markers, highlight.", ["src/components/ds/meter-bar.tsx"]),
   item("stage-track", "registry:component", "Where something is in a fixed sequence of stages, on one line.", ["src/components/ds/stage-track.tsx"]),
   item("sparkline", "registry:component", "A recent series as a line over a soft area, latest point marked.", ["src/components/ds/sparkline.tsx"]),
+  item("bar-series", "registry:component", "A short series as bars in one hue, the latest at full strength, hover to read.", ["src/components/ds/bar-series.tsx"]),
 
   // parts
   item("action-card", "registry:component", "One shape for every human-in-the-loop moment, plus ResolvedRow and TranscriptEvent.", ["src/components/parts/action-card.tsx"]),
+  item("plan", "registry:component", "A multi-step job the agent runs in front of you: steps check off, the running one spins, a tick meter fills.", ["src/components/parts/plan.tsx"]),
+  item("connect-prompt", "registry:component", "Docked above the composer when the agent needs access: ask → connecting → connected.", ["src/components/parts/connect-prompt.tsx"]),
+  item("attachment", "registry:component", "File chips (type badge + name, removable in the composer) and a hover preview with the file's gist.", ["src/components/parts/attachment.tsx"]),
+  item("findings", "registry:component", "What the agent pulled from a source, ranked by a severity signal, each with its reference (page, line).", ["src/components/parts/findings.tsx"]),
+  item("chart-card", "registry:component", "A chart inside a reply: title, the few numbers that answer, then the chart.", ["src/components/parts/chart-card.tsx"]),
   item("ask-user", "registry:component", "Clarifying questions (A/B/C keys) and their answered states.", ["src/components/parts/ask-user.tsx"]),
   item("confirmation", "registry:component", "Approval gate before a tool with side effects runs.", ["src/components/parts/confirmation.tsx"]),
   item("draft-card", "registry:component", "Editable draft that is its own approval; resolves to an expandable row.", ["src/components/parts/draft-card.tsx"]),
@@ -113,6 +119,8 @@ const ITEMS: Item[] = [
   item("composer", "registry:component", "Prompt box as parts: input, toolbar, attach, model select, submit.", ["src/components/chat/composer.tsx"]),
   item("chat-empty", "registry:component", "First screen: resting orb, greeting, suggestions.", ["src/components/chat/chat-empty.tsx"]),
   item("chat-status", "registry:component", "One-line conversation status.", ["src/components/chat/chat-status.tsx"]),
+  item("chat-error", "registry:component", "A turn that didn't happen: one quiet line with what it cost and Retry.", ["src/components/chat/chat-error.tsx"]),
+  item("chat-pill", "registry:component", "The assistant minimised: orb, live phase, Open (attention when it needs you).", ["src/components/chat/chat-pill.tsx"]),
 
   // Reference widgets: complete, working examples of how uia is composed.
   // They install into src/examples/ to be read, run and adapted.
@@ -144,10 +152,10 @@ const ITEMS: Item[] = [
 // Bundles: no files, just dependencies.
 const BUNDLES = [
   bundle("chat", "Everything to build an agent chat.", [
-    "agent-chat", "chat-thread", "chat-turn", "turn-actions", "composer", "chat-empty", "chat-status",
+    "agent-chat", "chat-thread", "chat-turn", "turn-actions", "composer", "chat-empty", "chat-status", "chat-error", "chat-pill", "attachment",
   ]),
   bundle("hitl", "All human-in-the-loop parts.", [
-    "action-card", "ask-user", "confirmation", "draft-card", "preview-approval", "decision-chip", "part-transition", "tool-line",
+    "action-card", "ask-user", "confirmation", "draft-card", "preview-approval", "decision-chip", "part-transition", "tool-line", "plan", "connect-prompt", "findings", "chart-card",
   ]),
   bundle("examples", "Every reference widget, to read, run and adapt.", [
     "example-assistant", "example-model-router", "example-agent-runtime", "example-ai-spend", "example-fleet-health", "example-model-evals", "example-bottega", "example-davinci",

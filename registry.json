@@ -630,6 +630,27 @@
       ]
     },
     {
+      "name": "bar-series",
+      "type": "registry:component",
+      "title": "Bar Series",
+      "description": "A short series as bars in one hue, the latest at full strength, hover to read.",
+      "author": "uia",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/motion",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/ds/bar-series.tsx",
+          "type": "registry:component",
+          "target": "@components/ds/bar-series.tsx"
+        }
+      ]
+    },
+    {
       "name": "action-card",
       "type": "registry:component",
       "title": "Action Card",
@@ -650,6 +671,110 @@
           "path": "src/components/parts/action-card.tsx",
           "type": "registry:component",
           "target": "@components/parts/action-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "plan",
+      "type": "registry:component",
+      "title": "Plan",
+      "description": "A multi-step job the agent runs in front of you: steps check off, the running one spins, a tick meter fills.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react",
+        "motion"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/action-card",
+        "franklinjavier/uia/motion",
+        "franklinjavier/uia/spinner",
+        "franklinjavier/uia/theme",
+        "franklinjavier/uia/tick-meter"
+      ],
+      "files": [
+        {
+          "path": "src/components/parts/plan.tsx",
+          "type": "registry:component",
+          "target": "@components/parts/plan.tsx"
+        }
+      ]
+    },
+    {
+      "name": "connect-prompt",
+      "type": "registry:component",
+      "title": "Connect Prompt",
+      "description": "Docked above the composer when the agent needs access: ask → connecting → connected.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react",
+        "motion"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/button",
+        "franklinjavier/uia/motion",
+        "franklinjavier/uia/spinner",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/parts/connect-prompt.tsx",
+          "type": "registry:component",
+          "target": "@components/parts/connect-prompt.tsx"
+        }
+      ]
+    },
+    {
+      "name": "attachment",
+      "type": "registry:component",
+      "title": "Attachment",
+      "description": "File chips (type badge + name, removable in the composer) and a hover preview with the file's gist.",
+      "author": "uia",
+      "dependencies": [
+        "@base-ui/react",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/parts/attachment.tsx",
+          "type": "registry:component",
+          "target": "@components/parts/attachment.tsx"
+        }
+      ]
+    },
+    {
+      "name": "findings",
+      "type": "registry:component",
+      "title": "Findings",
+      "description": "What the agent pulled from a source, ranked by a severity signal, each with its reference (page, line).",
+      "author": "uia",
+      "registryDependencies": [
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/parts/findings.tsx",
+          "type": "registry:component",
+          "target": "@components/parts/findings.tsx"
+        }
+      ]
+    },
+    {
+      "name": "chart-card",
+      "type": "registry:component",
+      "title": "Chart Card",
+      "description": "A chart inside a reply: title, the few numbers that answer, then the chart.",
+      "author": "uia",
+      "registryDependencies": [
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/parts/chart-card.tsx",
+          "type": "registry:component",
+          "target": "@components/parts/chart-card.tsx"
         }
       ]
     },
@@ -976,6 +1101,7 @@
         "franklinjavier/uia/agent-chat",
         "franklinjavier/uia/agent-orb",
         "franklinjavier/uia/ai",
+        "franklinjavier/uia/attachment",
         "franklinjavier/uia/bubble",
         "franklinjavier/uia/chat-thread",
         "franklinjavier/uia/markdown",
@@ -1077,6 +1203,51 @@
           "path": "src/components/chat/chat-status.tsx",
           "type": "registry:component",
           "target": "@components/chat/chat-status.tsx"
+        }
+      ]
+    },
+    {
+      "name": "chat-error",
+      "type": "registry:component",
+      "title": "Chat Error",
+      "description": "A turn that didn't happen: one quiet line with what it cost and Retry.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react",
+        "motion"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/button",
+        "franklinjavier/uia/motion",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/chat/chat-error.tsx",
+          "type": "registry:component",
+          "target": "@components/chat/chat-error.tsx"
+        }
+      ]
+    },
+    {
+      "name": "chat-pill",
+      "type": "registry:component",
+      "title": "Chat Pill",
+      "description": "The assistant minimised: orb, live phase, Open (attention when it needs you).",
+      "author": "uia",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/agent-orb",
+        "franklinjavier/uia/motion",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/chat/chat-pill.tsx",
+          "type": "registry:component",
+          "target": "@components/chat/chat-pill.tsx"
         }
       ]
     },
@@ -1351,7 +1522,8 @@
       "author": "uia",
       "dependencies": [
         "ai",
-        "lucide-react"
+        "lucide-react",
+        "motion"
       ],
       "registryDependencies": [
         "franklinjavier/uia/action-card",
@@ -1359,18 +1531,28 @@
         "franklinjavier/uia/agent-orb",
         "franklinjavier/uia/ai",
         "franklinjavier/uia/ask-user",
+        "franklinjavier/uia/attachment",
+        "franklinjavier/uia/bar-series",
+        "franklinjavier/uia/button",
+        "franklinjavier/uia/chart-card",
         "franklinjavier/uia/chat-empty",
+        "franklinjavier/uia/chat-error",
+        "franklinjavier/uia/chat-pill",
         "franklinjavier/uia/chat-thread",
         "franklinjavier/uia/chat-turn",
         "franklinjavier/uia/composer",
         "franklinjavier/uia/confirmation",
+        "franklinjavier/uia/connect-prompt",
         "franklinjavier/uia/draft-card",
+        "franklinjavier/uia/findings",
         "franklinjavier/uia/model-icons",
         "franklinjavier/uia/part-transition",
+        "franklinjavier/uia/plan",
         "franklinjavier/uia/search-results",
         "franklinjavier/uia/theme",
         "franklinjavier/uia/tool-line",
         "franklinjavier/uia/widget",
+        "tooltip",
         "trace"
       ],
       "files": [
@@ -1404,7 +1586,10 @@
         "franklinjavier/uia/turn-actions",
         "franklinjavier/uia/composer",
         "franklinjavier/uia/chat-empty",
-        "franklinjavier/uia/chat-status"
+        "franklinjavier/uia/chat-status",
+        "franklinjavier/uia/chat-error",
+        "franklinjavier/uia/chat-pill",
+        "franklinjavier/uia/attachment"
       ]
     },
     {
@@ -1421,7 +1606,11 @@
         "franklinjavier/uia/preview-approval",
         "franklinjavier/uia/decision-chip",
         "franklinjavier/uia/part-transition",
-        "franklinjavier/uia/tool-line"
+        "franklinjavier/uia/tool-line",
+        "franklinjavier/uia/plan",
+        "franklinjavier/uia/connect-prompt",
+        "franklinjavier/uia/findings",
+        "franklinjavier/uia/chart-card"
       ]
     },
     {

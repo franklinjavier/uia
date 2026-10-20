@@ -13,9 +13,10 @@ import { Reasoning } from "@/components/parts/reasoning"
 import { SourcesGrid } from "@/components/parts/sources"
 import { ToolLine } from "@/components/parts/tool-line"
 import { AgentOrb, type AgentPhase } from "@/components/ds/agent-orb"
+import { AttachmentChip } from "@/components/parts/attachment"
 import { TurnActions } from "@/components/chat/turn-actions"
 import { useTurnEnters } from "@/components/chat/chat-thread"
-import type { ToolContext, ToolRegistry } from "@/components/chat/tool-registry"
+import type { DataRegistry, ToolContext, ToolRegistry } from "@/components/chat/tool-registry"
 
 // Turns of a conversation.
 //
@@ -41,12 +42,21 @@ const sent = { opacity: 0, y: 8, filter: "blur(2px)" }
 const answer = { opacity: 0, y: 4 }
 const settled = { opacity: 1, y: 0, filter: "blur(0px)" }
 
+type FilePart = Extract<UIMessage["parts"][number], { type: "file" }>
+
 function UserTurn({
   message,
+  renderFile,
   className,
   ...props
-}: React.ComponentProps<typeof Message> & { message: UIMessage }) {
+}: React.ComponentProps<typeof Message> & {
+  message: UIMessage
+  /** How an attached file shows above the bubble. Default: a chip. */
+  renderFile?: (file: FilePart) => React.ReactNode
+}) {
   const enters = useTurnEnters()
+  const files = message.parts.filter((p): p is FilePart => p.type === "file")
+  const text = getMessageText(message)
   return (
     <MotionMessage
       data-slot="user-turn"
@@ -58,9 +68,20 @@ function UserTurn({
       {...(props as React.ComponentProps<typeof MotionMessage>)}
     >
       <MessageContent>
-        <Bubble align="end" variant="muted">
-          <BubbleContent>{getMessageText(message)}</BubbleContent>
-        </Bubble>
+        {files.length > 0 && (
+          <div data-slot="user-turn-files" className="flex flex-wrap justify-end gap-1.5">
+            {files.map((f, i) => (
+              <React.Fragment key={f.url + i}>
+                {renderFile ? renderFile(f) : <AttachmentChip name={f.filename ?? "file"} />}
+              </React.Fragment>
+            ))}
+          </div>
+        )}
+        {text && (
+          <Bubble align="end" variant="muted">
+            <BubbleContent>{text}</BubbleContent>
+          </Bubble>
+        )}
       </MessageContent>
     </MotionMessage>
   )
@@ -69,10 +90,17 @@ function UserTurn({
 function ChatParts({
   message,
   tools = {},
+  data = {},
   streaming = false,
   onToolOutput,
   onApproval,
-}: ToolHandlers & { message: UIMessage; tools?: ToolRegistry; streaming?: boolean }) {
+}: ToolHandlers & {
+  message: UIMessage
+  tools?: ToolRegistry
+  /** How `data-<name>` parts render, by name. Unknown ones render nothing. */
+  data?: DataRegistry
+  streaming?: boolean
+}) {
   const sources = message.parts.flatMap((p) =>
     p.type === "source-url" ? [{ url: p.url, title: p.title }] : []
   )
@@ -91,6 +119,11 @@ function ChatParts({
     }
     if (part.type === "source-url") {
       return index === firstSource ? <SourcesGrid key={index} sources={sources} /> : null
+    }
+    if (part.type.startsWith("data-")) {
+      const render = data[part.type.slice(5)]
+      const id = (part as { id?: string }).id ?? index
+      return render ? <React.Fragment key={`${part.type}-${id}`}>{render((part as unknown as { data: never }).data)}</React.Fragment> : null
     }
     if (!isToolUIPart(part)) return null
 
@@ -127,11 +160,13 @@ function ChatParts({
 function AssistantTurn({
   message,
   tools,
+  data,
   phase = "idle",
   active = false,
   streaming = false,
   pending = false,
   actions,
+  onRegenerate,
   onToolOutput,
   onApproval,
   className,
@@ -140,6 +175,7 @@ function AssistantTurn({
   ToolHandlers & {
     message: UIMessage
     tools?: ToolRegistry
+    data?: DataRegistry
     /** What the agent is doing, shown by the orb on the live turn. */
     phase?: AgentPhase
     /** The live turn: only its orb animates. */
@@ -149,11 +185,17 @@ function AssistantTurn({
     pending?: boolean
     /** Replace the default actions row, or `false` to hide it. */
     actions?: React.ReactNode | false
+    /** Adds Regenerate to the default actions row (pass it on the last turn). */
+    onRegenerate?: () => void
   }) {
   const text = getMessageText(message)
   const showActions = !streaming && !pending && text && actions !== false
 
   const enters = useTurnEnters()
+
+  // A request that failed before anything arrived leaves an empty turn:
+  // don't draw an orb with nothing next to it (the error line says it).
+  if (!streaming && !active && message.parts.length === 0) return null
 
   return (
     <MotionMessage
@@ -173,19 +215,23 @@ function AssistantTurn({
         <ChatParts
           message={message}
           tools={tools}
+          data={data}
           streaming={streaming}
           onToolOutput={onToolOutput}
           onApproval={onApproval}
         />
-        {showActions && (actions ?? <TurnActions text={text} />)}
+        {showActions && (actions ?? <TurnActions text={text} onRegenerate={onRegenerate} />)}
       </MessageContent>
     </MotionMessage>
   )
 }
 
-function ChatTurn(props: React.ComponentProps<typeof AssistantTurn>) {
+function ChatTurn({
+  renderFile,
+  ...props
+}: React.ComponentProps<typeof AssistantTurn> & Pick<React.ComponentProps<typeof UserTurn>, "renderFile">) {
   return props.message.role === "user" ? (
-    <UserTurn message={props.message} />
+    <UserTurn message={props.message} renderFile={renderFile} />
   ) : (
     <AssistantTurn {...props} />
   )

@@ -100,6 +100,40 @@ and never after a server tool that finished in-stream (that would loop).
 Empty conversation → `ChatEmpty` with 2–4 `ChatSuggestion`s (icon + a real
 task phrased as the person would type it).
 
+### The moments every chat needs (see `example-assistant`, scenarios *metrics* and *deck*)
+
+- **The composer shows what the agent is doing with what you gave it.**
+  Capabilities the person switches on are `ComposerToggle`s (Search, Think;
+  icon-only on phones). While the agent uses one, `live` lights it in
+  `attention`: `live={chat.phase === "searching"}`.
+- **Attachments**: files for the next message sit in `ComposerAttachments`
+  as removable `AttachmentChip`s; on the sent message they stack above the
+  bubble (`UserTurn` renders `file` parts; pass `renderFile` to wrap them in
+  `AttachmentPreview`). Reading a file is a trace line ("Read
+  q3-board-deck.pdf · 24 pages") followed by what it found (`Findings`).
+- **A visual answer** is a tool whose output renders a `ChartCard` after its
+  trace line, then one or two sentences that say what the chart means.
+- **Multi-step work** is a `Plan` streamed as a data part
+  (`writer.data({ type: "data-plan", id: "digest", data })`, rendered through
+  `defineData` and `ChatTurn data={…}`). Writing the same `id` again updates
+  the card; never stream a new card per step.
+- **Missing access**: a client tool (e.g. `connectApp`) that renders nothing in
+  the transcript; the app docks a `ConnectPrompt` above the composer while
+  it waits ("Connect Slack above to continue…" in the placeholder), answers
+  the tool on connect, shows the connected line ~2.5 s, removes it. The
+  plan's waiting step turns `attention` meanwhile.
+- **Errors**: `chat.error` → `<ChatError message onRetry={() =>
+  chat.regenerate()} />` as the last thing in the thread, in the person's
+  words with what it cost ("Nothing was sent"). If the same route will fail
+  again, the retry names another ("Retry with GPT") and switches the model.
+  An assistant turn that failed before anything arrived renders nothing.
+- **Regenerate** lives in the last turn's actions: `ChatTurn
+  onRegenerate={isLast && !busy ? () => chat.regenerate() : undefined}`.
+- **Header actions are few and real**: New chat (resets) and Minimise. A
+  minimised assistant is a `ChatPill` — orb, the live phase as an eyebrow,
+  "Open" turning `attention` when it needs the person — and reopening keeps
+  the conversation.
+
 ### Layouts
 
 **Full page** — header (orb + title) with a bottom hairline, the thread fills

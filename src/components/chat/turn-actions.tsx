@@ -1,5 +1,5 @@
 import * as React from "react"
-import { CheckIcon, CopyIcon, ThumbsDownIcon, ThumbsUpIcon } from "lucide-react"
+import { CheckIcon, CopyIcon, RotateCcwIcon, ThumbsDownIcon, ThumbsUpIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -7,7 +7,9 @@ import { MessageFooter } from "@/components/ui/message"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 // The quiet row under a finished assistant turn. Use <TurnActions> for the
-// default set (copy, good, bad) or compose your own row from <TurnAction>.
+// default set (copy, good, bad, and regenerate when you pass
+// `onRegenerate`, after a hairline) or compose your own row from
+// <TurnAction>.
 
 function TurnAction({
   label,
@@ -46,12 +48,15 @@ function TurnActionsRow({ className, ...props }: React.ComponentProps<typeof Mes
 function TurnActions({
   text,
   onVote,
+  onRegenerate,
   children,
   className,
 }: {
   /** What Copy puts on the clipboard. */
   text: string
   onVote?: (vote: "up" | "down" | null) => void
+  /** Ask again for this turn (useChat's `regenerate`). Shown only when set. */
+  onRegenerate?: () => void
   /** Extra actions appended after the defaults. */
   children?: React.ReactNode
   className?: string
@@ -90,6 +95,14 @@ function TurnActions({
       <TurnAction label="Bad response" aria-pressed={vote === "down"} onClick={() => cast("down")}>
         <ThumbsDownIcon />
       </TurnAction>
+      {onRegenerate && (
+        <>
+          <span aria-hidden className="mx-1 h-3.5 w-px bg-border" />
+          <TurnAction label="Regenerate" onClick={onRegenerate}>
+            <RotateCcwIcon />
+          </TurnAction>
+        </>
+      )}
       {children}
     </TurnActionsRow>
   )

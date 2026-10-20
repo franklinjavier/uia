@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "chart-card",
+  "title": "Chart Card",
+  "author": "uia",
+  "description": "A chart inside a reply: title, the few numbers that answer, then the chart.",
+  "registryDependencies": [
+    "franklinjavier/uia/theme"
+  ],
+  "files": [
+    {
+      "path": "src/components/parts/chart-card.tsx",
+      "content": "import * as React from \"react\"\n\nimport { cn } from \"@/lib/utils\"\n\n// ChartCard: a chart the agent made, inside its reply. Title, a row of the\n// few numbers that answer the question (total, change, median, peak), then\n// the chart. The surface matches the other in-message cards: hairline\n// border, card fill, no shadow.\n//\n//   <ChartCard title=\"Weekly signups\" stats={[{ label: \"Total\", value: \"13,009\" },\n//     { label: \"vs first week\", value: \"+53.2%\", tone: \"success\" }]}>\n//     <BarSeries data={weeks} />\n//   </ChartCard>\n\nexport type ChartStat = { label: string; value: React.ReactNode; tone?: \"success\" | \"destructive\" }\n\nfunction ChartCard({\n  title,\n  stats = [],\n  className,\n  children,\n}: {\n  title: React.ReactNode\n  stats?: ChartStat[]\n  className?: string\n  children: React.ReactNode\n}) {\n  return (\n    <figure data-slot=\"chart-card\" className={cn(\"not-typeset flex flex-col gap-3 rounded-2xl border border-border/70 bg-card p-3.5 text-sm\", className)}>\n      <figcaption className=\"font-medium\">{title}</figcaption>\n      {stats.length > 0 && (\n        <dl className=\"grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-4\">\n          {stats.map((s) => (\n            <div key={s.label} className=\"flex flex-col gap-0.5\">\n              <dt className=\"eyebrow text-muted-foreground\">{s.label}</dt>\n              <dd\n                className={cn(\n                  \"text-base tabular-nums\",\n                  s.tone === \"success\" && \"text-success\",\n                  s.tone === \"destructive\" && \"text-destructive\"\n                )}\n              >\n                {s.value}\n              </dd>\n            </div>\n          ))}\n        </dl>\n      )}\n      {children}\n    </figure>\n  )\n}\n\nexport { ChartCard }\n",
+      "type": "registry:component",
+      "target": "@components/parts/chart-card.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

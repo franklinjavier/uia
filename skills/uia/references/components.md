@@ -115,6 +115,12 @@ narrow range (pass rates 60–100%) so close markers don't collide.
 />
 ```
 
+### BarSeries (`bar-series`)
+`<BarSeries data={[{ label: "W27", value: 812 }, …]} format={fmt} />` — one hue
+(`chart-1`), bars at 30%, the one that matters (`highlight`, default the
+latest) at full strength with its value above. Hover/focus a bar to read it;
+the label row keeps only the first, last and hovered labels.
+
 ### Sparkline (`sparkline`)
 `<Sparkline values={series} />` — line over a soft area, dashed mean, last
 point marked. Pair with a big number and an eyebrow for the window ("Last 64 s").
@@ -164,6 +170,11 @@ Read `hitl.md` for when to use which. Summary:
 | `Confirmation` | `confirmation` | Ready-made approval gate; `allowLabel`/`denyLabel`/`status` take the action's own words ("Reverter para v41"); `children` for a fields panel. |
 | `PreviewApproval` / `PreviewApprovalResolved` | `preview-approval` | A visual change waits for the person's eye: before/after, preview link, accept or ask for changes in words. |
 | `DecisionChip` | `decision-chip` | A pending decision, compact, for a "needs you" strip outside the chat; opens the full card. |
+| `Plan` | `plan` | A multi-step job the agent runs in front of you: steps `todo → running → done` (or `waiting` on the person, `failed`), a tick meter that fills, `3/4` counter. Stream it as a **data part** with a fixed `id` so it updates in place. |
+| `ConnectPrompt` | `connect-prompt` | The agent needs access (Slack, a calendar): docked **above the composer**, not in the transcript; `ask → connecting → connected` in place, then says what happens next and leaves. Back it with a client tool that waits. |
+| `Findings` + `SeveritySignal` | `findings` | What the agent pulled from a source, ranked by a 3-bar severity signal (the only colour), each with its reference ("P. 12") in mono so the claim can be checked. |
+| `ChartCard` | `chart-card` | A chart inside a reply: title, the 2–4 numbers that answer the question, then the chart (`BarSeries`, `Sparkline`, `MeterBar`). |
+| `AttachmentChip` / `AttachmentPreview` / `FileBadge` | `attachment` | Files: a chip with a type badge (PDF, CSV…); removable (`onRemove`) in the composer; wrap in `AttachmentPreview` for a hover card with meta and the file's gist. |
 | `DraftCard` / `DraftCardResolved` | `draft-card` | Editable draft that is its own approval. |
 | `PartTransition` | `part-transition` | Animates a part between states (height + crossfade). |
 | `ToolLine` + `toolPhase()` | `tool-line` | A tool call as a quiet trace line; expandable when done. |

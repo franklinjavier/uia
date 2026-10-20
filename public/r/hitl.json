@@ -12,7 +12,11 @@
     "franklinjavier/uia/preview-approval",
     "franklinjavier/uia/decision-chip",
     "franklinjavier/uia/part-transition",
-    "franklinjavier/uia/tool-line"
+    "franklinjavier/uia/tool-line",
+    "franklinjavier/uia/plan",
+    "franklinjavier/uia/connect-prompt",
+    "franklinjavier/uia/findings",
+    "franklinjavier/uia/chart-card"
   ],
   "type": "registry:block"
 }

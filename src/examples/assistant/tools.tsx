@@ -1,5 +1,11 @@
 import { BanIcon, ListChecksIcon } from "lucide-react"
 
+import { BarSeries } from "@/components/ds/bar-series"
+import { ChartCard } from "@/components/parts/chart-card"
+import { FileBadge } from "@/components/parts/attachment"
+import { Findings } from "@/components/parts/findings"
+import { Plan } from "@/components/parts/plan"
+
 import { Trace } from "@/components/ui/trace"
 import { TranscriptEvent, ResolvedRow } from "@/components/parts/action-card"
 import { AskUser, AskUserAnswered } from "@/components/parts/ask-user"
@@ -8,7 +14,7 @@ import { DraftCard } from "@/components/parts/draft-card"
 import { PartTransition } from "@/components/parts/part-transition"
 import { SearchResults } from "@/components/parts/search-results"
 import { ToolLine, toolPhase } from "@/components/parts/tool-line"
-import { defineTools } from "@/components/chat/tool-registry"
+import { defineData, defineTools } from "@/components/chat/tool-registry"
 import type { ChatMessage } from "@/examples/assistant/scripts"
 
 // How the demo app renders its tools. This is exactly what a consuming app
@@ -79,6 +85,79 @@ export const tools = defineTools<ChatMessage>()({
     },
   },
 
+  // Server tool with a visual answer: a trace line, then the chart itself.
+  queryAnalytics: {
+    phase: "working",
+    render: (part) => (
+      <>
+        <Trace>
+          <ToolLine
+            part={part}
+            titles={{
+              running: "Querying analytics",
+              done: "Queried analytics",
+              error: "Query failed",
+              denied: "Query skipped",
+            }}
+            description={part.input?.range}
+          />
+        </Trace>
+        {part.state === "output-available" && (
+          <ChartCard
+            title={part.output.title}
+            stats={[
+              { label: "Total", value: part.output.total.toLocaleString("en-US") },
+              {
+                label: "vs first week",
+                value: `${part.output.change >= 0 ? "+" : ""}${(part.output.change * 100).toFixed(1)}%`,
+                tone: part.output.change >= 0 ? "success" : "destructive",
+              },
+              { label: "Median", value: part.output.median.toLocaleString("en-US") },
+              { label: "Peak", value: part.output.peak.toLocaleString("en-US") },
+            ]}
+          >
+            <BarSeries data={part.output.series} format={(v) => v.toLocaleString("en-US")} />
+          </ChartCard>
+        )}
+      </>
+    ),
+  },
+
+  // Client tool answered outside the transcript: the app docks a
+  // ConnectPrompt above the composer while this part waits.
+  connectApp: {
+    client: true,
+    render: () => null,
+  },
+
+  // Reading a file the person attached: trace line, then what it found.
+  readFile: {
+    phase: "working",
+    render: (part) => (
+      <>
+        <Trace>
+          <ToolLine
+            part={part}
+            titles={{
+              running: `Reading ${part.input?.name ?? "the file"}`,
+              done: `Read ${part.input?.name ?? "the file"}`,
+              error: "Couldn't read the file",
+              denied: "Reading skipped",
+            }}
+            description={part.input?.pages ? `${part.input.pages} pages` : undefined}
+          />
+        </Trace>
+        {part.state === "output-available" && (
+          <Findings
+            title={part.output.title}
+            icon={<FileBadge name={part.input.name} />}
+            items={part.output.findings}
+          />
+        )}
+      </>
+    ),
+  },
+
   // Approval-gated server tool: ask → running → resolved record.
   createIssues: {
     render: (part, ctx) => {
@@ -140,3 +219,10 @@ export const tools = defineTools<ChatMessage>()({
     },
   },
 })
+
+// Data parts: state streamed alongside the reply. The plan updates in place
+// (same id) as each step lands.
+export const data = defineData<ChatMessage>()({
+  plan: (plan) => <Plan title={plan.title} steps={plan.steps} />,
+})
+

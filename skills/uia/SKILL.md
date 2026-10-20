@@ -163,8 +163,16 @@ const tools = defineTools<MyMessage>()({
 
 `client: true` marks tools the person completes (questions, drafts): the chat
 waits on them and continues when `ctx.addOutput` is called. Approval tools use
-the AI SDK `needsApproval` flow and `ctx.respond`. Full wiring:
-`references/chat.md`.
+the AI SDK `needsApproval` flow and `ctx.respond`. State that isn't a tool
+call (a plan's progress) is a data part rendered through `defineData`;
+same `id` = updated in place. Full wiring: `references/chat.md`.
+
+Don't reinvent the common moments; each has a part and a place
+(`chat.md` → "The moments every chat needs"): toggles that light while the
+agent uses them, attachments with a hover gist, a chart in the reply, a
+`Plan` that ticks off, `ConnectPrompt` docked above the composer,
+`ChatError` with a retry that can switch model, Regenerate, and `ChatPill`
+when minimised.
 
 ## Human-in-the-loop in one paragraph
 

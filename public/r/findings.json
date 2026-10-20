@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "findings",
+  "title": "Findings",
+  "author": "uia",
+  "description": "What the agent pulled from a source, ranked by a severity signal, each with its reference (page, line).",
+  "registryDependencies": [
+    "franklinjavier/uia/theme"
+  ],
+  "files": [
+    {
+      "path": "src/components/parts/findings.tsx",
+      "content": "import * as React from \"react\"\n\nimport { cn } from \"@/lib/utils\"\n\n// Findings: what the agent pulled out of a source, ranked, each pointing\n// back to where it came from. Severity is a three-bar signal (the only\n// colour: high reads destructive, medium attention, low muted); the\n// reference (\"P. 12\", \"L. 40\", \"03:12\") sits right, in mono, so the person\n// can check the claim.\n//\n//   <Findings title=\"Risks in q3-board-deck.pdf\" icon={<FileBadge name=\"q3-board-deck.pdf\" />}\n//     items={[{ text: \"Two enterprise renewals slipped to Q4\", severity: \"high\", ref: \"P. 12\" }]} />\n\nexport type Severity = \"high\" | \"medium\" | \"low\"\nexport type Finding = { text: string; severity: Severity; ref?: string }\n\nconst LEVEL: Record<Severity, number> = { high: 3, medium: 2, low: 1 }\nconst TONE: Record<Severity, string> = {\n  high: \"text-destructive\",\n  medium: \"text-attention\",\n  low: \"text-muted-foreground\",\n}\nconst WORD: Record<Severity, string> = { high: \"High\", medium: \"Medium\", low: \"Low\" }\n\nfunction SeveritySignal({ severity }: { severity: Severity }) {\n  const level = LEVEL[severity]\n  return (\n    <span role=\"img\" aria-label={`${WORD[severity]} severity`} className={cn(\"flex h-3 shrink-0 items-end gap-[2px]\", TONE[severity])}>\n      {[0.45, 0.72, 1].map((h, i) => (\n        <span\n          key={i}\n          className={cn(\"w-[3px] rounded-[1px]\", i < level ? \"bg-current\" : \"bg-current/20\")}\n          style={{ height: `${h * 100}%` }}\n        />\n      ))}\n    </span>\n  )\n}\n\nfunction Findings({\n  title,\n  icon,\n  items,\n  className,\n}: {\n  title: React.ReactNode\n  icon?: React.ReactNode\n  items: Finding[]\n  className?: string\n}) {\n  return (\n    <div data-slot=\"findings\" className={cn(\"not-typeset overflow-hidden rounded-2xl border border-border/70 bg-card text-sm\", className)}>\n      <div className=\"flex items-center gap-2 px-3.5 pt-3 pb-2.5\">\n        {icon}\n        <span className=\"min-w-0 truncate font-medium\">{title}</span>\n      </div>\n      <ul className=\"border-t border-border/70\">\n        {items.map((f) => (\n          <li\n            key={f.text}\n            className=\"relative flex items-center gap-3 px-3.5 py-2.5 before:absolute before:inset-x-3.5 before:top-0 before:h-px before:bg-border/70 first:before:hidden\"\n          >\n            <SeveritySignal severity={f.severity} />\n            <span className=\"min-w-0 flex-1 text-pretty\">{f.text}</span>\n            {f.ref && <span className=\"shrink-0 eyebrow text-faint-foreground\">{f.ref}</span>}\n          </li>\n        ))}\n      </ul>\n    </div>\n  )\n}\n\nexport { Findings, SeveritySignal }\n",
+      "type": "registry:component",
+      "target": "@components/parts/findings.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

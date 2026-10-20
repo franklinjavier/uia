@@ -59,3 +59,35 @@ export function defineTools<M extends UIMessage>() {
     tools: T
   ) => tools as unknown as ToolRegistry
 }
+
+/* ------------------------------ data parts ------------------------------ */
+
+// Data parts (`data-<name>`) are state the agent streams that isn't a tool
+// call: a plan's progress, a live status. Writing the same `id` again
+// updates the part in place, so one card can tick along a whole turn.
+//
+//   const data = defineData<MyMessage>()({ plan: (plan) => <Plan {...plan} /> })
+//   <AssistantTurn message={m} tools={tools} data={data} … />
+
+export type DataRegistry = Record<string, (data: never) => React.ReactNode>
+
+/** Names of the typed data parts carried by a message type. */
+export type DataNames<M extends UIMessage> =
+  M["parts"][number] extends infer P
+    ? P extends { type: `data-${infer N}` }
+      ? N
+      : never
+    : never
+
+export type DataOf<M extends UIMessage, N extends string> = Extract<
+  M["parts"][number],
+  { type: `data-${N}` }
+> extends { data: infer D }
+  ? D
+  : never
+
+export function defineData<M extends UIMessage>() {
+  return <T extends { [N in DataNames<M>]?: (data: DataOf<M, N>) => React.ReactNode }>(renderers: T) =>
+    renderers as unknown as DataRegistry
+}
+

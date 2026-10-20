@@ -22,6 +22,7 @@ import {
 //     <ComposerInput placeholder="Ask anything…" />
 //     <ComposerToolbar>
 //       <ComposerAttach />
+//       <ComposerToggle icon={<GlobeIcon />} pressed={search} live={phase === "searching"} onPressedChange={setSearch}>Search</ComposerToggle>
 //       <ComposerModelSelect models={…} value={…} onValueChange={…} />
 //       <ComposerMic className="ml-auto" />
 //       <ComposerSubmit busy={busy} disabled={!canSend} onStop={stop} />
@@ -164,6 +165,58 @@ function ComposerSubmit({
   )
 }
 
+/**
+ * A capability the person can switch on for the next message (Search,
+ * Think). `pressed`: it's on. `live`: the agent is using it right now, so
+ * the pill lights in `attention` while it runs — the composer shows what
+ * the agent is doing with the tools you gave it.
+ */
+function ComposerToggle({
+  icon,
+  pressed = false,
+  live = false,
+  onPressedChange,
+  className,
+  children,
+}: {
+  icon: React.ReactNode
+  pressed?: boolean
+  live?: boolean
+  onPressedChange?: (pressed: boolean) => void
+  className?: string
+  children: React.ReactNode
+}) {
+  return (
+    <button
+      type="button"
+      data-slot="composer-toggle"
+      aria-pressed={pressed}
+      data-live={live || undefined}
+      onClick={() => onPressedChange?.(!pressed)}
+      className={cn(
+        "inline-flex h-8 items-center gap-1.5 rounded-full border border-border bg-card px-3 text-sm whitespace-nowrap text-muted-foreground shadow-xs transition-[color,background-color,border-color] duration-300 outline-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/30 aria-pressed:text-foreground [&_svg]:size-4 [&_svg]:shrink-0",
+        "data-live:border-attention/30 data-live:bg-attention/10 data-live:text-attention",
+        className
+      )}
+    >
+      {icon}
+      <span className="max-sm:hidden">{children}</span>
+    </button>
+  )
+}
+
+/** Files attached to the next message, above the input. */
+function ComposerAttachments({ className, ...props }: React.ComponentProps<typeof InputGroupAddon>) {
+  return (
+    <InputGroupAddon
+      data-slot="composer-attachments"
+      align="block-start"
+      className={cn("flex-wrap gap-1.5 px-3 pt-3 empty:hidden", className)}
+      {...props}
+    />
+  )
+}
+
 export type ComposerModel = { name: string; provider?: string; icon?: React.ReactNode }
 
 /** Model picker: icon + name in the trigger, provider in mono on each option. */
@@ -213,6 +266,8 @@ function ComposerModelSelect<K extends string>({
 export {
   Composer,
   ComposerAttach,
+  ComposerAttachments,
+  ComposerToggle,
   ComposerButton,
   ComposerInput,
   ComposerMic,

@@ -11,7 +11,10 @@
     "franklinjavier/uia/turn-actions",
     "franklinjavier/uia/composer",
     "franklinjavier/uia/chat-empty",
-    "franklinjavier/uia/chat-status"
+    "franklinjavier/uia/chat-status",
+    "franklinjavier/uia/chat-error",
+    "franklinjavier/uia/chat-pill",
+    "franklinjavier/uia/attachment"
   ],
   "type": "registry:block"
 }
