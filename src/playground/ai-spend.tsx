@@ -141,7 +141,7 @@ export function AiSpend() {
       <WidgetPanel className="flex flex-col gap-5">
         <div className="flex items-start justify-between gap-4">
           <Stat>
-            <StatLabel>Spent · {month.short}</StatLabel>
+            <StatLabel>Spent</StatLabel>
             <StatValue>
               <NumberTicker value={spent} format={(v) => usd(v)} />
               <StatUnit>/ {usd(BUDGET)}</StatUnit>
