@@ -11,6 +11,7 @@ happened afterwards. Every pattern below exists to answer one of those.
 | is missing information it can't infer | Ask | `AskUser` (client tool) |
 | produced something that will go out in the person's name (email, post, message, PR description) | Draft = approval | `DraftCard` (client tool) |
 | wants to run something with side effects (create, delete, pay, invite, deploy) | Gate | `Confirmation` (AI SDK `needsApproval`) |
+| changed something visual that ships to users | Preview acceptance | `PreviewApproval` (before/after, accept or ask for changes) |
 | needs a choice between a few concrete options with consequences | Custom ActionCard | `ActionCard` parts + buttons per option |
 | is doing something the person should see but not stop | Trace | `ToolLine` / `TranscriptEvent` |
 
@@ -120,3 +121,11 @@ header (title + status) → description → panel(s) → note → actions. Put t
 choice inside a panel (a list of `Item`s, `ActionCardFields`, a small form),
 keep one primary button, and give it a resolved state the same way. Make it a
 `client: true` tool if the person's choice *is* the tool output.
+
+## Decisions outside the conversation
+
+On a page next to the conversation (dashboards, workspaces), surface every
+open decision as a `DecisionChip` in a "needs you" strip at the top. The
+chip never decides: it scrolls to the full card in the conversation and
+highlights it briefly. One place to answer, one place to look.
+

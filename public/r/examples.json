@@ -10,7 +10,8 @@
     "franklinjavier/uia/example-agent-runtime",
     "franklinjavier/uia/example-ai-spend",
     "franklinjavier/uia/example-fleet-health",
-    "franklinjavier/uia/example-model-evals"
+    "franklinjavier/uia/example-model-evals",
+    "franklinjavier/uia/example-bottega"
   ],
   "type": "registry:block"
 }

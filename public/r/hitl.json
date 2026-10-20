@@ -9,6 +9,8 @@
     "franklinjavier/uia/ask-user",
     "franklinjavier/uia/confirmation",
     "franklinjavier/uia/draft-card",
+    "franklinjavier/uia/preview-approval",
+    "franklinjavier/uia/decision-chip",
     "franklinjavier/uia/part-transition",
     "franklinjavier/uia/tool-line"
   ],

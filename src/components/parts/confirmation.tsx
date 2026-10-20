@@ -26,6 +26,9 @@ export function Confirmation({
   onAllow,
   onAlwaysAllow,
   onDeny,
+  allowLabel = "Allow",
+  denyLabel = "Deny",
+  status = "Approval needed",
   className,
   children,
 }: {
@@ -37,6 +40,11 @@ export function Confirmation({
   onAllow: () => void
   onAlwaysAllow?: () => void
   onDeny: () => void
+  /** Verb for the primary action ("Create issues", "Fazer rollback"). */
+  allowLabel?: string
+  denyLabel?: string
+  /** Status pill text. */
+  status?: string
   className?: string
   /** Extra content between the details and the actions. */
   children?: React.ReactNode
@@ -45,7 +53,7 @@ export function Confirmation({
     <ActionCard className={className}>
       <ActionCardHeader>
         <ActionCardTitle>{title}</ActionCardTitle>
-        <ActionCardStatus tone="approval">Approval needed</ActionCardStatus>
+        <ActionCardStatus tone="approval">{status}</ActionCardStatus>
       </ActionCardHeader>
       {description && <ActionCardDescription>{description}</ActionCardDescription>}
       {details && (
@@ -57,7 +65,7 @@ export function Confirmation({
       {note && <ActionCardNote>{note}</ActionCardNote>}
       <ActionCardActions>
         <Button size="sm" onClick={onAllow}>
-          Allow
+          {allowLabel}
         </Button>
         {onAlwaysAllow && (
           <Button size="sm" variant="secondary" onClick={onAlwaysAllow}>
@@ -65,7 +73,7 @@ export function Confirmation({
           </Button>
         )}
         <Button size="sm" variant="secondary" onClick={onDeny}>
-          Deny
+          {denyLabel}
         </Button>
       </ActionCardActions>
     </ActionCard>

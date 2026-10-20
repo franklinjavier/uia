@@ -1,6 +1,6 @@
 # Examples
 
-Complete, working widgets built by the designer (six of them). **Before building anything,
+Complete, working widgets built by the designer (widgets and one page). **Before building anything,
 open the closest one and copy its structure**: anatomy, panel split,
 spacing, which `ds/` pieces carry the data, how the list links to the
 visual. Then change the content. Matching an example is how a new screen
@@ -25,6 +25,7 @@ your visual reference. Screenshots are also in the uia repo under
 | Model router | `example-model-router` | number + `Segmented` policy, flow graph linked to a list, inline controls in a sentence (Fallback if … retry on …), deploy with states | configuration with a preview, routing, A/B, policies |
 | Agent runtime | `example-agent-runtime` | small number of things with state, illustration that highlights the focused thing, list rows with badge + countdown, select → act | resources with lifecycle (jobs, agents, sandboxes, workers) |
 | Model evals (pt-BR) | `example-model-evals` | number vs a baseline *and* a target (`MeterBar` with `min` to zoom), per-row comparison bars with a baseline tick, click a row to filter a second list, re-run with states, Brazilian formatting | quality, scores, A/B results, anything compared to a previous version |
+| Bottega (page, pt-BR) | `example-bottega` | a full page: header with scope select, "needs you" strip of `DecisionChip`s, projects by `StageTrack`, production with `Sparkline` + health badges, activity log, conversation rail where decisions are answered (`Confirmation` with own labels, `PreviewApproval`), the page reacting to each decision | dashboards, workspaces, any page with an agent beside it |
 | Assistant | `example-assistant` | agent chat in a widget: thread + composer in one panel, scripted tools, questions → draft → approval | any chat, assistant or generative-UI surface |
 
 `?scenario=draft` style autostart and `?bare` are playground conveniences;

@@ -587,6 +587,27 @@
       ]
     },
     {
+      "name": "stage-track",
+      "type": "registry:component",
+      "title": "Stage Track",
+      "description": "Where something is in a fixed sequence of stages, on one line.",
+      "author": "uia",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/motion",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/ds/stage-track.tsx",
+          "type": "registry:component",
+          "target": "@components/ds/stage-track.tsx"
+        }
+      ]
+    },
+    {
       "name": "sparkline",
       "type": "registry:component",
       "title": "Sparkline",
@@ -690,6 +711,51 @@
           "path": "src/components/parts/draft-card.tsx",
           "type": "registry:component",
           "target": "@components/parts/draft-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "decision-chip",
+      "type": "registry:component",
+      "title": "Decision Chip",
+      "description": "A pending decision, compact, for a 'needs you' strip outside the chat.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react",
+        "motion"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/motion",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/parts/decision-chip.tsx",
+          "type": "registry:component",
+          "target": "@components/parts/decision-chip.tsx"
+        }
+      ]
+    },
+    {
+      "name": "preview-approval",
+      "type": "registry:component",
+      "title": "Preview Approval",
+      "description": "A visual change waiting for the person's eye: before/after, accept or ask for changes.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/action-card",
+        "franklinjavier/uia/button",
+        "franklinjavier/uia/theme",
+        "textarea"
+      ],
+      "files": [
+        {
+          "path": "src/components/parts/preview-approval.tsx",
+          "type": "registry:component",
+          "target": "@components/parts/preview-approval.tsx"
         }
       ]
     },
@@ -1136,6 +1202,58 @@
       ]
     },
     {
+      "name": "example-bottega",
+      "type": "registry:block",
+      "title": "Example Bottega",
+      "description": "Example page (pt-BR): an agent workshop — decisions strip, projects by stage, production, activity and the one conversation with decision cards.",
+      "author": "uia",
+      "dependencies": [
+        "ai",
+        "lucide-react",
+        "motion"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/action-card",
+        "franklinjavier/uia/agent-chat",
+        "franklinjavier/uia/agent-orb",
+        "franklinjavier/uia/chat-thread",
+        "franklinjavier/uia/chat-turn",
+        "franklinjavier/uia/composer",
+        "franklinjavier/uia/confirmation",
+        "franklinjavier/uia/decision-chip",
+        "franklinjavier/uia/part-transition",
+        "franklinjavier/uia/preview-approval",
+        "franklinjavier/uia/select",
+        "franklinjavier/uia/sparkline",
+        "franklinjavier/uia/stage-track",
+        "franklinjavier/uia/status",
+        "franklinjavier/uia/theme",
+        "franklinjavier/uia/widget"
+      ],
+      "files": [
+        {
+          "path": "src/examples/bottega/bottega.tsx",
+          "type": "registry:file",
+          "target": "~/src/examples/bottega/bottega.tsx"
+        },
+        {
+          "path": "src/examples/bottega/conversation.tsx",
+          "type": "registry:file",
+          "target": "~/src/examples/bottega/conversation.tsx"
+        },
+        {
+          "path": "src/examples/bottega/use-bottega.ts",
+          "type": "registry:file",
+          "target": "~/src/examples/bottega/use-bottega.ts"
+        },
+        {
+          "path": "src/examples/bottega/data.ts",
+          "type": "registry:file",
+          "target": "~/src/examples/bottega/data.ts"
+        }
+      ]
+    },
+    {
       "name": "example-assistant",
       "type": "registry:block",
       "title": "Example Assistant",
@@ -1210,6 +1328,8 @@
         "franklinjavier/uia/ask-user",
         "franklinjavier/uia/confirmation",
         "franklinjavier/uia/draft-card",
+        "franklinjavier/uia/preview-approval",
+        "franklinjavier/uia/decision-chip",
         "franklinjavier/uia/part-transition",
         "franklinjavier/uia/tool-line"
       ]
@@ -1226,7 +1346,8 @@
         "franklinjavier/uia/example-agent-runtime",
         "franklinjavier/uia/example-ai-spend",
         "franklinjavier/uia/example-fleet-health",
-        "franklinjavier/uia/example-model-evals"
+        "franklinjavier/uia/example-model-evals",
+        "franklinjavier/uia/example-bottega"
       ]
     },
     {
@@ -1300,6 +1421,9 @@
         "franklinjavier/uia/segmented",
         "franklinjavier/uia/status",
         "franklinjavier/uia/tick-meter",
+        "franklinjavier/uia/meter-bar",
+        "franklinjavier/uia/sparkline",
+        "franklinjavier/uia/stage-track",
         "franklinjavier/uia/number-ticker",
         "franklinjavier/uia/agent-orb",
         "franklinjavier/uia/model-icons",

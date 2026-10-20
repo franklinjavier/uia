@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "stage-track",
+  "title": "Stage Track",
+  "author": "uia",
+  "description": "Where something is in a fixed sequence of stages, on one line.",
+  "dependencies": [
+    "motion"
+  ],
+  "registryDependencies": [
+    "franklinjavier/uia/motion",
+    "franklinjavier/uia/theme"
+  ],
+  "files": [
+    {
+      "path": "src/components/ds/stage-track.tsx",
+      "content": "import * as React from \"react\"\nimport { motion } from \"motion/react\"\n\nimport { cn } from \"@/lib/utils\"\nimport { springSoft } from \"@/lib/motion\"\n\n// StageTrack: where something is in a fixed sequence of stages, on one line.\n// Dots joined by hairlines; each dot says its stage's state. Put the stage\n// names once, in a header that uses the same grid (`stageTrackGrid`), not\n// under every track.\n//\n//   done     filled ink              the stage is behind us\n//   active   ink ring, half filled   work is happening here\n//   waiting  attention              it waits on the person\n//   failed   destructive             it broke; see the detail\n//   todo     hollow hairline         not reached yet\n\ntype StageStatus = \"done\" | \"active\" | \"waiting\" | \"failed\" | \"todo\"\n\nconst DOT: Record<StageStatus, string> = {\n  done: \"border-foreground bg-foreground\",\n  active: \"border-foreground bg-[linear-gradient(90deg,var(--foreground)_50%,transparent_50%)]\",\n  waiting: \"border-attention bg-attention\",\n  failed: \"border-destructive bg-destructive\",\n  todo: \"border-border bg-card\",\n}\n\nconst LABELS: Record<StageStatus, string> = {\n  done: \"done\",\n  active: \"in progress\",\n  waiting: \"waiting for you\",\n  failed: \"failed\",\n  todo: \"to do\",\n}\n\n/** Grid template for a track with `n` stages; reuse it for the header. */\nfunction stageTrackGrid(n: number) {\n  return { gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }\n}\n\nfunction StageTrack({\n  stages,\n  statusLabels,\n  className,\n  ...props\n}: Omit<React.ComponentProps<\"ol\">, \"children\"> & {\n  stages: { label: string; status: StageStatus }[]\n  /** Screen-reader words for each state, in the product's language. */\n  statusLabels?: Partial<Record<StageStatus, string>>\n}) {\n  const words = { ...LABELS, ...statusLabels }\n  return (\n    <ol\n      data-slot=\"stage-track\"\n      className={cn(\"grid items-center\", className)}\n      style={stageTrackGrid(stages.length)}\n      {...props}\n    >\n      {stages.map((s, i) => {\n        const next = stages[i + 1]\n        return (\n          <li\n            key={s.label}\n            data-status={s.status}\n            aria-label={`${s.label}: ${words[s.status]}`}\n            className=\"relative flex items-center\"\n          >\n            <motion.span\n              initial={false}\n              animate={{ scale: s.status === \"waiting\" ? 1.15 : 1 }}\n              transition={springSoft}\n              className={cn(\"relative z-10 size-2.5 shrink-0 rounded-full border transition-colors duration-300\", DOT[s.status])}\n            />\n            {next && (\n              <span\n                className={cn(\n                  \"h-px flex-1 transition-colors duration-300\",\n                  s.status === \"done\" ? \"bg-foreground/40\" : \"bg-border\"\n                )}\n              />\n            )}\n          </li>\n        )\n      })}\n    </ol>\n  )\n}\n\nexport { StageTrack, stageTrackGrid, type StageStatus }\n",
+      "type": "registry:component",
+      "target": "@components/ds/stage-track.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

@@ -13,6 +13,7 @@ avoid; this says what to do. Read it with the closest example open
 5. Live and interactive
 6. Copy
 7. Spacing and type, in numbers
+8. Pages
 
 ---
 
@@ -139,3 +140,36 @@ the visual: MeterBar · TickMeter row · flow graph · scene
 | Labels / meta / column headers | `eyebrow` (11px mono uppercase) |
 | Body / rows | `text-sm` |
 | List columns | fixed widths in `grid-cols-[1fr_…]`, set once in a `COLS` const |
+
+## 8. Pages
+
+A page is widgets in a column plus, for agent products, the conversation as
+a rail. The example is `example-bottega`.
+
+```
+┌ header: title · eyebrow summary ─────────── [one scope select] ┐
+│ Needs you · N        (decision chips; the only orange)  │ rail: │
+│ Section widget (titled list, full width)                │ orb · │
+│ Section widget │ Section widget   (2-up at xl)          │ chat  │
+└─────────────────────────────────────────────────────────┴───────┘
+```
+
+- **Header** (`h-14`, sticky, hairline below): page title, an eyebrow
+  summary ("5 projetos · 3 no ar"), and one `Select` that scopes the whole
+  page. Clicking a row that represents the same thing sets that scope too.
+- **What needs the person comes first.** A strip of `DecisionChip`s, each
+  opening its full card in the conversation. When empty, one quiet line
+  ("Nada esperando você"). Nothing else on the page uses `attention`.
+- **Sections are plain `Widget`s** (title outside, panels inside) stacked
+  with `gap-8` in a centred column (`max-w-[60rem]`, `px-6 py-8`). Pair
+  two at `xl` when they're peers (production · activity).
+- **Outcomes over machinery.** For agent products show where each thing is
+  (`StageTrack` over the flow), what is live and healthy, and what the agent
+  did on its own (a quiet log) — not agents, tasks and tests. Details stay
+  one click away.
+- **The conversation rail** (`26rem`, `border-l`): header with the
+  `AgentOrb`, the agent's name and a status eyebrow ("Esperando você"),
+  the thread, the composer at the bottom. Decisions are answered there; the
+  page reflects the consequence (stage moves, version changes, log entry,
+  the agent confirms in the thread).
+

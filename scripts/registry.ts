@@ -76,6 +76,7 @@ const ITEMS: Item[] = [
   item("model-icons", "registry:component", "Monochrome marks of the major LLM families (Claude, OpenAI, Gemini, Meta, Grok).", ["src/components/ds/model-icons.tsx"]),
   item("agent-orb", "registry:component", "The assistant's presence; one animated state per agent phase.", ["src/components/ds/agent-orb.tsx"]),
   item("meter-bar", "registry:component", "A value against its limit: segments, threshold markers, highlight.", ["src/components/ds/meter-bar.tsx"]),
+  item("stage-track", "registry:component", "Where something is in a fixed sequence of stages, on one line.", ["src/components/ds/stage-track.tsx"]),
   item("sparkline", "registry:component", "A recent series as a line over a soft area, latest point marked.", ["src/components/ds/sparkline.tsx"]),
 
   // parts
@@ -83,6 +84,8 @@ const ITEMS: Item[] = [
   item("ask-user", "registry:component", "Clarifying questions (A/B/C keys) and their answered states.", ["src/components/parts/ask-user.tsx"]),
   item("confirmation", "registry:component", "Approval gate before a tool with side effects runs.", ["src/components/parts/confirmation.tsx"]),
   item("draft-card", "registry:component", "Editable draft that is its own approval; resolves to an expandable row.", ["src/components/parts/draft-card.tsx"]),
+  item("decision-chip", "registry:component", "A pending decision, compact, for a 'needs you' strip outside the chat.", ["src/components/parts/decision-chip.tsx"]),
+  item("preview-approval", "registry:component", "A visual change waiting for the person's eye: before/after, accept or ask for changes.", ["src/components/parts/preview-approval.tsx"]),
   item("part-transition", "registry:component", "Height + crossfade transition when a part resolves.", ["src/components/parts/part-transition.tsx"]),
   item("tool-line", "registry:component", "A tool call as a trace line, expandable with details.", ["src/components/parts/tool-line.tsx"]),
   item("reasoning", "registry:component", "Thinking / Thought trace line with measured duration.", ["src/components/parts/reasoning.tsx"]),
@@ -116,6 +119,12 @@ const ITEMS: Item[] = [
   item("example-ai-spend", "registry:block", "Example: monthly AI spend by model against a budget, with alert and projection.", ["src/examples/ai-spend.tsx"]),
   item("example-model-evals", "registry:block", "Example (pt-BR): pass rate vs a baseline and a target, per-suite comparison, failures filtered by suite, re-run.", ["src/examples/model-evals.tsx"]),
   item("example-fleet-health", "registry:block", "Example: tokens/s with sparkline, fleet meters and a GPU heatmap.", ["src/examples/fleet-health.tsx"]),
+  item("example-bottega", "registry:block", "Example page (pt-BR): an agent workshop — decisions strip, projects by stage, production, activity and the one conversation with decision cards.", [
+    "src/examples/bottega/bottega.tsx",
+    "src/examples/bottega/conversation.tsx",
+    "src/examples/bottega/use-bottega.ts",
+    "src/examples/bottega/data.ts",
+  ]),
   item("example-assistant", "registry:block", "Example: a scripted agent chat with questions, a draft and an approval.", [
     "src/examples/assistant/assistant.tsx",
     "src/examples/assistant/scripts.ts",
@@ -129,10 +138,10 @@ const BUNDLES = [
     "agent-chat", "chat-thread", "chat-turn", "turn-actions", "composer", "chat-empty", "chat-status",
   ]),
   bundle("hitl", "All human-in-the-loop parts.", [
-    "action-card", "ask-user", "confirmation", "draft-card", "part-transition", "tool-line",
+    "action-card", "ask-user", "confirmation", "draft-card", "preview-approval", "decision-chip", "part-transition", "tool-line",
   ]),
   bundle("examples", "Every reference widget, to read, run and adapt.", [
-    "example-assistant", "example-model-router", "example-agent-runtime", "example-ai-spend", "example-fleet-health", "example-model-evals",
+    "example-assistant", "example-model-router", "example-agent-runtime", "example-ai-spend", "example-fleet-health", "example-model-evals", "example-bottega",
   ]),
 ]
 
@@ -340,7 +349,7 @@ const items = [
     registryDependencies: [
       "font-inter", "font-geist-mono", "theme", "typeset",
       ...UI_OVERRIDES.map(([n]) => n),
-      "widget", "stat", "segmented", "status", "tick-meter", "number-ticker", "agent-orb", "model-icons",
+      "widget", "stat", "segmented", "status", "tick-meter", "meter-bar", "sparkline", "stage-track", "number-ticker", "agent-orb", "model-icons",
       "hitl", "reasoning", "sources", "search-results", "markdown", "chat", "skill",
     ].map((n) => `${NS}/${n}`),
   },

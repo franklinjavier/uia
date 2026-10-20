@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "decision-chip",
+  "title": "Decision Chip",
+  "author": "uia",
+  "description": "A pending decision, compact, for a 'needs you' strip outside the chat.",
+  "dependencies": [
+    "lucide-react",
+    "motion"
+  ],
+  "registryDependencies": [
+    "franklinjavier/uia/motion",
+    "franklinjavier/uia/theme"
+  ],
+  "files": [
+    {
+      "path": "src/components/parts/decision-chip.tsx",
+      "content": "import * as React from \"react\"\nimport { motion } from \"motion/react\"\nimport { ArrowUpRightIcon } from \"lucide-react\"\n\nimport { cn } from \"@/lib/utils\"\nimport { enter } from \"@/lib/motion\"\n\n// DecisionChip: a pending decision, compact, for a strip of \"needs you\"\n// items outside the conversation (dashboards, headers). It names the kind\n// and the thing, says what is being asked in one line, and opens the full\n// decision card (in the conversation) on click. The attention dot is the\n// only colour: everything in the strip waits on the person.\n//\n//   <DecisionChip kind=\"Preview\" subject=\"Loja\" onClick={open}>\n//     Aceitar a nova vitrine\n//   </DecisionChip>\n\nfunction DecisionChip({\n  kind,\n  subject,\n  className,\n  children,\n  ...props\n}: Omit<React.ComponentProps<typeof motion.button>, \"children\"> & {\n  kind: string\n  subject: string\n  children: React.ReactNode\n}) {\n  return (\n    <motion.button\n      type=\"button\"\n      layout\n      initial={{ opacity: 0, y: 4 }}\n      animate={{ opacity: 1, y: 0 }}\n      exit={{ opacity: 0, scale: 0.97 }}\n      transition={enter}\n      data-slot=\"decision-chip\"\n      className={cn(\n        \"group/chip flex min-w-0 flex-col gap-1.5 rounded-2xl border border-border/80 bg-card p-3.5 text-left shadow-xs outline-none transition-colors hover:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring/30\",\n        className\n      )}\n      {...props}\n    >\n      <span className=\"flex items-center gap-2\">\n        <span className=\"size-1.5 shrink-0 rounded-full bg-attention\" />\n        <span className=\"eyebrow truncate text-muted-foreground\">\n          {kind} · {subject}\n        </span>\n        <ArrowUpRightIcon className=\"ml-auto size-3.5 shrink-0 text-muted-foreground transition-colors group-hover/chip:text-foreground\" />\n      </span>\n      <span className=\"truncate text-sm\">{children}</span>\n    </motion.button>\n  )\n}\n\nexport { DecisionChip }\n",
+      "type": "registry:component",
+      "target": "@components/parts/decision-chip.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

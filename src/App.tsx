@@ -9,6 +9,7 @@ import { AgentRuntime } from "@/examples/agent-runtime"
 import { AiSpend } from "@/examples/ai-spend"
 import { FleetHealth } from "@/examples/fleet-health"
 import { ModelEvals } from "@/examples/model-evals"
+import { Bottega } from "@/examples/bottega/bottega"
 import { ModelRouter } from "@/examples/model-router"
 
 const scenario =
@@ -30,6 +31,7 @@ const WIDGETS = {
   spend: { label: "AI spend", component: AiSpend, full: false },
   fleet: { label: "Fleet health", component: FleetHealth, full: false },
   evals: { label: "Evals", component: ModelEvals, full: false },
+  bottega: { label: "Bottega", component: Bottega, full: true },
 } as const
 
 type WidgetKey = keyof typeof WIDGETS
@@ -56,7 +58,14 @@ export function App() {
   return (
     <div className="relative min-h-svh bg-background">
       {!bare && (
-        <header className="pointer-events-none absolute inset-x-0 top-0 z-10 flex h-16 items-center justify-center gap-2 px-4 *:pointer-events-auto">
+        <header
+          className={
+            full
+              ? // Full pages own the top edge: the playground nav floats bottom-left.
+                "fixed bottom-4 left-4 z-50 flex items-center gap-2 rounded-full bg-background/90 p-1 shadow-lg ring-1 ring-border backdrop-blur"
+              : "pointer-events-none absolute inset-x-0 top-0 z-10 flex h-16 items-center justify-center gap-2 px-4 *:pointer-events-auto"
+          }
+        >
           <Segmented
             variant="sans"
             value={active}
@@ -74,7 +83,7 @@ export function App() {
           <Button
             variant="outline"
             size="icon-sm"
-            className="absolute right-4"
+            className={full ? "" : "absolute right-4"}
             onClick={() => setTheme(isDark ? "light" : "dark")}
           >
             {isDark ? <SunIcon /> : <MoonIcon />}

@@ -119,6 +119,12 @@ narrow range (pass rates 60–100%) so close markers don't collide.
 `<Sparkline values={series} />` — line over a soft area, dashed mean, last
 point marked. Pair with a big number and an eyebrow for the window ("Last 64 s").
 
+### StageTrack (`stage-track`)
+Where something is in a fixed sequence, on one line: dots joined by
+hairlines, each `done | active | waiting | failed | todo`. Put the stage
+names once in a header using `stageTrackGrid(n)`; pass `statusLabels` in
+the product's language for screen readers.
+
 ### TickMeter (`tick-meter`)
 Progress as hairline ticks: `<TickMeter value={0.62} className="text-brand" />`.
 Colour = `currentColor`.
@@ -148,7 +154,9 @@ Read `hitl.md` for when to use which. Summary:
 | `ResolvedRow` | `action-card` | A settled moment: one line, expandable record, `muted` when it didn't go ahead. |
 | `TranscriptEvent` | `action-card` | Small centred line for in-progress or system events ("Creating 4 issues…"). |
 | `AskUser` / `AskUserAnswered` / `AnswerKey` | `ask-user` | Clarifying questions → answered record. |
-| `Confirmation` | `confirmation` | Ready-made approval gate (Allow / Always allow / Deny). |
+| `Confirmation` | `confirmation` | Ready-made approval gate; `allowLabel`/`denyLabel`/`status` take the action's own words ("Reverter para v41"); `children` for a fields panel. |
+| `PreviewApproval` / `PreviewApprovalResolved` | `preview-approval` | A visual change waits for the person's eye: before/after, preview link, accept or ask for changes in words. |
+| `DecisionChip` | `decision-chip` | A pending decision, compact, for a "needs you" strip outside the chat; opens the full card. |
 | `DraftCard` / `DraftCardResolved` | `draft-card` | Editable draft that is its own approval. |
 | `PartTransition` | `part-transition` | Animates a part between states (height + crossfade). |
 | `ToolLine` + `toolPhase()` | `tool-line` | A tool call as a quiet trace line; expandable when done. |
@@ -244,9 +252,9 @@ Button language:
 
 Foundation: `theme`, `font-inter`, `font-geist-mono`, `typeset`.
 Primitives: `button`, `select`, `bubble`, `code-block`, `questionnaire`, `spinner`, `message-scroller`.
-System: `widget`, `stat`, `segmented`, `status`, `tick-meter`, `meter-bar`, `sparkline`, `number-ticker`, `agent-orb`, `model-icons`.
-Examples: `example-assistant`, `example-model-router`, `example-agent-runtime`, `example-ai-spend`, `example-fleet-health`, `example-model-evals` (bundle: `examples`).
-Generative UI: `action-card`, `ask-user`, `confirmation`, `draft-card`, `part-transition`, `tool-line`, `reasoning`, `sources`, `search-results`, `markdown`.
+System: `widget`, `stat`, `segmented`, `status`, `tick-meter`, `meter-bar`, `sparkline`, `stage-track`, `number-ticker`, `agent-orb`, `model-icons`.
+Examples: `example-assistant`, `example-model-router`, `example-agent-runtime`, `example-ai-spend`, `example-fleet-health`, `example-model-evals`, `example-bottega` (bundle: `examples`).
+Generative UI: `action-card`, `ask-user`, `confirmation`, `preview-approval`, `decision-chip`, `draft-card`, `part-transition`, `tool-line`, `reasoning`, `sources`, `search-results`, `markdown`.
 Chat: `agent-chat`, `chat-thread`, `chat-turn`, `turn-actions`, `composer`, `chat-empty`, `chat-status`.
 Lib: `motion`, `ai`, `url`, `highlighter`.
 Bundles: `uia` (everything), `chat`, `hitl`.
