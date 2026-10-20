@@ -33,7 +33,8 @@
     "franklinjavier/uia/search-results",
     "franklinjavier/uia/markdown",
     "franklinjavier/uia/chat",
-    "franklinjavier/uia/skill"
+    "franklinjavier/uia/skill",
+    "franklinjavier/uia/skill-agents"
   ],
   "type": "registry:base"
 }

@@ -23,7 +23,8 @@ Building UI with uia in another project? Do this first:
    ```
    `examples` adds the reference widgets to `src/examples/`: start every new
    screen from the closest one.
-3. **Read `.claude/skills/uia/SKILL.md` before writing any UI** and follow it.
+3. **Read the skill before writing any UI** and follow it:
+   `.claude/skills/uia/SKILL.md` (or `.agents/skills/uia/SKILL.md`).
    It has the setup checks (`typeset.css`, `TooltipProvider`), the patterns
    (widgets, chat, human-in-the-loop), the tokens and the known pitfalls. The
    skill is installed mid-session, so it may not load on its own: open it.
@@ -126,7 +127,8 @@ npx shadcn@latest view franklinjavier/uia/chat  # inspect before installing
 (patterns, tokens, HITL copy, pitfalls). It comes with the `uia` bundle, or:
 
 ```bash
-npx shadcn@latest add franklinjavier/uia/skill   # → .claude/skills/uia/
+npx shadcn@latest add franklinjavier/uia/skill          # → .claude/skills/uia/ (Claude Code)
+npx shadcn@latest add franklinjavier/uia/skill-agents   # → .agents/skills/uia/ (Codex and others)
 ```
 
 ### Rendering your own tools

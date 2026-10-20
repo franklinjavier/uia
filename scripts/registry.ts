@@ -314,6 +314,15 @@ const skill = {
   files: SKILL_FILES.map((f) => ({ path: `skills/uia/${f}`, type: "registry:file", target: `~/.claude/skills/uia/${f}` })),
 }
 
+// The same skill where Codex and other agents look (.agents/skills).
+const skillAgents = {
+  ...skill,
+  name: "skill-agents",
+  title: "uia skill (.agents)",
+  description: "The uia agent skill for Codex and agents that read .agents/skills.",
+  files: SKILL_FILES.map((f) => ({ path: `skills/uia/${f}`, type: "registry:file", target: `~/.agents/skills/uia/${f}` })),
+}
+
 /* ------------------------------ output ----------------------------- */
 
 const items = [
@@ -340,6 +349,7 @@ const items = [
   }),
   ...BUNDLES,
   skill,
+  skillAgents,
   {
     name: "uia",
     type: "registry:base",
@@ -350,7 +360,7 @@ const items = [
       "font-inter", "font-geist-mono", "theme", "typeset",
       ...UI_OVERRIDES.map(([n]) => n),
       "widget", "stat", "segmented", "status", "tick-meter", "meter-bar", "sparkline", "stage-track", "number-ticker", "agent-orb", "model-icons",
-      "hitl", "reasoning", "sources", "search-results", "markdown", "chat", "skill",
+      "hitl", "reasoning", "sources", "search-results", "markdown", "chat", "skill", "skill-agents",
     ].map((n) => `${NS}/${n}`),
   },
 ]

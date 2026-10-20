@@ -76,6 +76,16 @@ to compose the existing pieces so the result looks like the designer built it.
   buttons, ⋮ menus or status footers that are only there to look complete.
   If it has no action or no information the person needs, leave it out;
   empty space is fine.
+- **Build what was asked.** A widget request gets a widget: no page header,
+  breadcrumb, tagline or hero copy around it. A page request gets a page
+  (`references/grammar.md` §8).
+- **No instructions on screen.** "Select a suite to filter", "Hover a GPU",
+  "Click a node to focus" are signs the affordance is weak; make it
+  discoverable instead (hover state, cursor, the visual reacting).
+- **Don't label the data as fake.** No "demo", "sample data", "no API
+  connected" pills or footers; mock data should look like real data.
+- **Colour only what needs a look.** In a list of deltas, regressions get a
+  tone; improvements stay muted. A column of green badges is noise.
 - **Adapting a reference or mockup:** keep its structure and behaviour, not
   its decoration. Its accent colour becomes `brand` (ink); its "needs you"
   moments become `attention`; repeated indicators (a dot *and* a badge for

@@ -1399,6 +1399,54 @@
       ]
     },
     {
+      "name": "skill-agents",
+      "type": "registry:file",
+      "title": "uia skill (.agents)",
+      "description": "The uia agent skill for Codex and agents that read .agents/skills.",
+      "files": [
+        {
+          "path": "skills/uia/SKILL.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/uia/SKILL.md"
+        },
+        {
+          "path": "skills/uia/references/tokens.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/uia/references/tokens.md"
+        },
+        {
+          "path": "skills/uia/references/components.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/uia/references/components.md"
+        },
+        {
+          "path": "skills/uia/references/hitl.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/uia/references/hitl.md"
+        },
+        {
+          "path": "skills/uia/references/chat.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/uia/references/chat.md"
+        },
+        {
+          "path": "skills/uia/references/pitfalls.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/uia/references/pitfalls.md"
+        },
+        {
+          "path": "skills/uia/references/examples.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/uia/references/examples.md"
+        },
+        {
+          "path": "skills/uia/references/grammar.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/uia/references/grammar.md"
+        }
+      ]
+    },
+    {
       "name": "uia",
       "type": "registry:base",
       "title": "uia",
@@ -1433,7 +1481,8 @@
         "franklinjavier/uia/search-results",
         "franklinjavier/uia/markdown",
         "franklinjavier/uia/chat",
-        "franklinjavier/uia/skill"
+        "franklinjavier/uia/skill",
+        "franklinjavier/uia/skill-agents"
       ]
     }
   ]
