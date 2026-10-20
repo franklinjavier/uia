@@ -232,7 +232,7 @@ function Comparison({ value, baseline }: { value: number; baseline: number }) {
   const lo = 0.6
   const at = (v: number) => `${((v - lo) / (1 - lo)) * 100}%`
   return (
-    <span className="relative h-1.5 w-full rounded-full bg-muted">
+    <span className="relative block h-1.5 w-full rounded-full bg-muted">
       <motion.span
         className="absolute inset-y-0 left-0 rounded-full"
         style={{ background: value < baseline ? "var(--destructive)" : "var(--chart-1)" }}

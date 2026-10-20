@@ -185,7 +185,7 @@ export function Bottega() {
                     <WidgetListRow key={p.id} className={LIVE_COLS}>
                       <span className="flex min-w-0 flex-col gap-0.5">
                         <span className="truncate">{p.name}</span>
-                        <span className="eyebrow truncate text-muted-foreground">
+                        <span className="eyebrow text-muted-foreground">
                           {p.live!.version} · {p.live!.deployed}
                         </span>
                       </span>
