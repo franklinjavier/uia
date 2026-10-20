@@ -99,6 +99,8 @@ const ITEMS: Item[] = [
     registryDependencies: [`${NS}/typeset`],
   },
 
+  item("theme-provider", "registry:component", "Light/dark/system theme with a `useTheme` hook (class on <html>, saved in localStorage).", ["src/components/theme-provider.tsx"]),
+
   // chat kit
   item("agent-chat", "registry:hook", "useAgentChat, the tool registry types and pure transcript reads.", [
     "src/components/chat/use-agent-chat.ts",
@@ -125,6 +127,13 @@ const ITEMS: Item[] = [
     "src/examples/bottega/use-bottega.ts",
     "src/examples/bottega/data.ts",
   ]),
+  item("example-davinci", "registry:block", "Example app: an agent coordinator as an inbox — decisions grouped by urgency (the urgent one glows), threads per project, projects by stage that scale to dozens of tasks, a log of what was decided for you, rules with switches; each view a route. Plus the one-chat version it replaced.", [
+    "src/examples/davinci2/davinci2.tsx",
+    "src/examples/davinci2/data.ts",
+    "src/examples/davinci/davinci.tsx",
+    "src/examples/davinci/cards.tsx",
+    "src/examples/davinci/data.ts",
+  ]),
   item("example-assistant", "registry:block", "Example: a scripted agent chat with questions, a draft and an approval.", [
     "src/examples/assistant/assistant.tsx",
     "src/examples/assistant/scripts.ts",
@@ -141,7 +150,7 @@ const BUNDLES = [
     "action-card", "ask-user", "confirmation", "draft-card", "preview-approval", "decision-chip", "part-transition", "tool-line",
   ]),
   bundle("examples", "Every reference widget, to read, run and adapt.", [
-    "example-assistant", "example-model-router", "example-agent-runtime", "example-ai-spend", "example-fleet-health", "example-model-evals", "example-bottega",
+    "example-assistant", "example-model-router", "example-agent-runtime", "example-ai-spend", "example-fleet-health", "example-model-evals", "example-bottega", "example-davinci",
   ]),
 ]
 

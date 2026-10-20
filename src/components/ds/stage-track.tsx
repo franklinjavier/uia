@@ -5,9 +5,10 @@ import { cn } from "@/lib/utils"
 import { springSoft } from "@/lib/motion"
 
 // StageTrack: where something is in a fixed sequence of stages, on one line.
-// Dots joined by hairlines; each dot says its stage's state. Put the stage
-// names once, in a header that uses the same grid (`stageTrackGrid`), not
-// under every track.
+// Dots joined by hairlines; each dot says its stage's state. In a list, put
+// the stage names once, in a header that uses the same grid
+// (`stageTrackGrid`), not under every track. A track that stands alone
+// (a detail panel) names its own stages with `labeled`.
 //
 //   done     filled ink              the stage is behind us
 //   active   ink ring, half filled   work is happening here
@@ -41,14 +42,25 @@ function stageTrackGrid(n: number) {
 function StageTrack({
   stages,
   statusLabels,
+  labeled = false,
   className,
   ...props
 }: Omit<React.ComponentProps<"ol">, "children"> & {
   stages: { label: string; status: StageStatus }[]
   /** Screen-reader words for each state, in the product's language. */
   statusLabels?: Partial<Record<StageStatus, string>>
+  /** Stage names under the dots, for a track that stands alone. */
+  labeled?: boolean
 }) {
   const words = { ...LABELS, ...statusLabels }
+  if (labeled) {
+    return (
+      <div data-slot="stage-track-labeled" className={cn("flex flex-col gap-1.5", className)}>
+        <StageTrack stages={stages} statusLabels={statusLabels} {...props} />
+        <StageTrackLabels stages={stages} />
+      </div>
+    )
+  }
   return (
     <ol
       data-slot="stage-track"
@@ -86,4 +98,36 @@ function StageTrack({
   )
 }
 
-export { StageTrack, stageTrackGrid, type StageStatus }
+/**
+ * The stage names on the track's grid: a list header, or under a lone
+ * track. The stage you're at (not done, not to do) reads in ink.
+ */
+function StageTrackLabels({
+  stages,
+  className,
+}: {
+  /** `count`: how many items sit at that stage, for a header over many tracks. */
+  stages: { label: string; status?: StageStatus; count?: number }[]
+  className?: string
+}) {
+  return (
+    <div aria-hidden className={cn("grid", className)} style={stageTrackGrid(stages.length)}>
+      {stages.map((s) => (
+        <span
+          key={s.label}
+          className={cn(
+            "flex min-w-0 flex-col text-xs",
+            s.status && s.status !== "done" && s.status !== "todo" ? "text-foreground" : "text-muted-foreground"
+          )}
+        >
+          <span className="truncate">{s.label}</span>
+          {s.count !== undefined && (
+            <span className={cn("text-sm tabular-nums", s.count ? "text-foreground" : "text-faint-foreground")}>{s.count}</span>
+          )}
+        </span>
+      ))}
+    </div>
+  )
+}
+
+export { StageTrack, StageTrackLabels, stageTrackGrid, type StageStatus }

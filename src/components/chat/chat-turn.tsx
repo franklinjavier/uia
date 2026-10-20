@@ -1,7 +1,9 @@
 import * as React from "react"
 import { getToolName, isToolUIPart, type UIMessage } from "ai"
+import { motion } from "motion/react"
 
 import { cn } from "@/lib/utils"
+import { enter } from "@/lib/motion"
 import { getMessageText } from "@/lib/ai"
 import { Bubble, BubbleContent } from "@/components/ui/bubble"
 import { Message, MessageAvatar, MessageContent } from "@/components/ui/message"
@@ -12,6 +14,7 @@ import { SourcesGrid } from "@/components/parts/sources"
 import { ToolLine } from "@/components/parts/tool-line"
 import { AgentOrb, type AgentPhase } from "@/components/ds/agent-orb"
 import { TurnActions } from "@/components/chat/turn-actions"
+import { useTurnEnters } from "@/components/chat/chat-thread"
 import type { ToolContext, ToolRegistry } from "@/components/chat/tool-registry"
 
 // Turns of a conversation.
@@ -29,19 +32,37 @@ export type ToolHandlers = {
   onApproval?: (approvalId: string, approved: boolean) => void
 }
 
+const MotionMessage = motion.create(Message)
+
+// Entrances. What you send lands with a short fade, a lift and a blur
+// clearing; the answer follows a beat later, so the two read as a call and
+// a response instead of one block appearing.
+const sent = { opacity: 0, y: 8, filter: "blur(2px)" }
+const answer = { opacity: 0, y: 4 }
+const settled = { opacity: 1, y: 0, filter: "blur(0px)" }
+
 function UserTurn({
   message,
   className,
   ...props
 }: React.ComponentProps<typeof Message> & { message: UIMessage }) {
+  const enters = useTurnEnters()
   return (
-    <Message data-slot="user-turn" align="end" className={className} {...props}>
+    <MotionMessage
+      data-slot="user-turn"
+      align="end"
+      initial={enters ? sent : false}
+      animate={settled}
+      transition={enter}
+      className={className}
+      {...(props as React.ComponentProps<typeof MotionMessage>)}
+    >
       <MessageContent>
         <Bubble align="end" variant="muted">
           <BubbleContent>{getMessageText(message)}</BubbleContent>
         </Bubble>
       </MessageContent>
-    </Message>
+    </MotionMessage>
   )
 }
 
@@ -132,8 +153,17 @@ function AssistantTurn({
   const text = getMessageText(message)
   const showActions = !streaming && !pending && text && actions !== false
 
+  const enters = useTurnEnters()
+
   return (
-    <Message data-slot="assistant-turn" className={cn("gap-3", className)} {...props}>
+    <MotionMessage
+      data-slot="assistant-turn"
+      initial={enters ? answer : false}
+      animate={settled}
+      transition={{ ...enter, delay: 0.12 }}
+      className={cn("gap-3", className)}
+      {...(props as React.ComponentProps<typeof MotionMessage>)}
+    >
       {/* Phones: no avatar; the conversation header's orb carries presence and
           the text gets the full width. */}
       <MessageAvatar className="mt-0.5 size-5 min-w-0 self-start overflow-visible rounded-none bg-transparent group-has-data-[slot=message-footer]/message:translate-y-0 max-sm:hidden">
@@ -149,7 +179,7 @@ function AssistantTurn({
         />
         {showActions && (actions ?? <TurnActions text={text} />)}
       </MessageContent>
-    </Message>
+    </MotionMessage>
   )
 }
 

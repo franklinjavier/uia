@@ -174,3 +174,68 @@ export const STATE: ProjectState[] = [
 ]
 
 export const STAGES = ["Plan", "Build", "Gates", "Review", "Next", "Main"] as const
+
+/* --------------------------- busy factory ---------------------------- */
+
+// The same factory under load: dozens of tasks in flight at once. A
+// simulation behind the side-nav switch (or `?busy`), to see the screens
+// hold up. The inbox doesn't grow with it: davinci's job is to keep what
+// reaches you to a handful, however much is running.
+
+type Extra = [key: string, title: string, family: ModelFamily, at: number, status: StageStatus, now: string]
+
+function extra([key, title, family, at, status, now]: Extra): ProjectState["tasks"][number] {
+  return {
+    key,
+    title,
+    family,
+    now,
+    stages: STAGES.map((_, i) => (i < at ? "done" : i === at ? status : "todo")),
+  }
+}
+
+const BLOG_EXTRA: Extra[] = [
+  ["BLOG-7", "Dark mode for code blocks", "claude", 1, "active", "Building · 2 of 4"],
+  ["BLOG-8", "Sitemap with lastmod", "openai", 2, "active", "Running gates"],
+  ["BLOG-9", "Draft posts behind a flag", "claude", 0, "active", "Planning"],
+  ["BLOG-10", "Image sizes in the build", "openai", 3, "active", "In review · claude"],
+  ["BLOG-11", "Search over post titles", "claude", 0, "todo", "Queued"],
+  ["BLOG-12", "Footer links from config", "openai", 4, "active", "On next · 20 quiet min"],
+]
+
+const BOTTEGA_EXTRA: Extra[] = [
+  ["T-414", "Event door: retries", "claude", 1, "active", "Building · 3 of 6"],
+  ["T-415", "Event door: replay endpoint", "openai", 0, "active", "Planning"],
+  ["T-420", "Lane caps per family", "claude", 2, "failed", "Gates failed · retrying"],
+  ["T-421", "Digest: group by project", "openai", 3, "active", "In review · claude"],
+  ["T-422", "Quota forecast to Monday", "claude", 1, "active", "Building · 1 of 3"],
+  ["T-423", "Melzi: lost-session alarm", "openai", 2, "active", "Running gates"],
+  ["T-424", "Spec diff in the plan step", "claude", 0, "active", "Planning"],
+  ["T-425", "Review bounce reasons", "openai", 4, "active", "On next · 12 quiet min"],
+  ["T-426", "Cost per delivered task", "claude", 3, "active", "In review · codex"],
+  ["T-427", "Flaky e2e quarantine", "openai", 1, "active", "Building · 5 of 8"],
+  ["T-428", "Merge queue metrics", "claude", 2, "active", "Running gates"],
+  ["T-429", "Night run summary", "openai", 0, "todo", "Queued"],
+  ["T-430", "Risk class from the diff", "claude", 1, "active", "Building · 2 of 5"],
+  ["T-431", "Operator handoff notes", "openai", 4, "active", "On next · 4 quiet min"],
+  ["T-432", "Per-project gates", "claude", 0, "todo", "Queued"],
+  ["T-433", "Webhook signatures", "openai", 2, "active", "Running gates"],
+  ["T-434", "Task search in the CLI", "claude", 3, "active", "In review · codex"],
+  ["T-435", "Rebase before integrate", "openai", 1, "active", "Building · 4 of 4"],
+  ["T-436", "Stale branch sweeper", "claude", 0, "todo", "Queued"],
+  ["T-437", "Plan size estimates", "openai", 5, "active", "Promoting to main"],
+  ["T-438", "Spend alerts by family", "claude", 1, "active", "Building · 1 of 2"],
+  ["T-439", "Gate timings in the log", "openai", 2, "active", "Running gates"],
+]
+
+export const BUSY_STATE: ProjectState[] = STATE.map((p) => ({
+  ...p,
+  live: p.id === "blog" ? p.live : "main 112 deliveries today",
+  tasks: [...p.tasks, ...(p.id === "blog" ? BLOG_EXTRA : BOTTEGA_EXTRA).map(extra)],
+}))
+
+/** "Since 21:00" for each load. */
+export const SINCE = {
+  calm: { shipped: 7, stuck: 1 },
+  busy: { shipped: 64, stuck: 2 },
+}

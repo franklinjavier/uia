@@ -894,6 +894,23 @@
       ]
     },
     {
+      "name": "theme-provider",
+      "type": "registry:component",
+      "title": "Theme Provider",
+      "description": "Light/dark/system theme with a `useTheme` hook (class on <html>, saved in localStorage).",
+      "author": "uia",
+      "registryDependencies": [
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "@components/theme-provider.tsx"
+        }
+      ]
+    },
+    {
       "name": "agent-chat",
       "type": "registry:hook",
       "title": "Agent Chat",
@@ -952,14 +969,17 @@
       "description": "UserTurn, AssistantTurn, ChatParts; tools render via the registry.",
       "author": "uia",
       "dependencies": [
-        "ai"
+        "ai",
+        "motion"
       ],
       "registryDependencies": [
         "franklinjavier/uia/agent-chat",
         "franklinjavier/uia/agent-orb",
         "franklinjavier/uia/ai",
         "franklinjavier/uia/bubble",
+        "franklinjavier/uia/chat-thread",
         "franklinjavier/uia/markdown",
+        "franklinjavier/uia/motion",
         "franklinjavier/uia/reasoning",
         "franklinjavier/uia/sources",
         "franklinjavier/uia/theme",
@@ -1260,6 +1280,70 @@
       ]
     },
     {
+      "name": "example-davinci",
+      "type": "registry:block",
+      "title": "Example Davinci",
+      "description": "Example app: an agent coordinator as an inbox — decisions grouped by urgency (the urgent one glows), threads per project, projects by stage that scale to dozens of tasks, a log of what was decided for you, rules with switches; each view a route. Plus the one-chat version it replaced.",
+      "author": "uia",
+      "dependencies": [
+        "ai",
+        "lucide-react",
+        "motion"
+      ],
+      "registryDependencies": [
+        "collapsible",
+        "franklinjavier/uia/action-card",
+        "franklinjavier/uia/agent-chat",
+        "franklinjavier/uia/agent-orb",
+        "franklinjavier/uia/button",
+        "franklinjavier/uia/chat-thread",
+        "franklinjavier/uia/chat-turn",
+        "franklinjavier/uia/composer",
+        "franklinjavier/uia/confirmation",
+        "franklinjavier/uia/decision-chip",
+        "franklinjavier/uia/meter-bar",
+        "franklinjavier/uia/model-icons",
+        "franklinjavier/uia/motion",
+        "franklinjavier/uia/part-transition",
+        "franklinjavier/uia/preview-approval",
+        "franklinjavier/uia/select",
+        "franklinjavier/uia/sparkline",
+        "franklinjavier/uia/stage-track",
+        "franklinjavier/uia/status",
+        "franklinjavier/uia/theme",
+        "franklinjavier/uia/theme-provider",
+        "franklinjavier/uia/widget",
+        "switch"
+      ],
+      "files": [
+        {
+          "path": "src/examples/davinci2/davinci2.tsx",
+          "type": "registry:file",
+          "target": "~/src/examples/davinci2/davinci2.tsx"
+        },
+        {
+          "path": "src/examples/davinci2/data.ts",
+          "type": "registry:file",
+          "target": "~/src/examples/davinci2/data.ts"
+        },
+        {
+          "path": "src/examples/davinci/davinci.tsx",
+          "type": "registry:file",
+          "target": "~/src/examples/davinci/davinci.tsx"
+        },
+        {
+          "path": "src/examples/davinci/cards.tsx",
+          "type": "registry:file",
+          "target": "~/src/examples/davinci/cards.tsx"
+        },
+        {
+          "path": "src/examples/davinci/data.ts",
+          "type": "registry:file",
+          "target": "~/src/examples/davinci/data.ts"
+        }
+      ]
+    },
+    {
       "name": "example-assistant",
       "type": "registry:block",
       "title": "Example Assistant",
@@ -1353,7 +1437,8 @@
         "franklinjavier/uia/example-ai-spend",
         "franklinjavier/uia/example-fleet-health",
         "franklinjavier/uia/example-model-evals",
-        "franklinjavier/uia/example-bottega"
+        "franklinjavier/uia/example-bottega",
+        "franklinjavier/uia/example-davinci"
       ]
     },
     {

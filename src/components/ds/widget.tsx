@@ -136,6 +136,8 @@ function WidgetListHeader({ className, ...props }: React.ComponentProps<"div">) 
 }
 
 /** A row. Renders a button when it has `onClick`, a plain row otherwise. */
+// The separator is a straight hairline drawn inside the row's padding, not
+// a border: a border on a rounded row curls up at both ends.
 function WidgetListRow({
   selected = false,
   dimmed = false,
@@ -153,7 +155,7 @@ function WidgetListRow({
       data-selected={selected || undefined}
       data-dimmed={dimmed || undefined}
       className={cn(
-        "grid items-center gap-x-3 rounded-lg border-t border-border/70 px-2 py-2.5 text-left text-sm outline-none transition-[opacity,background-color] duration-200 first:border-t-0 hover:bg-muted/70 focus-visible:ring-3 focus-visible:ring-ring/30 data-dimmed:opacity-45 data-selected:bg-muted",
+        "relative grid items-center gap-x-3 rounded-lg px-2 py-2.5 text-left text-sm outline-none transition-[opacity,background-color] duration-200 before:pointer-events-none before:absolute before:inset-x-2 before:top-0 before:h-px before:bg-border/70 first:before:hidden hover:bg-muted/70 focus-visible:ring-3 focus-visible:ring-ring/30 data-dimmed:opacity-45 data-selected:bg-muted",
         className
       )}
       {...props}

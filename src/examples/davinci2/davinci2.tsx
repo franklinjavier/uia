@@ -1,14 +1,15 @@
 import * as React from "react"
 import type { UIMessage } from "ai"
-import { AnimatePresence, motion } from "motion/react"
+import { AnimatePresence, motion, type TargetAndTransition } from "motion/react"
 import {
   CheckIcon,
   HistoryIcon,
   InboxIcon,
   LayersIcon,
-  MessageCircleIcon,
+  MoonIcon,
   RotateCcwIcon,
   ScaleIcon,
+  SunIcon,
   Undo2Icon,
   XIcon,
 } from "lucide-react"
@@ -16,6 +17,7 @@ import {
 import { cn } from "@/lib/utils"
 import { enter } from "@/lib/motion"
 import { Button } from "@/components/ui/button"
+import { useTheme } from "@/components/theme-provider"
 import { Switch } from "@/components/ui/switch"
 import {
   Select,
@@ -26,10 +28,11 @@ import {
 } from "@/components/ui/select"
 import { AgentOrb } from "@/components/ds/agent-orb"
 import { ModelIcon } from "@/components/ds/model-icons"
-import { StageTrack, stageTrackGrid } from "@/components/ds/stage-track"
+import { StageTrack, StageTrackLabels } from "@/components/ds/stage-track"
 import { StatusBadge, StatusDot } from "@/components/ds/status"
 import {
   Widget,
+  WidgetFooter,
   WidgetHeader,
   WidgetList,
   WidgetListRow,
@@ -48,19 +51,27 @@ import {
 import { PartTransition } from "@/components/parts/part-transition"
 import { ChatThread, ChatThreadItem } from "@/components/chat/chat-thread"
 import { ChatTurn } from "@/components/chat/chat-turn"
-import { Composer, ComposerInput, ComposerSubmit, ComposerToolbar } from "@/components/chat/composer"
+import {
+  Composer,
+  ComposerInput,
+  ComposerSubmit,
+  ComposerToolbar,
+} from "@/components/chat/composer"
 import type { ToolRegistry } from "@/components/chat/tool-registry"
 import { DiffCard, EvidenceCard, QuotaCard } from "@/examples/davinci/cards"
 import { RISKY_DIFF, type Project } from "@/examples/davinci/data"
 import { BlogPreview } from "@/examples/davinci/davinci"
 import {
   DECIDED,
+  BUSY_STATE,
   QUEUE,
   RULES,
   STAGES,
+  SINCE,
   STATE,
   type Decided,
   type QueueItem,
+  type ProjectState,
   type Rule,
   type Urgency,
 } from "@/examples/davinci2/data"
@@ -75,39 +86,74 @@ import {
 //   Rules     decisions that became policy.
 // Deep dives open in a side panel (a sheet on phones), not inline.
 
-export type View = "inbox" | `thread:${Project}` | "projects" | "decided" | "rules"
-type Panel = { kind: "diff" } | { kind: "preview" } | { kind: "task"; key: string } | null
+export type View =
+  "inbox" | `thread:${Project}` | "projects" | "decided" | "rules"
+type Panel =
+  { kind: "diff" } | { kind: "preview" } | { kind: "task"; key: string } | null
 type Answer = { label: string; by: "you" | "rule"; pick: boolean; at: string }
 
-const URGENCY: Record<Urgency, string> = { now: "Now", today: "Today", later: "Can wait" }
+const URGENCY: Record<Urgency, string> = {
+  now: "Now",
+  today: "Today",
+  later: "Can wait",
+}
 
 let seq = 0
 const mid = () => `v2-${++seq}`
-const say = (role: "user" | "assistant", text: string): UIMessage => ({ id: mid(), role, parts: [{ type: "text", text }] })
+const say = (role: "user" | "assistant", text: string): UIMessage => ({
+  id: mid(),
+  role,
+  parts: [{ type: "text", text }],
+})
 /** A message that points at an inbox item; the thread shows its live status. */
 const refTo = (text: string, ...ids: string[]): UIMessage => ({
   id: mid(),
   role: "assistant",
   parts: [
     { type: "text", text },
-    ...ids.map((id) => ({ type: "tool-ref", toolCallId: id, state: "input-available", input: {} }) as UIMessage["parts"][number]),
+    ...ids.map(
+      (id) =>
+        ({
+          type: "tool-ref",
+          toolCallId: id,
+          state: "input-available",
+          input: {},
+        }) as UIMessage["parts"][number]
+    ),
   ],
 })
 const tool = (text: string, name: string): UIMessage => ({
   id: mid(),
   role: "assistant",
-  parts: [{ type: "text", text }, { type: `tool-${name}`, toolCallId: name, state: "input-available", input: {} } as UIMessage["parts"][number]],
+  parts: [
+    { type: "text", text },
+    {
+      type: `tool-${name}`,
+      toolCallId: name,
+      state: "input-available",
+      input: {},
+    } as UIMessage["parts"][number],
+  ],
 })
 
 const THREADS: Record<Project, UIMessage[]> = {
   blog: [
     say("user", "Add an Open Source section, sorted by stars"),
-    refTo("Done as **BLOG-5**: built, gates and review passed. It changed a screen, so it needs your eye.", "q-preview"),
-    refTo("Production check failed after v12: the RSS page returns 500. Bisect points at **3f2a1c** (BLOG-4).", "q-incident"),
+    refTo(
+      "Done as **BLOG-5**: built, gates and review passed. It changed a screen, so it needs your eye.",
+      "q-preview"
+    ),
+    refTo(
+      "Production check failed after v12: the RSS page returns 500. Bisect points at **3f2a1c** (BLOG-4).",
+      "q-incident"
+    ),
   ],
   bottega: [
     say("user", "Why was the factory idle last night?"),
-    tool("The chat watcher lost its session at 22:30; four tasks waited on an unanswered question until Melzi's redelivery at 03:40. **The event door (T-413) closes this**, it's building now.", "evidence"),
+    tool(
+      "The chat watcher lost its session at 22:30; four tasks waited on an unanswered question until Melzi's redelivery at 03:40. **The event door (T-413) closes this**, it's building now.",
+      "evidence"
+    ),
   ],
 }
 
@@ -115,6 +161,47 @@ const THREADS: Record<Project, UIMessage[]> = {
  * Pass `view` and `onViewChange` to drive the view from your router (each
  * view its own route); leave them out and it keeps the view itself.
  */
+// A thread is a conversation with davinci: its still orb, the same one a
+// past message carries, stands for it.
+// A thread is a conversation with davinci: its still orb, the same one a
+// past message carries, stands for it. Hovering the entry wakes it.
+function ThreadIcon({ live = false }: { live?: boolean }) {
+  return (
+    <span className="flex size-4 items-center justify-center">
+      <AgentOrb active={live} className="scale-90 opacity-100" />
+    </span>
+  )
+}
+
+// Hover nudges for the side nav, one small gesture per icon that says what
+// the place is: the inbox takes something in, projects stack up, the log
+// rewinds, rules weigh. Played once per hover, never looping.
+const NUDGE = {
+  drop: { y: [0, 2, 0] },
+  lift: { y: [0, -2, 0], scale: [1, 1.06, 1] },
+  rewind: { rotate: [0, -40, 0] },
+  weigh: { rotate: [0, -10, 7, 0] },
+} satisfies Record<string, TargetAndTransition>
+
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme()
+  const dark =
+    theme === "dark" ||
+    (theme === "system" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches)
+  return (
+    <Button
+      size="icon-sm"
+      variant="ghost"
+      className="text-muted-foreground"
+      aria-label={dark ? "Light theme" : "Dark theme"}
+      onClick={() => setTheme(dark ? "light" : "dark")}
+    >
+      {dark ? <SunIcon /> : <MoonIcon />}
+    </Button>
+  )
+}
+
 export function DavinciInbox({
   view: viewProp,
   onViewChange,
@@ -123,17 +210,37 @@ export function DavinciInbox({
   onViewChange?: (view: View) => void
 }) {
   const [ownView, setOwnView] = React.useState<View>("inbox")
+  // Simulation: the factory under load. Lives in the URL (`?busy`) so a
+  // reload, or a phone without the side nav, keeps it.
+  const [busy, setBusyState] = React.useState(() =>
+    new URLSearchParams(window.location.search).has("busy")
+  )
+  const setBusy = (on: boolean) => {
+    const url = new URL(window.location.href)
+    if (on) url.searchParams.set("busy", "")
+    else url.searchParams.delete("busy")
+    url.search = url.search.replace(/=(?=&|$)/g, "")
+    window.history.replaceState(null, "", url)
+    setBusyState(on)
+  }
+  const factory = busy ? BUSY_STATE : STATE
+  const [hovered, setHovered] = React.useState<View | null>(null)
   const view = viewProp ?? ownView
   const setView = (v: View) => (onViewChange ? onViewChange(v) : setOwnView(v))
   const [panel, setPanel] = React.useState<Panel>(null)
   const [answers, setAnswers] = React.useState<Record<string, Answer>>({})
   const [rules, setRules] = React.useState<(Rule & { off?: boolean })[]>(RULES)
-  const [decided, setDecided] = React.useState<(Decided & { undone?: boolean })[]>(DECIDED)
+  const [decided, setDecided] =
+    React.useState<(Decided & { undone?: boolean })[]>(DECIDED)
   const [threads, setThreads] = React.useState(THREADS)
   const [typing, setTyping] = React.useState(false)
 
   const open = QUEUE.filter((q) => !answers[q.id])
-  const now = () => new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })
+  const now = () =>
+    new Date().toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+    })
 
   function answer(q: QueueItem, label: string, pick: boolean) {
     setAnswers((a) => ({ ...a, [q.id]: { label, by: "you", pick, at: now() } }))
@@ -142,10 +249,34 @@ export function DavinciInbox({
 
   function makeRule(q: QueueItem) {
     const option = q.options?.find((o) => o.id === q.pick)
-    const rule: Rule = { id: `r-${q.id}`, category: q.category, text: `${q.category}: ${option?.label.toLowerCase() ?? "take davinci's pick"} when the plan is under 40 lines`, applied: 1 }
+    const rule: Rule = {
+      id: `r-${q.id}`,
+      category: q.category,
+      text: `${q.category}: ${option?.label.toLowerCase() ?? "take davinci's pick"} when the plan is under 40 lines`,
+      applied: 1,
+    }
     setRules((r) => [rule, ...r])
-    setAnswers((a) => ({ ...a, [q.id]: { label: option?.label ?? "davinci's pick", by: "rule", pick: true, at: now() } }))
-    setDecided((d) => [{ id: `d-${q.id}`, time: now(), project: q.project, what: `${option?.label ?? "Approved"}: ${q.title}`, why: "Your new rule", rule: rule.id, reversible: true }, ...d])
+    setAnswers((a) => ({
+      ...a,
+      [q.id]: {
+        label: option?.label ?? "davinci's pick",
+        by: "rule",
+        pick: true,
+        at: now(),
+      },
+    }))
+    setDecided((d) => [
+      {
+        id: `d-${q.id}`,
+        time: now(),
+        project: q.project,
+        what: `${option?.label ?? "Approved"}: ${q.title}`,
+        why: "Your new rule",
+        rule: rule.id,
+        reversible: true,
+      },
+      ...d,
+    ])
   }
 
   // An answer stays undoable from the inbox; one made by a new rule takes
@@ -169,19 +300,51 @@ export function DavinciInbox({
     window.setTimeout(() => {
       setTyping(false)
       const reply = /quota/i.test(text)
-        ? tool("Codex is fine. **Claude is tight**: 94% by Monday 09:00. Reviews already go to Codex (rule).", "quota")
-        : say("assistant", "Noted. It becomes a task here; it reaches your inbox only if it needs a decision.")
+        ? tool(
+            "Codex is fine. **Claude is tight**: 94% by Monday 09:00. Reviews already go to Codex (rule).",
+            "quota"
+          )
+        : say(
+            "assistant",
+            "Noted. It becomes a task here; it reaches your inbox only if it needs a decision."
+          )
       setThreads((t) => ({ ...t, [project]: [...t[project], reply] }))
     }, 800)
   }
 
-  const nav: { id: View; label: string; icon: React.ReactNode; count?: number; attention?: boolean }[] = [
-    { id: "inbox", label: "Inbox", icon: <InboxIcon />, count: open.length, attention: open.length > 0 },
-    { id: "thread:blog", label: "blog", icon: <MessageCircleIcon /> },
-    { id: "thread:bottega", label: "bottega", icon: <MessageCircleIcon /> },
-    { id: "projects", label: "Projects", icon: <LayersIcon /> },
-    { id: "decided", label: "Decided for you", icon: <HistoryIcon />, count: decided.filter((d) => !d.undone).length },
-    { id: "rules", label: "Rules", icon: <ScaleIcon />, count: rules.filter((r) => !r.off).length },
+  const nav: {
+    id: View
+    label: string
+    icon: React.ReactNode
+    nudge?: keyof typeof NUDGE
+    count?: number
+    attention?: boolean
+  }[] = [
+    {
+      id: "inbox",
+      label: "Inbox",
+      icon: <InboxIcon />,
+      nudge: "drop",
+      count: open.length,
+      attention: open.length > 0,
+    },
+    { id: "thread:blog", label: "blog", icon: <ThreadIcon live={hovered === "thread:blog"} /> },
+    { id: "thread:bottega", label: "bottega", icon: <ThreadIcon live={hovered === "thread:bottega"} /> },
+    { id: "projects", label: "Projects", icon: <LayersIcon />, nudge: "lift" },
+    {
+      id: "decided",
+      label: "Decided for you",
+      icon: <HistoryIcon />,
+      nudge: "rewind",
+      count: decided.filter((d) => !d.undone).length,
+    },
+    {
+      id: "rules",
+      label: "Rules",
+      icon: <ScaleIcon />,
+      nudge: "weigh",
+      count: rules.filter((r) => !r.off).length,
+    },
   ]
   const label = (v: View) => nav.find((n) => n.id === v)!.label
 
@@ -203,33 +366,71 @@ export function DavinciInbox({
           }}
           className="flex h-11 items-center gap-2.5 rounded-xl px-2 outline-none focus-visible:ring-3 focus-visible:ring-ring/30"
         >
-          <AgentOrb phase={typing ? "composing" : open.length ? "waiting" : "idle"} active={typing || open.length > 0} />
+          <AgentOrb
+            phase={typing ? "composing" : open.length ? "waiting" : "idle"}
+            active={typing || open.length > 0}
+          />
           <span className="text-[15px]">davinci</span>
         </button>
         {nav.map((n, i) => (
           <React.Fragment key={n.id}>
-            {(i === 1 || i === 3) && <div className="eyebrow mt-3 px-2 pb-1 text-faint-foreground">{i === 1 ? "Threads" : "Look"}</div>}
-            <button
+            {(i === 1 || i === 3) && (
+              <div className="mt-3 px-2 pb-1 eyebrow text-faint-foreground">
+                {i === 1 ? "Threads" : "Look"}
+              </div>
+            )}
+            <motion.button
               type="button"
               onClick={() => {
                 setView(n.id)
                 setPanel(null)
               }}
+              initial="rest"
+              animate="rest"
+              whileHover="hover"
+              onHoverStart={() => setHovered(n.id)}
+              onHoverEnd={() => setHovered(null)}
               aria-current={view === n.id}
               className={cn(
-                "flex h-9 items-center gap-2.5 rounded-xl px-2 text-sm text-muted-foreground outline-none transition-colors hover:bg-muted/60 hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/30 [&_svg]:size-4",
+                "flex h-9 items-center gap-2.5 rounded-xl px-2 text-sm text-muted-foreground transition-colors outline-none hover:bg-muted/60 hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/30",
                 view === n.id && "bg-muted text-foreground"
               )}
             >
-              {n.icon}
+              <motion.span
+                variants={{ rest: { y: 0, scale: 1, rotate: 0 }, hover: n.nudge ? NUDGE[n.nudge] : {} }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                className="flex size-4 items-center justify-center [&>svg]:size-4"
+              >
+                {n.icon}
+              </motion.span>
               {n.label}
               {n.count !== undefined && (
-                <span className={cn("eyebrow ml-auto tabular-nums", n.attention ? "text-attention" : "text-faint-foreground")}>{n.count}</span>
+                <span
+                  className={cn(
+                    "ml-auto eyebrow tabular-nums",
+                    n.attention ? "text-attention" : "text-faint-foreground"
+                  )}
+                >
+                  {n.count}
+                </span>
               )}
-            </button>
+            </motion.button>
           </React.Fragment>
         ))}
-        <div className="eyebrow mt-auto px-2 text-faint-foreground">Next digest 21:00</div>
+        {/* Not part of the product: a switch to see the screens under load. */}
+        <label className="mt-auto flex cursor-pointer items-center justify-between gap-2 rounded-xl border border-dashed border-border px-2 py-2">
+          <span className="flex flex-col">
+            <span className="text-xs">Busy factory</span>
+            <span className="eyebrow text-faint-foreground">Simulation</span>
+          </span>
+          <Switch size="sm" checked={busy} onCheckedChange={setBusy} />
+        </label>
+        <div className="mt-2 flex items-center justify-between gap-2 pl-2">
+          <span className="eyebrow text-faint-foreground">
+            Next digest 21:00
+          </span>
+          <ThemeToggle />
+        </div>
       </nav>
 
       <main className="flex min-h-0 flex-col">
@@ -244,7 +445,10 @@ export function DavinciInbox({
             }}
             className="rounded-full outline-none focus-visible:ring-3 focus-visible:ring-ring/30"
           >
-            <AgentOrb phase={open.length ? "waiting" : "idle"} active={open.length > 0} />
+            <AgentOrb
+              phase={open.length ? "waiting" : "idle"}
+              active={open.length > 0}
+            />
           </button>
           <Select
             value={view}
@@ -266,6 +470,7 @@ export function DavinciInbox({
               ))}
             </SelectContent>
           </Select>
+          <ThemeToggle />
         </header>
 
         {view === "inbox" && (
@@ -279,6 +484,7 @@ export function DavinciInbox({
             decidedCount={decided.filter((d) => !d.undone).length}
             onDecided={() => setView("decided")}
             onProjects={() => setView("projects")}
+            since={SINCE[busy ? "busy" : "calm"]}
           />
         )}
         {view.startsWith("thread:") && (
@@ -291,11 +497,33 @@ export function DavinciInbox({
             onInbox={() => setView("inbox")}
           />
         )}
-        {view === "projects" && <Projects onTask={(key) => setPanel({ kind: "task", key })} />}
-        {view === "decided" && (
-          <DecidedLog items={decided} rules={rules} onUndo={(id) => setDecided((d) => d.map((x) => (x.id === id ? { ...x, undone: true } : x)))} />
+        {view === "projects" && (
+          <Projects
+            state={factory}
+            onTask={(key) => setPanel({ kind: "task", key })}
+          />
         )}
-        {view === "rules" && <Rules items={rules} onToggle={(id) => setRules((r) => r.map((x) => (x.id === id ? { ...x, off: !x.off } : x)))} />}
+        {view === "decided" && (
+          <DecidedLog
+            items={decided}
+            rules={rules}
+            onUndo={(id) =>
+              setDecided((d) =>
+                d.map((x) => (x.id === id ? { ...x, undone: true } : x))
+              )
+            }
+          />
+        )}
+        {view === "rules" && (
+          <Rules
+            items={rules}
+            onToggle={(id) =>
+              setRules((r) =>
+                r.map((x) => (x.id === id ? { ...x, off: !x.off } : x))
+              )
+            }
+          />
+        )}
       </main>
 
       {/* Deep dives: a side panel on wide screens, a sheet on phones. */}
@@ -311,9 +539,19 @@ export function DavinciInbox({
           >
             <div className="flex h-14 shrink-0 items-center gap-2 border-b border-border/70 px-4">
               <span className="text-[15px]">
-                {panel.kind === "diff" ? `${RISKY_DIFF.key} · diff` : panel.kind === "preview" ? "BLOG-5 · before / after" : panel.key}
+                {panel.kind === "diff"
+                  ? `${RISKY_DIFF.key} · diff`
+                  : panel.kind === "preview"
+                    ? "BLOG-5 · before / after"
+                    : panel.key}
               </span>
-              <Button variant="ghost" size="icon-sm" aria-label="Close" className="ml-auto text-muted-foreground" onClick={() => setPanel(null)}>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label="Close"
+                className="ml-auto text-muted-foreground"
+                onClick={() => setPanel(null)}
+              >
                 <XIcon />
               </Button>
             </div>
@@ -321,15 +559,29 @@ export function DavinciInbox({
               {panel.kind === "diff" && (
                 <DiffCard
                   diff={RISKY_DIFF}
-                  state={answers["q-diff"] ? (answers["q-diff"].label === "Approve" ? "approved" : "returned") : "open"}
-                  onDecide={(ok) => answer(QUEUE.find((q) => q.id === "q-diff")!, ok ? "Approve" : "Return", ok)}
+                  state={
+                    answers["q-diff"]
+                      ? answers["q-diff"].label === "Approve"
+                        ? "approved"
+                        : "returned"
+                      : "open"
+                  }
+                  onDecide={(ok) =>
+                    answer(
+                      QUEUE.find((q) => q.id === "q-diff")!,
+                      ok ? "Approve" : "Return",
+                      ok
+                    )
+                  }
                 />
               )}
               {panel.kind === "preview" && (
                 <div className="flex flex-col gap-4">
                   {[false, true].map((after) => (
                     <figure key={String(after)} className="flex flex-col gap-2">
-                      <figcaption className="eyebrow text-muted-foreground">{after ? "After" : "Before"} · 400 and 1440 px</figcaption>
+                      <figcaption className="eyebrow text-muted-foreground">
+                        {after ? "After" : "Before"} · 400 and 1440 px
+                      </figcaption>
                       <div className="aspect-[16/10] overflow-hidden rounded-xl border border-border/70 bg-card">
                         <BlogPreview after={after} />
                       </div>
@@ -337,7 +589,9 @@ export function DavinciInbox({
                   ))}
                 </div>
               )}
-              {panel.kind === "task" && <TaskPath taskKey={panel.key} />}
+              {panel.kind === "task" && (
+                <TaskPath state={factory} taskKey={panel.key} />
+              )}
             </div>
           </motion.aside>
         )}
@@ -358,7 +612,9 @@ function Inbox({
   decidedCount,
   onDecided,
   onProjects,
+  since,
 }: {
+  since: { shipped: number; stuck: number }
   open: QueueItem[]
   answers: Record<string, Answer>
   onAnswer: (q: QueueItem, label: string, pick: boolean) => void
@@ -379,12 +635,16 @@ function Inbox({
   React.useEffect(() => {
     const el = nowCard.current
     if (!el || !scroller.current) return setNowAway(false)
-    const io = new IntersectionObserver(([e]) => setNowAway(!e.isIntersecting), { root: scroller.current, threshold: 0.15 })
+    const io = new IntersectionObserver(
+      ([e]) => setNowAway(!e.isIntersecting),
+      { root: scroller.current, threshold: 0.15 }
+    )
     io.observe(el)
     return () => io.disconnect()
   }, [urgent?.id])
 
-  const link = "underline decoration-border underline-offset-4 hover:text-foreground"
+  const link =
+    "underline decoration-border underline-offset-4 hover:text-foreground"
 
   return (
     <div ref={scroller} className="min-h-0 flex-1 overflow-y-auto">
@@ -399,16 +659,25 @@ function Inbox({
           >
             <div className="mx-auto flex w-full max-w-[44rem] items-center gap-3 px-4 py-2.5 sm:px-6">
               <StatusDot tone="attention" pulse />
-              <span className="eyebrow shrink-0 text-attention">Now</span>
+              <span className="shrink-0 eyebrow text-attention">Now</span>
               <button
                 type="button"
-                onClick={() => nowCard.current?.scrollIntoView({ behavior: "smooth", block: "center" })}
+                onClick={() =>
+                  nowCard.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                  })
+                }
                 className="min-w-0 flex-1 truncate text-left text-sm hover:underline"
               >
                 {urgent.title}
               </button>
               {urgent.kind === "incident" && (
-                <Button size="xs" className="shrink-0 rounded-full" onClick={() => onAnswer(urgent, "Reverted 3f2a1c", true)}>
+                <Button
+                  size="xs"
+                  className="shrink-0 rounded-full"
+                  onClick={() => onAnswer(urgent, "Reverted 3f2a1c", true)}
+                >
                   Revert
                 </Button>
               )}
@@ -420,16 +689,18 @@ function Inbox({
       <div className="mx-auto flex w-full max-w-[44rem] flex-col gap-8 px-4 pt-6 pb-28 sm:px-6">
         <div className="flex flex-col gap-1">
           <h1 className="text-xl tracking-[-0.01em]">
-            {open.length ? `${open.length} decisions need you` : "Nothing needs you"}
+            {open.length
+              ? `${open.length} decisions need you`
+              : "Nothing needs you"}
           </h1>
           <p className="text-sm text-muted-foreground">
             Since 21:00:{" "}
             <button type="button" onClick={onProjects} className={link}>
-              7 shipped
+              {since.shipped} shipped
             </button>
             ,{" "}
             <button type="button" onClick={onProjects} className={link}>
-              1 stuck
+              {since.stuck} stuck
             </button>
             ,{" "}
             <button type="button" onClick={onDecided} className={link}>
@@ -443,12 +714,32 @@ function Inbox({
           const items = open.filter((q) => q.urgency === u)
           if (!items.length) return null
           return (
-            <section key={u} ref={u === "now" ? nowCard : undefined} className="flex scroll-my-24 flex-col gap-3">
-              <h2 className={cn("eyebrow px-1", u === "now" ? "text-attention" : "text-muted-foreground")}>{URGENCY[u]}</h2>
+            <section
+              key={u}
+              ref={u === "now" ? nowCard : undefined}
+              className="flex scroll-my-24 flex-col gap-3"
+            >
+              <h2
+                className={cn(
+                  "px-1 eyebrow",
+                  u === "now" ? "text-attention" : "text-muted-foreground"
+                )}
+              >
+                {URGENCY[u]}
+              </h2>
               <AnimatePresence initial={false} mode="popLayout">
                 {items.map((q) => (
-                  <motion.div key={q.id} exit={{ opacity: 0, scale: 0.98 }} transition={enter}>
-                    <QueueCard item={q} onAnswer={onAnswer} onRule={onRule} onPanel={onPanel} />
+                  <motion.div
+                    key={q.id}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={enter}
+                  >
+                    <QueueCard
+                      item={q}
+                      onAnswer={onAnswer}
+                      onRule={onRule}
+                      onPanel={onPanel}
+                    />
                   </motion.div>
                 ))}
               </AnimatePresence>
@@ -458,7 +749,9 @@ function Inbox({
 
         {answered.length > 0 && (
           <section className="flex flex-col gap-2">
-            <h2 className="eyebrow px-1 text-muted-foreground">Answered today</h2>
+            <h2 className="px-1 eyebrow text-muted-foreground">
+              Answered today
+            </h2>
             {answered.map((q) => {
               const a = answers[q.id]
               return (
@@ -471,7 +764,12 @@ function Inbox({
                       summary={`${q.title} · ${a.at}${a.by === "rule" ? " · by your new rule" : a.pick ? " · davinci's pick" : ""}`}
                     />
                     {(q.reversible || a.by === "rule") && (
-                      <Button size="xs" variant="ghost" className="shrink-0 text-muted-foreground" onClick={() => onUndo(q.id)}>
+                      <Button
+                        size="xs"
+                        variant="ghost"
+                        className="shrink-0 text-muted-foreground"
+                        onClick={() => onUndo(q.id)}
+                      >
                         <Undo2Icon />
                         Undo
                       </Button>
@@ -499,8 +797,18 @@ function QueueCard({
   onPanel: (p: Panel) => void
 }) {
   const ratio = q.agreement ? q.agreement.accepted / q.agreement.total : 0
+  // Answering drains the urgent glow first; the card leaves once it's out.
+  const [settling, setSettling] = React.useState(false)
+  const settle = (then: () => void) => {
+    setSettling(true)
+    window.setTimeout(then, q.urgency === "now" ? 320 : 0)
+  }
+  const answer = (label: string, pick: boolean) =>
+    settle(() => onAnswer(q, label, pick))
   return (
-    <ActionCard>
+    <ActionCard
+      tone={q.urgency === "now" && !settling ? "attention" : "default"}
+    >
       <ActionCardHeader>
         <div className="flex min-w-0 flex-col gap-0.5">
           <span className="eyebrow text-muted-foreground">
@@ -509,9 +817,13 @@ function QueueCard({
           <ActionCardTitle>{q.title}</ActionCardTitle>
         </div>
         {/* Mark the exception only: most decisions can be undone. */}
-        {!q.reversible && <ActionCardStatus tone="neutral">Irreversible</ActionCardStatus>}
+        {!q.reversible && (
+          <ActionCardStatus tone="neutral">Irreversible</ActionCardStatus>
+        )}
       </ActionCardHeader>
-      <ActionCardDescription className="mt-0">{q.context}</ActionCardDescription>
+      <ActionCardDescription className="mt-0">
+        {q.context}
+      </ActionCardDescription>
 
       {q.kind === "choice" && q.options && (
         <div className="flex flex-col gap-1.5">
@@ -521,19 +833,27 @@ function QueueCard({
               <button
                 key={o.id}
                 type="button"
-                onClick={() => onAnswer(q, o.label, pick)}
+                onClick={() => answer(o.label, pick)}
                 className={cn(
-                  "flex items-start gap-3 rounded-xl border bg-card px-3 py-2.5 text-left outline-none transition-colors hover:bg-muted/60 focus-visible:ring-3 focus-visible:ring-ring/30",
+                  "flex items-start gap-3 rounded-xl border bg-card px-3 py-2.5 text-left transition-colors outline-none hover:bg-muted/60 focus-visible:ring-3 focus-visible:ring-ring/30",
                   pick ? "border-foreground/40" : "border-border/80"
                 )}
               >
-                <span className="eyebrow mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">{i + 1}</span>
+                <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-md bg-muted eyebrow text-muted-foreground">
+                  {i + 1}
+                </span>
                 <span className="flex min-w-0 flex-1 flex-col">
                   <span className="flex flex-wrap items-center gap-x-2">
                     {o.label}
-                    {pick && <span className="eyebrow rounded-full bg-foreground/5 px-1.5 text-muted-foreground">davinci's pick</span>}
+                    {pick && (
+                      <span className="rounded-full bg-foreground/5 px-1.5 eyebrow text-muted-foreground">
+                        davinci's pick
+                      </span>
+                    )}
                   </span>
-                  <span className="text-xs text-muted-foreground">{o.hint}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {o.hint}
+                  </span>
                 </span>
               </button>
             )
@@ -542,44 +862,67 @@ function QueueCard({
       )}
 
       <p className="text-xs text-muted-foreground">
-        <span className="text-foreground">If you go with davinci:</span> {q.consequence}
+        <span className="text-foreground">If you go with davinci:</span>{" "}
+        {q.consequence}
       </p>
 
       {q.kind !== "choice" && (
         <ActionCardActions className="flex-wrap">
           {q.kind === "incident" && (
             <>
-              <Button size="sm" onClick={() => onAnswer(q, "Reverted 3f2a1c", true)}>
+              <Button size="sm" onClick={() => answer("Reverted 3f2a1c", true)}>
                 <RotateCcwIcon />
                 Revert 3f2a1c
               </Button>
-              <Button size="sm" variant="secondary" onClick={() => onAnswer(q, "Kept v12", false)}>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => answer("Kept v12", false)}
+              >
                 Keep and investigate
               </Button>
             </>
           )}
           {q.kind === "diff" && (
             <>
-              <Button size="sm" onClick={() => onAnswer(q, "Approve", true)}>
+              <Button size="sm" onClick={() => answer("Approve", true)}>
                 Approve
               </Button>
-              <Button size="sm" variant="secondary" onClick={() => onAnswer(q, "Return", false)}>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => answer("Return", false)}
+              >
                 Return with note
               </Button>
-              <Button size="sm" variant="ghost" className="ml-auto" onClick={() => onPanel({ kind: "diff" })}>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="ml-auto"
+                onClick={() => onPanel({ kind: "diff" })}
+              >
                 See the diff
               </Button>
             </>
           )}
           {q.kind === "preview" && (
             <>
-              <Button size="sm" onClick={() => onAnswer(q, "Promoted BLOG-5", true)}>
+              <Button size="sm" onClick={() => answer("Promoted BLOG-5", true)}>
                 Promote
               </Button>
-              <Button size="sm" variant="secondary" onClick={() => onAnswer(q, "Adjust BLOG-5", false)}>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => answer("Adjust BLOG-5", false)}
+              >
                 Adjust
               </Button>
-              <Button size="sm" variant="ghost" className="ml-auto" onClick={() => onPanel({ kind: "preview" })}>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="ml-auto"
+                onClick={() => onPanel({ kind: "preview" })}
+              >
                 Before / after
               </Button>
             </>
@@ -598,7 +941,12 @@ function QueueCard({
             times in {q.category.toLowerCase()}.
           </span>
           {ratio >= 0.9 && (
-            <Button size="xs" variant="outline" className="ml-auto rounded-full" onClick={() => onRule(q)}>
+            <Button
+              size="xs"
+              variant="outline"
+              className="ml-auto rounded-full"
+              onClick={() => settle(() => onRule(q))}
+            >
               <ScaleIcon />
               Make it a rule
             </Button>
@@ -646,9 +994,19 @@ function Thread({
             onClick={onInbox}
             className="not-typeset flex w-fit items-center gap-2 rounded-full border border-border/80 bg-card px-3 py-1.5 text-xs shadow-xs transition-colors hover:bg-muted/60"
           >
-            {a ? <CheckIcon className="size-3.5 text-muted-foreground" /> : <StatusDot tone="attention" />}
+            {a ? (
+              <CheckIcon className="size-3.5 text-muted-foreground" />
+            ) : (
+              <StatusDot tone="attention" />
+            )}
             <span className="text-muted-foreground">{q.title}</span>
-            <span>{a ? `${a.label} · ${a.at}` : q.urgency === "now" ? "Waits in your inbox · Now" : "Waits in your inbox"}</span>
+            <span>
+              {a
+                ? `${a.label} · ${a.at}`
+                : q.urgency === "now"
+                  ? "Waits in your inbox · Now"
+                  : "Waits in your inbox"}
+            </span>
           </button>
         )
       },
@@ -659,23 +1017,42 @@ function Thread({
       <div className="flex shrink-0 items-center gap-2 border-b border-border/70 px-4 py-2.5 text-sm sm:px-6">
         <span className="eyebrow text-muted-foreground">Thread</span>
         <span>{project}</span>
-        <button type="button" onClick={onInbox} className="ml-auto text-xs text-muted-foreground underline decoration-border underline-offset-4 hover:text-foreground">
+        <button
+          type="button"
+          onClick={onInbox}
+          className="ml-auto text-xs text-muted-foreground underline decoration-border underline-offset-4 hover:text-foreground"
+        >
           Decisions live in the inbox
         </button>
       </div>
       <div className="relative min-h-0 flex-1">
-        <ChatThread busy={typing} className="mx-auto w-full max-w-[44rem] gap-6 px-4 py-6 sm:px-6">
+        <ChatThread
+          busy={typing}
+          className="mx-auto w-full max-w-[44rem] gap-6 px-4 py-6 sm:px-6"
+        >
           {messages.map((m, i) => (
             <ChatThreadItem key={m.id} message={m}>
-              <ChatTurn message={m} tools={tools} phase={typing ? "composing" : "idle"} active={typing && i === messages.length - 1} actions={false} />
+              <ChatTurn
+                message={m}
+                tools={tools}
+                phase={typing ? "composing" : "idle"}
+                active={typing && i === messages.length - 1}
+                actions={false}
+              />
             </ChatThreadItem>
           ))}
         </ChatThread>
       </div>
       <div className="mx-auto w-full max-w-[44rem] shrink-0 px-4 pb-4 sm:px-6">
-        <div className="mb-2 flex gap-2 overflow-x-auto [scrollbar-width:none]">
+        <div className="mb-2 flex [scrollbar-width:none] gap-2 overflow-x-auto">
           {SUGGEST[project].map((s) => (
-            <Button key={s} variant="outline" size="sm" className="shrink-0 rounded-full font-normal" onClick={() => onAsk(s)}>
+            <Button
+              key={s}
+              variant="outline"
+              size="sm"
+              className="shrink-0 rounded-full font-normal"
+              onClick={() => onAsk(s)}
+            >
               {s}
             </Button>
           ))}
@@ -688,9 +1065,19 @@ function Thread({
               setInput("")
             }}
           >
-            <ComposerInput aria-label={`Message about ${project}`} placeholder={`Ask about ${project}…`} value={input} onChange={(e) => setInput(e.target.value)} className="min-h-12" />
+            <ComposerInput
+              aria-label={`Message about ${project}`}
+              placeholder={`Ask about ${project}…`}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              className="min-h-12"
+            />
             <ComposerToolbar>
-              <ComposerSubmit className="ml-auto" busy={false} disabled={!input.trim()} />
+              <ComposerSubmit
+                className="ml-auto"
+                busy={false}
+                disabled={!input.trim()}
+              />
             </ComposerToolbar>
           </Composer>
         </div>
@@ -702,79 +1089,218 @@ function Thread({
 /* ------------------------------ projects ---------------------------- */
 
 // Container queries: the table follows its own width (a side panel may be open).
-const COLS = "grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-y-2.5 @xl:grid-cols-[minmax(8rem,1fr)_minmax(12rem,18rem)_minmax(6rem,8rem)]"
+const COLS =
+  "grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-y-2.5 @xl:grid-cols-[minmax(8rem,1fr)_minmax(12rem,18rem)_minmax(6rem,8rem)]"
 
-function Projects({ onTask }: { onTask: (key: string) => void }) {
+// Many tasks in flight: what needs you first, then what's moving, then the
+// queue; past a handful the rest folds away, and the stage names carry how
+// many tasks sit at each stage, so the pile-up shows without reading rows.
+const FOLD_AFTER = 8
+const SHOWN = 6
+
+type Task = ProjectState["tasks"][number]
+const rank = (t: Task) =>
+  t.stages.some((s) => s === "waiting" || s === "failed")
+    ? 0
+    : t.stages.every((s) => s === "todo")
+      ? 2
+      : 1
+const atStage = (t: Task) => {
+  const i = t.stages.findIndex((s) => s !== "done")
+  return i === -1 ? t.stages.length - 1 : i
+}
+
+function Projects({
+  state,
+  onTask,
+}: {
+  state: ProjectState[]
+  onTask: (key: string) => void
+}) {
+  const [unfolded, setUnfolded] = React.useState<Record<string, boolean>>({})
   return (
     <div className="min-h-0 flex-1 overflow-y-auto">
       <div className="@container mx-auto flex w-full max-w-[52rem] flex-col gap-8 px-4 pt-6 pb-28 sm:px-6">
-        <p className="text-sm text-muted-foreground">To look at when you want. Nothing here needs you; that's what the inbox is for.</p>
-        {STATE.map((p) => (
-          <Widget key={p.id}>
-            <WidgetHeader>
-              <WidgetTitle>{p.id}</WidgetTitle>
-              <span className="eyebrow text-muted-foreground">{p.live}</span>
-              <StatusBadge tone={p.health === "ok" ? "success" : "warning"} className="ml-auto">
-                {p.health === "ok" ? "Healthy" : "Degraded"}
-              </StatusBadge>
-            </WidgetHeader>
-            <WidgetPanel className="flex flex-col pt-3">
-              <WidgetList>
-                <div className={cn("grid items-center gap-x-3 px-2 pb-2 @max-xl:hidden", COLS)}>
-                  <span className="eyebrow text-muted-foreground">Task</span>
-                  <span className="grid" style={stageTrackGrid(STAGES.length)}>
-                    {STAGES.map((s) => (
-                      <span key={s} className="truncate text-xs text-muted-foreground">
-                        {s}
+        <p className="text-sm text-muted-foreground">
+          To look at when you want. Nothing here needs you; that's what the
+          inbox is for.
+        </p>
+        {state.map((p) => {
+          const many = p.tasks.length > FOLD_AFTER
+          const tasks = [...p.tasks].sort(
+            (x, y) => rank(x) - rank(y) || atStage(y) - atStage(x)
+          )
+          const queued = tasks.filter((t) => rank(t) === 2).length
+          const shown = many && !unfolded[p.id] ? tasks.slice(0, SHOWN) : tasks
+          const labels = STAGES.map((label, i) => ({
+            label,
+            count: many
+              ? tasks.filter((t) => rank(t) < 2 && atStage(t) === i).length
+              : undefined,
+          }))
+          return (
+            <Widget key={p.id}>
+              <WidgetHeader>
+                <WidgetTitle>{p.id}</WidgetTitle>
+                <span className="truncate eyebrow text-muted-foreground">
+                  {p.live}
+                  {many && (
+                    <>
+                      {" · "}
+                      <span className="tabular-nums">
+                        {tasks.length - queued}
+                      </span>{" "}
+                      in flight
+                      {queued > 0 && (
+                        <>
+                          {" · "}
+                          <span className="tabular-nums">{queued}</span> queued
+                        </>
+                      )}
+                    </>
+                  )}
+                </span>
+                <StatusBadge
+                  tone={p.health === "ok" ? "success" : "warning"}
+                  className="ml-auto"
+                >
+                  {p.health === "ok" ? "Healthy" : "Degraded"}
+                </StatusBadge>
+              </WidgetHeader>
+              <WidgetPanel className="flex flex-col pt-3">
+                <WidgetList>
+                  <div
+                    className={cn(
+                      "grid items-center gap-x-3 px-2 pb-2 @max-xl:hidden",
+                      COLS
+                    )}
+                  >
+                    <span className="eyebrow text-muted-foreground">Task</span>
+                    <StageTrackLabels stages={labels} />
+                    <span className="text-right eyebrow text-muted-foreground">
+                      Now
+                    </span>
+                  </div>
+                  {/* Narrow: the tracks span the row, so do the names. */}
+                  <StageTrackLabels
+                    className="px-2 pb-2 @xl:hidden"
+                    stages={labels}
+                  />
+                  {shown.map((t) => (
+                    <WidgetListRow
+                      key={t.key}
+                      className={COLS}
+                      onClick={() => onTask(t.key)}
+                    >
+                      <span className="flex min-w-0 items-center gap-2">
+                        <ModelIcon
+                          family={t.family}
+                          className="size-4 text-muted-foreground"
+                        />
+                        <span className="shrink-0 eyebrow text-muted-foreground">
+                          {t.key}
+                        </span>
+                        <span className="truncate">{t.title}</span>
                       </span>
-                    ))}
-                  </span>
-                  <span className="eyebrow text-right text-muted-foreground">Now</span>
-                </div>
-                {p.tasks.map((t) => (
-                  <WidgetListRow key={t.key} className={COLS} onClick={() => onTask(t.key)}>
-                    <span className="flex min-w-0 items-center gap-2">
-                      <ModelIcon family={t.family} className="size-4 text-muted-foreground" />
-                      <span className="eyebrow shrink-0 text-muted-foreground">{t.key}</span>
-                      <span className="truncate">{t.title}</span>
-                    </span>
-                    <StageTrack className="order-last col-span-2 @xl:order-none @xl:col-span-1" stages={t.stages.map((status, i) => ({ label: STAGES[i], status }))} />
-                    <span className={cn("truncate text-right text-xs", t.stages.some((s) => s === "waiting" || s === "failed") ? "text-foreground" : "text-muted-foreground")}>
-                      {t.now}
-                    </span>
-                  </WidgetListRow>
-                ))}
-              </WidgetList>
-            </WidgetPanel>
-          </Widget>
-        ))}
+                      <StageTrack
+                        className="order-last col-span-2 @xl:order-none @xl:col-span-1"
+                        stages={t.stages.map((status, i) => ({
+                          label: STAGES[i],
+                          status,
+                        }))}
+                      />
+                      <span
+                        className={cn(
+                          "truncate text-right text-xs",
+                          rank(t) === 0
+                            ? "text-foreground"
+                            : "text-muted-foreground"
+                        )}
+                      >
+                        {t.now}
+                      </span>
+                    </WidgetListRow>
+                  ))}
+                </WidgetList>
+              </WidgetPanel>
+              {many && (
+                <WidgetFooter>
+                  <Button
+                    size="xs"
+                    variant="ghost"
+                    className="-ml-1 text-muted-foreground"
+                    onClick={() =>
+                      setUnfolded((u) => ({ ...u, [p.id]: !u[p.id] }))
+                    }
+                  >
+                    {unfolded[p.id]
+                      ? "Show fewer"
+                      : `Show ${tasks.length - SHOWN} more`}
+                  </Button>
+                </WidgetFooter>
+              )}
+            </Widget>
+          )
+        })}
       </div>
     </div>
   )
 }
 
-function TaskPath({ taskKey }: { taskKey: string }) {
-  const task = STATE.flatMap((p) => p.tasks).find((t) => t.key === taskKey)!
-  const steps = STAGES.slice(0, task.stages.findIndex((s) => s !== "done") === -1 ? STAGES.length : task.stages.findIndex((s) => s !== "done") + 1)
+function TaskPath({
+  state,
+  taskKey,
+}: {
+  state: ProjectState[]
+  taskKey: string
+}) {
+  const task = state.flatMap((p) => p.tasks).find((t) => t.key === taskKey)!
+  const steps = STAGES.slice(
+    0,
+    task.stages.findIndex((s) => s !== "done") === -1
+      ? STAGES.length
+      : task.stages.findIndex((s) => s !== "done") + 1
+  )
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
         <span className="text-[15px]">{task.title}</span>
         <span className="text-sm text-muted-foreground">{task.now}</span>
       </div>
-      <StageTrack stages={task.stages.map((status, i) => ({ label: STAGES[i], status }))} />
+      <StageTrack
+        labeled
+        stages={task.stages.map((status, i) => ({ label: STAGES[i], status }))}
+      />
       <div className="flex flex-col gap-2">
         <span className="eyebrow text-faint-foreground">Today</span>
         {steps.map((s, i) => (
-          <div key={s} className="grid grid-cols-[3rem_1fr_auto] items-baseline gap-2 text-sm">
+          <div
+            key={s}
+            className="grid grid-cols-[3rem_1fr_auto] items-baseline gap-2 text-sm"
+          >
             <span className="eyebrow text-muted-foreground tabular-nums">{`${String(8 + Math.floor(i / 2)).padStart(2, "0")}:${i % 2 ? "34" : "12"}`}</span>
-            <span>{s === "Plan" ? "Plan written from the conversation" : s === "Build" ? "Built and committed" : s === "Gates" ? "Gates passed" : s === "Review" ? "Reviewed by the other family" : s === "Next" ? "On next" : "On main"}</span>
-            <span className="eyebrow text-faint-foreground tabular-nums">{["48 s", "7 min", "52 s", "3 min", "1 min", "—"][i]}</span>
+            <span>
+              {s === "Plan"
+                ? "Plan written from the conversation"
+                : s === "Build"
+                  ? "Built and committed"
+                  : s === "Gates"
+                    ? "Gates passed"
+                    : s === "Review"
+                      ? "Reviewed by the other family"
+                      : s === "Next"
+                        ? "On next"
+                        : "On main"}
+            </span>
+            <span className="eyebrow text-faint-foreground tabular-nums">
+              {["48 s", "7 min", "52 s", "3 min", "1 min", "—"][i]}
+            </span>
           </div>
         ))}
       </div>
       <p className="text-xs text-muted-foreground">
-        More detail: <code className="font-mono">bottega task show {task.key}</code>
+        More detail:{" "}
+        <code className="font-mono">bottega task show {task.key}</code>
       </p>
     </div>
   )
@@ -796,34 +1322,59 @@ function DecidedLog({
       <div className="mx-auto flex w-full max-w-[44rem] flex-col gap-4 px-4 pt-6 pb-28 sm:px-6">
         <div className="flex flex-col gap-1">
           <h1 className="text-xl tracking-[-0.01em]">Decided for you</h1>
-          <p className="text-sm text-muted-foreground">Everything davinci decided without asking, with why. Undo what you disagree with.</p>
+          <p className="text-sm text-muted-foreground">
+            Everything davinci decided without asking, with why. Undo what you
+            disagree with.
+          </p>
         </div>
         <WidgetPanel className="flex flex-col pt-3">
           <WidgetList>
             {items.map((d) => {
               const rule = rules.find((r) => r.id === d.rule)
               return (
-                <WidgetListRow key={d.id} className="grid-cols-[3rem_minmax(0,1fr)_auto] items-start" dimmed={d.undone}>
-                  <span className="eyebrow pt-0.5 text-muted-foreground tabular-nums">{d.time}</span>
+                <WidgetListRow
+                  key={d.id}
+                  className="grid-cols-[3rem_minmax(0,1fr)_auto] items-start"
+                  dimmed={d.undone}
+                >
+                  <span className="pt-0.5 eyebrow text-muted-foreground tabular-nums">
+                    {d.time}
+                  </span>
                   <span className="flex min-w-0 flex-col gap-0.5">
                     <span>
-                      <span className="text-muted-foreground">{d.project} · </span>
+                      <span className="text-muted-foreground">
+                        {d.project} ·{" "}
+                      </span>
                       {d.what}
                     </span>
                     <span className="text-xs text-muted-foreground">
                       {d.why}
-                      {rule && <span className="text-faint-foreground"> · rule: {rule.text.toLowerCase()}</span>}
+                      {rule && (
+                        <span className="text-faint-foreground">
+                          {" "}
+                          · rule: {rule.text.toLowerCase()}
+                        </span>
+                      )}
                     </span>
                   </span>
                   {d.undone ? (
-                    <span className="eyebrow pt-0.5 text-muted-foreground">Undone</span>
+                    <span className="pt-0.5 eyebrow text-muted-foreground">
+                      Undone
+                    </span>
                   ) : d.reversible ? (
-                    <Button size="xs" variant="ghost" className="text-muted-foreground" onClick={() => onUndo(d.id)}>
+                    <Button
+                      size="xs"
+                      variant="ghost"
+                      className="text-muted-foreground"
+                      onClick={() => onUndo(d.id)}
+                    >
                       <Undo2Icon />
                       Undo
                     </Button>
                   ) : (
-                    <span className="eyebrow pt-0.5 text-faint-foreground">Final</span>
+                    <span className="pt-0.5 eyebrow text-faint-foreground">
+                      Final
+                    </span>
                   )}
                 </WidgetListRow>
               )
@@ -837,13 +1388,22 @@ function DecidedLog({
 
 /* ------------------------------- rules ------------------------------ */
 
-function Rules({ items, onToggle }: { items: (Rule & { off?: boolean })[]; onToggle: (id: string) => void }) {
+function Rules({
+  items,
+  onToggle,
+}: {
+  items: (Rule & { off?: boolean })[]
+  onToggle: (id: string) => void
+}) {
   return (
     <div className="min-h-0 flex-1 overflow-y-auto">
       <div className="mx-auto flex w-full max-w-[44rem] flex-col gap-4 px-4 pt-6 pb-28 sm:px-6">
         <div className="flex flex-col gap-1">
           <h1 className="text-xl tracking-[-0.01em]">Rules</h1>
-          <p className="text-sm text-muted-foreground">Decisions that stopped being yours. Each one came from agreeing with davinci again and again.</p>
+          <p className="text-sm text-muted-foreground">
+            Decisions that stopped being yours. Each one came from agreeing with
+            davinci again and again.
+          </p>
         </div>
         <WidgetPanel className="flex flex-col pt-3">
           <WidgetList>
@@ -853,13 +1413,23 @@ function Rules({ items, onToggle }: { items: (Rule & { off?: boolean })[]; onTog
               <WidgetListRow key={r.id} className="grid-cols-1 py-0">
                 <label className="grid cursor-pointer grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 py-2.5">
                   <span className="flex min-w-0 flex-col gap-0.5">
-                    <span className={cn("transition-colors", r.off && "text-muted-foreground")}>{r.text}</span>
+                    <span
+                      className={cn(
+                        "transition-colors",
+                        r.off && "text-muted-foreground"
+                      )}
+                    >
+                      {r.text}
+                    </span>
                     <span className="eyebrow text-muted-foreground">
                       {r.off ? (
-                        <span className="text-foreground">Off · these come back to your inbox</span>
+                        <span className="text-foreground">
+                          Off · these come back to your inbox
+                        </span>
                       ) : (
                         <>
-                          {r.category} · applied <span className="tabular-nums">{r.applied}</span>×
+                          {r.category} · applied{" "}
+                          <span className="tabular-nums">{r.applied}</span>×
                         </>
                       )}
                     </span>

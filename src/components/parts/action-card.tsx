@@ -23,11 +23,18 @@ import {
 //
 // Pending cards ask; resolved cards shrink to a status and stop asking.
 
+// tone="attention": a faint warm glow in two opposite corners for the one
+// decision that can't wait. Use it on the urgent card only, never on every
+// card; switch back to "default" when the person answers and the glow
+// drains before the card resolves.
+export type ActionCardTone = "default" | "attention"
+
 function ActionCard({
+  tone = "default",
   className,
   children,
   ...props
-}: React.ComponentProps<typeof motion.div>) {
+}: React.ComponentProps<typeof motion.div> & { tone?: ActionCardTone }) {
   return (
     // Appears where it lands. No layout animation: the transcript moves
     // under it while text streams and scroll anchors, and animating that
@@ -37,13 +44,23 @@ function ActionCard({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={enter}
       data-slot="action-card"
+      data-tone={tone}
       className={cn(
-        "not-typeset flex flex-col gap-3 rounded-2xl border border-border/70 bg-muted/60 p-3.5 text-sm shadow-xs dark:bg-accent/50",
+        "not-typeset relative isolate flex flex-col gap-3 rounded-2xl border border-border/70 bg-muted/30 p-3.5 text-sm dark:bg-accent/30",
         className
       )}
       {...props}
     >
-      {children}
+      {/* Always rendered so the glow can fade out, not just vanish. */}
+      <span
+        aria-hidden
+        data-slot="action-card-glow"
+        className={cn(
+          "pointer-events-none absolute inset-0 -z-10 rounded-[inherit] bg-[linear-gradient(45deg,color-mix(in_oklch,var(--attention)_8%,transparent),transparent_30%,transparent_70%,color-mix(in_oklch,var(--attention)_8%,transparent))] transition-opacity duration-500 ease-out",
+          tone === "attention" ? "opacity-100" : "opacity-0"
+        )}
+      />
+      {children as React.ReactNode}
     </motion.div>
   )
 }
