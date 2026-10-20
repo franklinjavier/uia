@@ -1,6 +1,8 @@
 import * as React from "react"
+import { LayoutGroup, motion } from "motion/react"
 
 import { cn } from "@/lib/utils"
+import { enter, springSoft } from "@/lib/motion"
 import { Skeleton } from "@/components/ui/skeleton"
 import type {
   Catalog,
@@ -141,7 +143,9 @@ export function Surface({
   const renderNode = (
     id: string | undefined,
     depth: number,
-    scope?: string
+    scope?: string,
+    /** The caller (an animated layout) already applies `span`. */
+    noSpan = false
   ): React.ReactNode => {
     if (!id) return null
     const node: ComponentNode | undefined = surface.components[id]
@@ -180,31 +184,66 @@ export function Surface({
       formatOptions,
       format: (v, f) => formatValue(v, f as ValueFormat, formatOptions),
       child: (childId) => renderNode(childId, depth + 1, scope),
-      children: (ref) => {
+      children: (ref, opts) => {
+        // One child: plain, or (layouts) a motion wrapper that keeps its
+        // identity across updates so moves show where things went.
+        const one = (
+          key: string,
+          childId: string,
+          childScope: string | undefined
+        ) => {
+          if (!opts?.animate)
+            return (
+              <React.Fragment key={key}>
+                {renderNode(childId, depth + 1, childScope)}
+              </React.Fragment>
+            )
+          const span = surface.components[childId]?.span
+          return (
+            <motion.div
+              key={key}
+              layout="position"
+              initial={{ opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20, scale: 0.98 }}
+              transition={{ ...enter, layout: springSoft }}
+              className={cn(
+                "min-w-0",
+                typeof span === "number" && "@xl:col-span-(--span)"
+              )}
+              style={
+                typeof span === "number"
+                  ? ({ "--span": span } as React.CSSProperties)
+                  : undefined
+              }
+            >
+              {renderNode(childId, depth + 1, childScope, true)}
+            </motion.div>
+          )
+        }
         if (Array.isArray(ref))
-          return ref.map((c) => (
-            <React.Fragment key={String(c)}>
-              {renderNode(String(c), depth + 1, scope)}
-            </React.Fragment>
-          ))
+          return ref.map((c) => one(String(c), String(c), scope))
         if (
           ref &&
           typeof ref === "object" &&
           "path" in ref &&
           "componentId" in ref
         ) {
-          const { path, componentId } = ref as {
+          const { path, componentId, key } = ref as {
             path: string
             componentId: string
+            key?: string
           }
           const base = joinPath(scope, path)
           const items = getAt(data, base)
           if (!Array.isArray(items)) return []
-          return items.map((_, i) => (
-            <React.Fragment key={`${componentId}-${i}`}>
-              {renderNode(componentId, depth + 1, `${base}/${i}`)}
-            </React.Fragment>
-          ))
+          return items.map((item, i) => {
+            const k =
+              key && item && typeof item === "object"
+                ? (item as Record<string, unknown>)[key]
+                : undefined
+            return one(`${componentId}-${k ?? i}`, componentId, `${base}/${i}`)
+          })
         }
         return []
       },
@@ -214,7 +253,8 @@ export function Surface({
         const reversible =
           typeof info.reversible === "function"
             ? info.reversible(
-                (resolveDeep(spec?.event?.context ?? {}, data, scope) ?? {}) as Record<string, unknown>
+                (resolveDeep(spec?.event?.context ?? {}, data, scope) ??
+                  {}) as Record<string, unknown>
               )
             : info.reversible
         return { ...info, reversible }
@@ -250,7 +290,8 @@ export function Surface({
     }
 
     const rendered = entry.render(parsed.data as Record<string, unknown>, ctx)
-    const span = typeof node.span === "number" ? node.span : undefined
+    const span =
+      typeof node.span === "number" && !noSpan ? node.span : undefined
     return span ? (
       <div
         key={id}
@@ -270,7 +311,8 @@ export function Surface({
       data-surface={surface.id}
       className={cn("@container flex min-w-0 flex-col", className)}
     >
-      {renderNode("root", 0)}
+      {/* One layout group: a card leaving one list and arriving in another glides. */}
+      <LayoutGroup>{renderNode("root", 0)}</LayoutGroup>
     </div>
   )
 }

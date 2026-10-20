@@ -36,6 +36,10 @@
                 },
                 "componentId": {
                   "type": "string"
+                },
+                "key": {
+                  "description": "Item field with a stable id (e.g. \"id\"): items keep their identity, so moves animate.",
+                  "type": "string"
                 }
               },
               "required": [
@@ -111,6 +115,10 @@
                   "type": "string"
                 },
                 "componentId": {
+                  "type": "string"
+                },
+                "key": {
+                  "description": "Item field with a stable id (e.g. \"id\"): items keep their identity, so moves animate.",
                   "type": "string"
                 }
               },
@@ -212,6 +220,10 @@
                   "type": "string"
                 },
                 "componentId": {
+                  "type": "string"
+                },
+                "key": {
+                  "description": "Item field with a stable id (e.g. \"id\"): items keep their identity, so moves animate.",
                   "type": "string"
                 }
               },
@@ -349,6 +361,10 @@
                 },
                 "componentId": {
                   "type": "string"
+                },
+                "key": {
+                  "description": "Item field with a stable id (e.g. \"id\"): items keep their identity, so moves animate.",
+                  "type": "string"
                 }
               },
               "required": [
@@ -420,6 +436,10 @@
                   "type": "string"
                 },
                 "componentId": {
+                  "type": "string"
+                },
+                "key": {
+                  "description": "Item field with a stable id (e.g. \"id\"): items keep their identity, so moves animate.",
                   "type": "string"
                 }
               },
@@ -1662,6 +1682,10 @@
                   "type": "string"
                 },
                 "componentId": {
+                  "type": "string"
+                },
+                "key": {
+                  "description": "Item field with a stable id (e.g. \"id\"): items keep their identity, so moves animate.",
                   "type": "string"
                 }
               },
@@ -3753,6 +3777,10 @@
                 },
                 "componentId": {
                   "type": "string"
+                },
+                "key": {
+                  "description": "Item field with a stable id (e.g. \"id\"): items keep their identity, so moves animate.",
+                  "type": "string"
                 }
               },
               "required": [
@@ -4004,6 +4032,10 @@
                   "type": "string"
                 },
                 "componentId": {
+                  "type": "string"
+                },
+                "key": {
+                  "description": "Item field with a stable id (e.g. \"id\"): items keep their identity, so moves animate.",
                   "type": "string"
                 }
               },

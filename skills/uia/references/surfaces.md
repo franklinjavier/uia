@@ -82,6 +82,13 @@ Composition rules (the runtime checks the ones marked ✓):
 - In a chat reply (`layout: "inline"`, the default at `size="sm"`): at most
   2 loose buttons ✓, no `Tabs` ✓, grids of at most 2 columns ✓.
 
+**Motion comes with the layout.** `Column` and `Grid` keep each child's
+identity: an item that leaves sinks and fades, the rest glide into the gap,
+a new one arrives from above (one `LayoutGroup` per surface, so a card can
+move between lists). The agent doesn't ask for it. For template children,
+give the item key so identity survives updates:
+`{ "path": "/items", "componentId": "row", "key": "id" }`.
+
 ## What the host owns
 
 **Facts.** Counts, rates, money, durations and dates come from the data

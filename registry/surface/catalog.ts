@@ -28,7 +28,16 @@ export const children = z
   .union([
     z.array(z.string()),
     z
-      .object({ path: z.string(), componentId: z.string() })
+      .object({
+        path: z.string(),
+        componentId: z.string(),
+        key: z
+          .string()
+          .optional()
+          .describe(
+            'Item field with a stable id (e.g. "id"): items keep their identity, so moves animate.'
+          ),
+      })
       .describe(
         "Repeat componentId once per item of the array at path; inside it, relative paths read the item."
       ),
@@ -96,8 +105,12 @@ export type RenderContext = {
   componentId: string
   /** Render a child by id (a skeleton while it hasn't streamed in). */
   child: (id: string | undefined) => React.ReactNode
-  /** Render `children` (ids or a template). */
-  children: (ref: unknown) => React.ReactNode[]
+  /**
+   * Render `children` (ids or a template). `{ animate: true }` (layouts):
+   * each child keeps its identity, enters from above, leaves sinking, and the
+   * rest glide into place — wrap the result in `<AnimatePresence>`.
+   */
+  children: (ref: unknown, opts?: { animate?: boolean }) => React.ReactNode[]
   /**
    * A click handler for an action, or undefined when it can't run here: no
    * spec, an event the host didn't register, or a destructive event outside
@@ -177,7 +190,9 @@ export type HostAction = {
 
 export type HostActions = Record<string, HostAction>
 
-export type ResolvedHostAction = Omit<HostAction, "reversible"> & { reversible?: boolean }
+export type ResolvedHostAction = Omit<HostAction, "reversible"> & {
+  reversible?: boolean
+}
 
 export function defineActions<T extends HostActions>(actions: T): T {
   return actions

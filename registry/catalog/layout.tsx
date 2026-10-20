@@ -1,4 +1,5 @@
 import * as React from "react"
+import { AnimatePresence } from "motion/react"
 import { z } from "zod"
 
 import { cn } from "@/lib/utils"
@@ -16,6 +17,10 @@ import { children, defineComponent } from "@/components/surface/catalog"
 // Layout: how pieces sit together. Columns follow the surface's own width
 // (container queries), so a Grid of 3 is one column inside a chat reply and
 // three on a wide page — the agent says the intent, the renderer adapts.
+//
+// Column and Grid also move their children: an item leaves sinking, the rest
+// glide into the gap, a new one arrives from above. The agent never asks for
+// it; every screen gets it.
 
 const GAP = { sm: "gap-3", md: "gap-5", lg: "gap-8" } as const
 const gap = z.enum(["sm", "md", "lg"]).optional()
@@ -26,8 +31,10 @@ export const Column = defineComponent({
   description: "Stack children vertically. The usual root.",
   props: z.object({ children, gap }),
   render: (p, ctx) => (
-    <div className={cn("flex min-w-0 flex-col", GAP[p.gap ?? "md"])}>
-      {ctx.children(p.children)}
+    <div className={cn("relative flex min-w-0 flex-col", GAP[p.gap ?? "md"])}>
+      <AnimatePresence initial={false} mode="popLayout">
+        {ctx.children(p.children, { animate: true })}
+      </AnimatePresence>
     </div>
   ),
 })
@@ -76,12 +83,14 @@ export const Grid = defineComponent({
   render: (p, ctx) => (
     <div
       className={cn(
-        "grid min-w-0 grid-cols-1",
+        "relative grid min-w-0 grid-cols-1",
         COLS[p.columns],
         GAP[p.gap ?? "lg"]
       )}
     >
-      {ctx.children(p.children)}
+      <AnimatePresence initial={false} mode="popLayout">
+        {ctx.children(p.children, { animate: true })}
+      </AnimatePresence>
     </div>
   ),
 })

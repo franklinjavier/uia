@@ -138,7 +138,7 @@ export function composeInbox(
         id: "answered",
         component: "List",
         title: "Answered today",
-        children: { path: "/answered", componentId: "answeredRow" },
+        children: { path: "/answered", componentId: "answeredRow", key: "id" },
       },
       {
         id: "answeredRow",
@@ -191,7 +191,7 @@ export function composeDecided(): SurfaceMessage[] {
           {
             id: "log",
             component: "ActivityList",
-            children: { path: "/decided", componentId: "entry" },
+            children: { path: "/decided", componentId: "entry", key: "id" },
           },
           {
             id: "entry",
@@ -232,7 +232,7 @@ export function composeRules(): SurfaceMessage[] {
           {
             id: "list",
             component: "PolicyList",
-            children: { path: "/rules", componentId: "rule" },
+            children: { path: "/rules", componentId: "rule", key: "id" },
           },
           {
             id: "rule",

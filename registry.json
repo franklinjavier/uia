@@ -1563,9 +1563,11 @@
       "description": "A2UI v0.9 runtime: messages → surfaces (store, JSON Pointer bindings), <Surface> renderer with validation, streaming placeholders and actions; defineComponent/defineCatalog, catalogToJSONSchema/catalogToPrompt.",
       "author": "uia",
       "dependencies": [
+        "motion",
         "zod"
       ],
       "registryDependencies": [
+        "franklinjavier/uia/motion",
         "skeleton"
       ],
       "files": [
@@ -1608,6 +1610,7 @@
       "description": "Catalog entries: Column, Row, Grid (container-query columns, span), Section, Card, Tabs, Divider.",
       "author": "uia",
       "dependencies": [
+        "motion",
         "zod"
       ],
       "registryDependencies": [
