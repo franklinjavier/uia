@@ -38,7 +38,8 @@ function ChatThread({
             {children}
           </MessageScrollerContent>
         </MessageScrollerViewport>
-        <MessageScrollerButton />
+        {/* Phones: bottom-right, so it never sits on a card's buttons. */}
+        <MessageScrollerButton className="shadow-sm max-sm:inset-s-auto max-sm:right-3 max-sm:translate-x-0" />
       </MessageScroller>
     </MessageScrollerProvider>
   )

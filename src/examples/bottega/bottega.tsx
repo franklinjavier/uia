@@ -239,7 +239,7 @@ export function Bottega() {
 
       {/* Below lg: the conversation opens as a sheet from a button. */}
       {chatOpen ? (
-        <div className="fixed inset-0 z-40 flex flex-col bg-background lg:hidden">
+        <div className="fixed inset-0 z-[60] flex flex-col bg-background lg:hidden">
           <Conversation state={state} flash={flash} onClose={() => setChatOpen(false)} />
         </div>
       ) : (

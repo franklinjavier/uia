@@ -134,7 +134,9 @@ function AssistantTurn({
 
   return (
     <Message data-slot="assistant-turn" className={cn("gap-3", className)} {...props}>
-      <MessageAvatar className="mt-0.5 size-5 min-w-0 self-start overflow-visible rounded-none bg-transparent group-has-data-[slot=message-footer]/message:translate-y-0">
+      {/* Phones: no avatar; the conversation header's orb carries presence and
+          the text gets the full width. */}
+      <MessageAvatar className="mt-0.5 size-5 min-w-0 self-start overflow-visible rounded-none bg-transparent group-has-data-[slot=message-footer]/message:translate-y-0 max-sm:hidden">
         <AgentOrb phase={active ? phase : "idle"} active={active} />
       </MessageAvatar>
       <MessageContent className="gap-3">

@@ -198,6 +198,10 @@ tap target shrinks).
 - **Rails become sheets.** Below `lg` the conversation rail is a full-screen
   sheet opened by a floating `brand` button ("Conversa" + attention count);
   decision chips open the sheet and scroll to their card.
+- **Chat on phones:** no avatar beside the agent's messages (the header's
+  orb carries presence; the text gets the full width — `AssistantTurn`
+  does this); the scroll-to-end button sits bottom-right, off the cards'
+  buttons; a full-screen sheet stacks above any floating chrome.
 - **Many tabs become a select.** A `Segmented` with more than ~4 options
   turns into a `Select` on phones (`max-md:hidden` / `md:hidden` pair).
 - **Check it for real:** emulate a phone (device toolbar or the browser
