@@ -58,11 +58,24 @@ export type SurfaceAction = {
   timestamp: string
 }
 
+export type IssueCode =
+  | "UNKNOWN_COMPONENT"
+  | "VALIDATION_FAILED"
+  | "LIMIT_EXCEEDED"
+  /** A fact (count, rate, money) written as a literal instead of bound to data. */
+  | "UNBOUND_FACT"
+  /** An event the host didn't register. */
+  | "UNKNOWN_ACTION"
+  /** A destructive event on a plain control, outside a confirmation. */
+  | "UNCONFIRMED_DESTRUCTIVE"
+  /** A composition rule: one primary, one Note per Section, layout limits. */
+  | "COMPOSITION"
+
 /** A node the renderer couldn't draw, reported so the agent can fix it. */
 export type SurfaceIssue = {
   surfaceId: string
   componentId: string
-  code: "UNKNOWN_COMPONENT" | "VALIDATION_FAILED" | "LIMIT_EXCEEDED"
+  code: IssueCode
   message: string
 }
 

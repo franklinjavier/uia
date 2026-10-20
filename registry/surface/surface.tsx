@@ -2,7 +2,21 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
-import type { Catalog, RenderContext } from "@/components/surface/catalog"
+import type {
+  Catalog,
+  HostActions,
+  RenderContext,
+} from "@/components/surface/catalog"
+import {
+  collectIssues,
+  isPathRef,
+  issueText,
+  MAX_DEPTH,
+  MAX_NODES,
+  rawProps,
+  resolveDeep,
+  unboundFacts,
+} from "@/components/surface/validate"
 import {
   formatValue,
   type FormatOptions,
@@ -31,128 +45,13 @@ import type {
 //   fix and resend. The rest of the surface still renders.
 // - Inputs write to a local copy of the data model (`onDataChange` to keep
 //   your own); actions resolve their context bindings, then call `onAction`.
-
-const MAX_NODES = 400
-const MAX_DEPTH = 16
-
-function isPathRef(v: unknown): v is { path: string } {
-  return (
-    !!v &&
-    typeof v === "object" &&
-    !Array.isArray(v) &&
-    Object.keys(v).length === 1 &&
-    typeof (v as { path?: unknown }).path === "string"
-  )
-}
-
-function resolveDeep(
-  value: unknown,
-  data: unknown,
-  scope: string | undefined
-): unknown {
-  if (isPathRef(value)) return getAt(data, joinPath(scope, value.path))
-  if (Array.isArray(value)) return value.map((v) => resolveDeep(v, data, scope))
-  if (value && typeof value === "object") {
-    return Object.fromEntries(
-      Object.entries(value).map(([k, v]) => [k, resolveDeep(v, data, scope)])
-    )
-  }
-  return value
-}
-
-const PASS_THROUGH = new Set(["children", "child", "action"])
-const COMMON = new Set(["id", "component", "span", "fallback"])
-
-function rawProps(
-  node: ComponentNode,
-  data: unknown,
-  scope: string | undefined
-) {
-  const raw: Record<string, unknown> = {}
-  for (const [k, v] of Object.entries(node))
-    if (!COMMON.has(k))
-      raw[k] = PASS_THROUGH.has(k) ? v : resolveDeep(v, data, scope)
-  return raw
-}
-
-function issueText(error: {
-  issues: { path: PropertyKey[]; message: string }[]
-}) {
-  return error.issues
-    .map((i) => `${i.path.map(String).join(".") || "(props)"}: ${i.message}`)
-    .join("; ")
-}
-
-/** Walk what's reachable from root and list what can't render, for the agent. */
-function collectIssues(
-  surface: SurfaceState,
-  catalog: Catalog,
-  data: unknown
-): SurfaceIssue[] {
-  const out: SurfaceIssue[] = []
-  const seen = new Set<string>()
-  let count = 0
-  const add = (
-    componentId: string,
-    code: SurfaceIssue["code"],
-    message: string
-  ) => out.push({ surfaceId: surface.id, componentId, code, message })
-  const visit = (id: string | undefined, depth: number, scope?: string) => {
-    if (!id) return
-    const node = surface.components[id]
-    if (!node) return // still streaming
-    const key = `${id}@${scope ?? ""}`
-    if (seen.has(key)) return
-    seen.add(key)
-    if (++count > MAX_NODES || depth > MAX_DEPTH)
-      return add(
-        id,
-        "LIMIT_EXCEEDED",
-        `Max ${MAX_NODES} nodes and depth ${MAX_DEPTH}.`
-      )
-    const entry = catalog.components[node.component]
-    if (!entry) {
-      add(
-        id,
-        "UNKNOWN_COMPONENT",
-        `"${node.component}" is not in catalog ${catalog.id}.`
-      )
-      return visit(
-        typeof node.fallback === "string" ? node.fallback : undefined,
-        depth + 1,
-        scope
-      )
-    }
-    const parsed = entry.props.safeParse(rawProps(node, data, scope))
-    if (!parsed.success) add(id, "VALIDATION_FAILED", issueText(parsed.error))
-    const kids = node.children
-    if (Array.isArray(kids))
-      kids.forEach((c) => visit(String(c), depth + 1, scope))
-    else if (
-      kids &&
-      typeof kids === "object" &&
-      "componentId" in kids &&
-      "path" in kids
-    ) {
-      const base = joinPath(scope, String((kids as { path: string }).path))
-      const items = getAt(data, base)
-      if (Array.isArray(items) && items.length)
-        visit(
-          String((kids as { componentId: string }).componentId),
-          depth + 1,
-          `${base}/0`
-        )
-    }
-    for (const k of ["child", "aside"])
-      if (typeof node[k] === "string")
-        visit(node[k] as string, depth + 1, scope)
-    if (Array.isArray(node.tabs))
-      for (const t of node.tabs as { child?: string }[])
-        visit(t?.child, depth + 1, scope)
-  }
-  visit("root", 0)
-  return out
-}
+// - The host owns actions (`actions`): unregistered events don't render,
+//   destructive ones only run from a confirmation, and reversibility comes
+//   from the host, not the agent.
+// - Facts must be bound: an entry's `facts` props written as literals are
+//   rejected (the agent must not invent numbers).
+// - `layout` sets the limits: "inline" (a chat reply: ≤ 2 actions, no tabs,
+//   grids of ≤ 2) or "page". Always: one primary action, one Note per Section.
 
 export function Surface({
   surface,
@@ -161,6 +60,8 @@ export function Surface({
   locale,
   currency,
   showIssues = false,
+  actions,
+  layout,
   onAction,
   onIssue,
   onDataChange,
@@ -173,6 +74,10 @@ export function Surface({
   currency?: string
   /** Show a placeholder where a node failed (dev, playgrounds). */
   showIssues?: boolean
+  /** The events the host offers and what each one is. Omit to allow any. */
+  actions?: HostActions
+  /** Limits to check: "inline" in a chat reply, "page" otherwise. Default from size. */
+  layout?: "inline" | "page"
   onAction?: (action: SurfaceAction) => void
   onIssue?: (issue: SurfaceIssue) => void
   onDataChange?: (path: string, value: unknown, data: unknown) => void
@@ -188,8 +93,17 @@ export function Surface({
   // Issues come from a pure pass over the tree (same checks as rendering),
   // reported once each after commit.
   const issues = React.useMemo(
-    () => (surface ? collectIssues(surface, catalog, data) : []),
-    [surface, catalog, data]
+    () =>
+      surface
+        ? collectIssues(
+            surface,
+            catalog,
+            data,
+            actions,
+            layout ?? (size === "sm" ? "inline" : "page")
+          )
+        : [],
+    [surface, catalog, data, actions, layout, size]
   )
   const reported = React.useRef(new Set<string>())
   React.useEffect(() => {
@@ -249,6 +163,12 @@ export function Surface({
         : placeholder(id, `Unsupported · ${node.component}`)
     }
 
+    const unbound = unboundFacts(entry, node)
+    if (unbound.length)
+      return placeholder(
+        id,
+        `${node.component} · ${unbound.join(", ")} must be bound to data`
+      )
     const parsed = entry.props.safeParse(rawProps(node, data, scope))
     if (!parsed.success)
       return placeholder(id, `${node.component} · ${issueText(parsed.error)}`)
@@ -288,8 +208,27 @@ export function Surface({
         }
         return []
       },
-      action: (spec: ActionSpec | undefined) => {
+      actionInfo: (spec) => {
+        const info = spec?.event?.name ? actions?.[spec.event.name] : undefined
+        if (!info) return undefined
+        const reversible =
+          typeof info.reversible === "function"
+            ? info.reversible(
+                (resolveDeep(spec?.event?.context ?? {}, data, scope) ?? {}) as Record<string, unknown>
+              )
+            : info.reversible
+        return { ...info, reversible }
+      },
+      action: (
+        spec: ActionSpec | undefined,
+        opts?: { confirmed?: boolean }
+      ) => {
         if (!spec?.event?.name) return undefined
+        if (actions) {
+          const info = actions[spec.event.name]
+          if (!info) return undefined
+          if (info.destructive && !opts?.confirmed) return undefined
+        }
         return () =>
           onAction?.({
             name: spec.event.name,

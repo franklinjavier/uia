@@ -1,5 +1,5 @@
 import type { ModelFamily } from "@/components/ds/model-icons"
-import type { StageStatus } from "@/components/ds/stage-track"
+import type { StepStatus } from "@/components/ds/stepper"
 import type { Option, Project } from "@/examples/davinci/data"
 
 // davinci v2: the same factory, organised around what the owner actually
@@ -146,7 +146,7 @@ export type ProjectState = {
   id: Project
   health: "ok" | "degraded"
   live: string
-  tasks: { key: string; title: string; family: ModelFamily; stages: StageStatus[]; now: string }[]
+  tasks: { key: string; title: string; family: ModelFamily; stages: StepStatus[]; now: string }[]
 }
 
 export const STATE: ProjectState[] = [
@@ -182,7 +182,7 @@ export const STAGES = ["Plan", "Build", "Gates", "Review", "Next", "Main"] as co
 // hold up. The inbox doesn't grow with it: davinci's job is to keep what
 // reaches you to a handful, however much is running.
 
-type Extra = [key: string, title: string, family: ModelFamily, at: number, status: StageStatus, now: string]
+type Extra = [key: string, title: string, family: ModelFamily, at: number, status: StepStatus, now: string]
 
 function extra([key, title, family, at, status, now]: Extra): ProjectState["tasks"][number] {
   return {

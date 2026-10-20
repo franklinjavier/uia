@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "activity",
+  "title": "Activity",
+  "author": "uia",
+  "description": "ActivityItem + ActivityList: what the agent did for you — time, what, why, the rule that did it, Undo or Final (host-decided).",
+  "dependencies": [
+    "lucide-react"
+  ],
+  "registryDependencies": [
+    "franklinjavier/uia/button",
+    "franklinjavier/uia/theme",
+    "franklinjavier/uia/widget"
+  ],
+  "files": [
+    {
+      "path": "registry/parts/activity.tsx",
+      "content": "import * as React from \"react\"\nimport { Undo2Icon } from \"lucide-react\"\n\nimport { Button } from \"@/components/ui/button\"\nimport {\n  Widget,\n  WidgetHeader,\n  WidgetList,\n  WidgetListRow,\n  WidgetPanel,\n  WidgetTitle,\n} from \"@/components/ds/widget\"\n\n// Activity: what the agent did for the person without asking, each entry\n// with why — the trust surface. One row per action: the time (mono), the\n// subject and what was done, the reason muted under it (and the rule that\n// did it, fainter), and on the right Undo while it can still be undone or\n// \"Final\" when it can't. Whether it can be undone comes from the host,\n// never from the agent. Undone rows dim and say so.\n//\n//   <ActivityList title=\"Decided for you\">\n//     <ActivityItem time=\"08:52\" subject=\"blog\" what=\"Reverted 3f2a1c\"\n//       why=\"The production check failed twice\" rule=\"Revert failed deploys\"\n//       onUndo={() => undo(\"d-1\")} />\n//     <ActivityItem time=\"08:40\" subject=\"bottega\" what=\"Merged T-580\" why=\"All gates green\" />\n//   </ActivityList>\n\nexport type ActivityLabels = {\n  undo: string\n  undone: string\n  final: string\n  rule: string\n}\n\nconst EN: ActivityLabels = {\n  undo: \"Undo\",\n  undone: \"Undone\",\n  final: \"Final\",\n  rule: \"rule\",\n}\n\nfunction ActivityList({\n  title,\n  size = \"default\",\n  className,\n  children,\n}: {\n  title?: React.ReactNode\n  size?: \"default\" | \"sm\"\n  className?: string\n  children: React.ReactNode\n}) {\n  return (\n    <Widget size={size} className={className}>\n      {title && (\n        <WidgetHeader>\n          <WidgetTitle>{title}</WidgetTitle>\n        </WidgetHeader>\n      )}\n      <WidgetPanel className=\"flex flex-col pt-3\">\n        <WidgetList>{children}</WidgetList>\n      </WidgetPanel>\n    </Widget>\n  )\n}\n\nfunction ActivityItem({\n  time,\n  subject,\n  what,\n  why,\n  rule,\n  undone = false,\n  onUndo,\n  labels,\n}: {\n  /** When it happened, already in the product's format (\"08:52\"). */\n  time: React.ReactNode\n  /** What it was about (a project, an account), before the action. */\n  subject?: React.ReactNode\n  what: React.ReactNode\n  why?: React.ReactNode\n  /** The standing rule that made the call, if one did. */\n  rule?: string\n  undone?: boolean\n  /** Omit when it can't be undone: the row says \"Final\". */\n  onUndo?: () => void\n  labels?: Partial<ActivityLabels>\n}) {\n  const l = { ...EN, ...labels }\n  return (\n    <WidgetListRow\n      data-slot=\"activity-item\"\n      className=\"grid-cols-[3rem_minmax(0,1fr)_auto] items-start\"\n      dimmed={undone}\n    >\n      <span className=\"pt-0.5 eyebrow text-muted-foreground tabular-nums\">\n        {time}\n      </span>\n      <span className=\"flex min-w-0 flex-col gap-0.5\">\n        <span>\n          {subject && (\n            <span className=\"text-muted-foreground\">{subject} · </span>\n          )}\n          {what}\n        </span>\n        {(why || rule) && (\n          <span className=\"text-xs text-muted-foreground\">\n            {why}\n            {rule && (\n              <span className=\"text-faint-foreground\">\n                {why ? \" · \" : \"\"}\n                {l.rule}: {rule.toLowerCase()}\n              </span>\n            )}\n          </span>\n        )}\n      </span>\n      {undone ? (\n        <span className=\"pt-0.5 eyebrow text-muted-foreground\">{l.undone}</span>\n      ) : onUndo ? (\n        <Button\n          size=\"xs\"\n          variant=\"ghost\"\n          className=\"text-muted-foreground\"\n          onClick={onUndo}\n        >\n          <Undo2Icon />\n          {l.undo}\n        </Button>\n      ) : (\n        <span className=\"pt-0.5 eyebrow text-faint-foreground\">{l.final}</span>\n      )}\n    </WidgetListRow>\n  )\n}\n\nexport { ActivityItem, ActivityList }\n",
+      "type": "registry:component",
+      "target": "@components/parts/activity.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

@@ -19,7 +19,7 @@ import { Sheet, SheetClose, SheetContent, SheetTitle } from "@/components/ui/she
 import { Switch } from "@/components/ui/switch"
 import type { AgentPhase } from "@/components/ds/agent-orb"
 import { ModelIcon } from "@/components/ds/model-icons"
-import { StageTrack } from "@/components/ds/stage-track"
+import { Stepper } from "@/components/ds/stepper"
 import { TaskListHeader, TaskRow, taskRank, taskStage } from "@/components/ds/task-list"
 import { AppNav, AppNavSelect, type AppNavItem } from "@/components/app/app-nav"
 import { ThemeToggle } from "@/components/app/theme-toggle"
@@ -1044,7 +1044,7 @@ function TaskPath({
         <span className="text-[15px]">{task.title}</span>
         <span className="text-sm text-muted-foreground">{task.now}</span>
       </div>
-      <StageTrack
+      <Stepper
         labeled
         stages={task.stages.map((status, i) => ({ label: STAGES[i], status }))}
       />

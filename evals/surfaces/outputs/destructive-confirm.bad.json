@@ -1,0 +1,46 @@
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "rb",
+      "catalogId": "https://uia.imfrank.dev/catalog/v1.json"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateDataModel": {
+      "surfaceId": "rb",
+      "path": "/",
+      "value": {
+        "service": "checkout-api",
+        "from": "v42",
+        "to": "v41"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "rb",
+      "components": [
+        {
+          "id": "root",
+          "component": "Row",
+          "children": [
+            "rb"
+          ]
+        },
+        {
+          "id": "rb",
+          "component": "Button",
+          "label": "Roll back to v41",
+          "action": {
+            "event": {
+              "name": "rollback"
+            }
+          }
+        }
+      ]
+    }
+  }
+]

@@ -102,11 +102,16 @@ to compose the existing pieces so the result looks like the designer built it.
   curls up at both ends; draw the line inside the padding instead
   (`WidgetListRow` does). Never put a border on one side of a rounded box.
 - **A widget is a component with props; demo data lives outside.** Build
-  data views as pure components (`components/widgets/*`: data in via props,
+  data views as pure components (`components/blocks/*`: data in via props,
   UI state inside, actions out via callbacks, pending states as props) and
   keep fixtures and simulations in the example. The same component renders
   on a page and, at `Widget size="sm"`, inside a chat reply — one shell,
   two densities, never a chat-only copy.
+- **Name by form or by agent role, never by product subject.** uia is for
+  any product: `Stepper`, `Stat`, `Meter` (form); `DecisionCard`,
+  `Confirmation`, `Plan`, `ActivityItem` (agent interaction). "Incident",
+  "task", "deploy", "spend" are a product's words: they live in that
+  product's catalog (`extendCatalog`) or as a block, not in uia's core.
 - **shadcn first.** Before building a piece, check the shadcn catalog
   (`bunx shadcn add <name>`): Badge, Alert, Sheet, Attachment, Marker,
   HoverCard, Table, Tabs, Field… uia's pieces are built on them

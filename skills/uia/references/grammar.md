@@ -166,7 +166,7 @@ a rail. The example is `example-bottega`.
   with `gap-8` in a centred column (`max-w-[60rem]`, `px-6 py-8`). Pair
   two at `xl` when they're peers (production · activity).
 - **Outcomes over machinery.** For agent products show where each thing is
-  (`StageTrack` over the flow), what is live and healthy, and what the agent
+  (`Stepper` over the flow), what is live and healthy, and what the agent
   did on its own (a quiet log) — not agents, tasks and tests. Details stay
   one click away.
 - **The conversation rail** (`26rem`, `border-l`): header with the

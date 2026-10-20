@@ -13,7 +13,8 @@
     "franklinjavier/uia/example-model-evals",
     "franklinjavier/uia/example-bottega",
     "franklinjavier/uia/example-davinci",
-    "franklinjavier/uia/example-surface"
+    "franklinjavier/uia/example-surface",
+    "franklinjavier/uia/example-davinci-surface"
   ],
   "type": "registry:block"
 }

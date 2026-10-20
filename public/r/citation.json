@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "citation",
+  "title": "Citation",
+  "author": "uia",
+  "description": "Evidence behind a claim: source host as eyebrow, the quote, a mono reference, a link out (http(s) only).",
+  "dependencies": [
+    "lucide-react",
+    "motion"
+  ],
+  "registryDependencies": [
+    "franklinjavier/uia/motion",
+    "franklinjavier/uia/theme"
+  ],
+  "files": [
+    {
+      "path": "registry/parts/citation.tsx",
+      "content": "import * as React from \"react\"\nimport { motion } from \"motion/react\"\nimport { ArrowUpRightIcon } from \"lucide-react\"\n\nimport { enter } from \"@/lib/motion\"\nimport { cn } from \"@/lib/utils\"\n\n// Citation: the evidence behind a claim — the passage itself, where it\n// came from, and where in it, so the person can check without opening\n// anything. The source's host is the eyebrow (what kind of place said\n// it), the reference (\"P. 12\", \"L. 40\", \"03:12\") sits right in mono, the\n// quote is the body, and the source's name links out at the foot. Use one\n// per claim the answer leans on; for a list of links, use Sources.\n//\n//   <Citation source=\"Q3 board deck\" url=\"https://drive.example.com/q3.pdf\" ref=\"P. 12\"\n//     quote=\"Two enterprise renewals slipped to Q4 pending security review.\" />\n\n/** The host of an http(s) URL, without \"www.\"; undefined for anything else. */\nfunction hostOf(url: string | undefined) {\n  if (!url) return undefined\n  try {\n    const u = new URL(url)\n    if (u.protocol !== \"https:\" && u.protocol !== \"http:\") return undefined\n    return u.hostname.replace(/^www\\./, \"\")\n  } catch {\n    return undefined\n  }\n}\n\nfunction Citation({\n  source,\n  url,\n  quote,\n  reference,\n  className,\n}: {\n  /** The source's name (\"Q3 board deck\", \"RFC 9110\"). */\n  source: React.ReactNode\n  /** http(s) only; anything else isn't linked. */\n  url?: string\n  quote: React.ReactNode\n  /** Where in the source: page, line, timestamp. */\n  reference?: string\n  className?: string\n}) {\n  const host = hostOf(url)\n  return (\n    <motion.figure\n      initial={{ opacity: 0, y: 4 }}\n      animate={{ opacity: 1, y: 0 }}\n      transition={enter}\n      data-slot=\"citation\"\n      className={cn(\n        \"not-typeset flex flex-col gap-2 rounded-2xl border border-border/80 bg-card p-4 text-sm shadow-xs\",\n        className\n      )}\n    >\n      <div className=\"flex items-baseline gap-3\">\n        <span className=\"min-w-0 truncate eyebrow text-muted-foreground\">\n          {host ?? source}\n        </span>\n        {reference && (\n          <span className=\"ml-auto shrink-0 eyebrow text-faint-foreground tabular-nums\">\n            {reference}\n          </span>\n        )}\n      </div>\n      <blockquote className=\"text-pretty\">“{quote}”</blockquote>\n      {host && (\n        <figcaption>\n          <a\n            href={url}\n            target=\"_blank\"\n            rel=\"noreferrer\"\n            className=\"group/cite flex w-fit max-w-full items-center gap-1 text-xs text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:text-foreground\"\n          >\n            <span className=\"truncate\">{source}</span>\n            <ArrowUpRightIcon className=\"size-3.5 shrink-0\" />\n          </a>\n        </figcaption>\n      )}\n    </motion.figure>\n  )\n}\n\nexport { Citation }\n",
+      "type": "registry:component",
+      "target": "@components/parts/citation.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

@@ -1,0 +1,74 @@
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "inc",
+      "catalogId": "https://uia.imfrank.dev/catalog/v1.json"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateDataModel": {
+      "surfaceId": "inc",
+      "path": "/",
+      "value": {
+        "incident": {
+          "title": "Blog RSS back to healthy",
+          "when": "09:12",
+          "steps": [
+            {
+              "label": "Detected",
+              "status": "done"
+            },
+            {
+              "label": "Reverted",
+              "status": "done"
+            },
+            {
+              "label": "Healthy",
+              "status": "done"
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "inc",
+      "components": [
+        {
+          "id": "root",
+          "component": "Column",
+          "children": [
+            "i1"
+          ]
+        },
+        {
+          "id": "i1",
+          "component": "Confirm",
+          "title": "Revert 3f2a1c?",
+          "description": "The RSS check failed after v12.",
+          "confirmLabel": "Revert",
+          "action": {
+            "event": {
+              "name": "revert",
+              "context": {
+                "id": "i1"
+              }
+            }
+          },
+          "cancelAction": {
+            "event": {
+              "name": "keep",
+              "context": {
+                "id": "i1"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+]

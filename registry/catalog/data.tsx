@@ -12,7 +12,7 @@ import {
 import { BarSeries as BarSeriesView } from "@/components/ds/bar-series"
 import { MeterBar } from "@/components/ds/meter-bar"
 import { Sparkline as SparklineView } from "@/components/ds/sparkline"
-import { StageTrack as StageTrackView } from "@/components/ds/stage-track"
+import { Stepper as StepperView } from "@/components/ds/stepper"
 import {
   Stat as StatRoot,
   StatLabel,
@@ -348,8 +348,8 @@ export const KeyValue = defineComponent({
   ),
 })
 
-export const StageTrack = defineComponent({
-  name: "StageTrack",
+export const Stepper = defineComponent({
+  name: "Stepper",
   kind: "data",
   description: "Where something is in a fixed sequence of stages.",
   props: z.object({
@@ -362,7 +362,7 @@ export const StageTrack = defineComponent({
       )
       .min(2),
   }),
-  render: (p) => <StageTrackView labeled stages={p.stages} />,
+  render: (p) => <StepperView labeled stages={p.stages} />,
 })
 
 export const data = [
@@ -374,5 +374,5 @@ export const data = [
   Table,
   List,
   KeyValue,
-  StageTrack,
+  Stepper,
 ]

@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "registry": "bun scripts/registry.ts",
+    "eval:surfaces": "bun scripts/eval-surfaces.ts",
     "registry:build": "bun scripts/registry.ts && bun scripts/catalog.ts && shadcn build --output public/r",
     "deploy": "bun run build && wrangler deploy",
     "cf:preview": "bun run build && wrangler dev"

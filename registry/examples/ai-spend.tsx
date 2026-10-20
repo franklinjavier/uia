@@ -2,7 +2,7 @@ import {
   AiSpend,
   type AiSpendModel,
   type AiSpendPeriod,
-} from "@/components/widgets/ai-spend"
+} from "@/components/blocks/ai-spend"
 
 // Example: the AiSpend widget with demo data. The widget is a pure view
 // (components/widgets/ai-spend); this file is only the fixture. Pick a past

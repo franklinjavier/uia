@@ -1,0 +1,55 @@
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "rb",
+      "catalogId": "https://uia.imfrank.dev/catalog/v1.json"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateDataModel": {
+      "surfaceId": "rb",
+      "path": "/",
+      "value": {
+        "service": "checkout-api",
+        "from": "v42",
+        "to": "v41"
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "rb",
+      "components": [
+        {
+          "id": "root",
+          "component": "Confirm",
+          "title": "Roll back checkout-api to v41?",
+          "description": "Reverts the payment retry change that shipped in v42.",
+          "confirmLabel": "Roll back",
+          "cancelLabel": "Investigate first",
+          "action": {
+            "event": {
+              "name": "rollback",
+              "context": {
+                "service": {
+                  "path": "/service"
+                },
+                "to": {
+                  "path": "/to"
+                }
+              }
+            }
+          },
+          "cancelAction": {
+            "event": {
+              "name": "keep"
+            }
+          }
+        }
+      ]
+    }
+  }
+]

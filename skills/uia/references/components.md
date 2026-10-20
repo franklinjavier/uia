@@ -23,7 +23,7 @@ forking the component.
 3. Chat kit (`chat/`)
 4. Primitives (`ui/`)
 5. Bundles and item names
-6. Widgets (`widgets/`) and the app shell (`app/`)
+6. Blocks (`blocks/`, product widgets) and the app shell (`app/`)
 
 ---
 
@@ -130,14 +130,14 @@ the label row keeps only the first, last and hovered labels.
 `<Sparkline values={series} />` — line over a soft area, dashed mean, last
 point marked. Pair with a big number and an eyebrow for the window ("Last 64 s").
 
-### StageTrack (`stage-track`)
+### Stepper (`stepper`)
 Where something is in a fixed sequence, on one line: dots joined by
 hairlines, each `done | active | waiting | failed | todo`. Dots without
 names are a puzzle: every track must have its stage names in view. In a
-list, put them once in a header with `<StageTrackLabels stages={…} />`
+list, put them once in a header with `<StepperLabels stages={…} />`
 (same grid as the tracks; when rows stack on narrow widths and the track
 spans the row, give the stacked layout its own labels row too). A track that
-stands alone (a detail panel) uses `<StageTrack labeled />`. Over many tracks
+stands alone (a detail panel) uses `<Stepper labeled />`. Over many tracks
 (dozens of tasks), give each label a `count` (how many sit at that stage),
 sort what needs the person first, and fold the list after a handful: the
 counts show where work piles up without reading every row. Pass
@@ -175,6 +175,11 @@ Read `hitl.md` for when to use which. Summary:
 | `Confirmation` | `confirmation` | Ready-made approval gate; `allowLabel`/`denyLabel`/`status` take the action's own words ("Reverter para v41"); `children` for a fields panel. |
 | `PreviewApproval` / `PreviewApprovalResolved` | `preview-approval` | A visual change waits for the person's eye: before/after, preview link, accept or ask for changes in words. |
 | `DecisionChip` | `decision-chip` | A pending decision, compact, for a "needs you" strip outside the chat; opens the full card. |
+| `StatusCard` | `status-card` | A state with its steps and what's next (an incident, a deploy, a migration): status pill, labelled `Stepper`, fields, note, optional answers; `resolved` collapses it to a `ResolvedRow`. Read-mostly; a gate with an answer is `Confirmation`. |
+| `ActivityItem` / `ActivityList` | `activity` | What the agent did without asking: time, what, why, the rule that did it, Undo or "Final" — decided by the host, never the agent. |
+| `Policy` / `PolicyList` | `policy` | A standing rule: a switch row (the whole row is the label), `applied` count, the off state says its effect. A rule is a switch, never a button. |
+| `Diff` | `diff` | Code to review: summary, files with +/- lines, answers; resolves to a row. |
+| `Citation` | `citation` | The evidence for one claim: source, quote, reference, link. |
 | `Plan` | `plan` | A multi-step job the agent runs in front of you: steps `todo → running → done` (or `waiting` on the person, `failed`), a tick meter that fills, `3/4` counter. Stream it as a **data part** with a fixed `id` so it updates in place. |
 | `ConnectPrompt` | `connect-prompt` | The agent needs access (Slack, a calendar): docked **above the composer**, not in the transcript; `ask → connecting → connected` in place, then says what happens next and leaves. Back it with a client tool that waits. |
 | `Findings` + `SeveritySignal` | `findings` | What the agent pulled from a source, ranked by a 3-bar severity signal (the only colour), each with its reference ("P. 12") in mono so the claim can be checked. |
@@ -280,20 +285,20 @@ Button language:
 
 Foundation: `theme`, `font-inter`, `font-geist-mono`, `typeset`.
 Primitives: `button`, `select`, `bubble`, `code-block`, `questionnaire`, `spinner`, `message-scroller`.
-System: `widget`, `stat`, `segmented`, `status`, `tick-meter`, `meter-bar`, `sparkline`, `bar-series`, `stage-track`, `task-list`, `number-ticker`, `agent-orb`, `model-icons`.
-Widgets: `widget-ai-spend`, `widget-fleet-health`, `widget-model-evals`, `widget-model-router`, `widget-agent-runtime` (bundle: `widgets`).
+System: `widget`, `stat`, `segmented`, `status`, `tick-meter`, `meter-bar`, `sparkline`, `bar-series`, `stepper`, `task-list`, `number-ticker`, `agent-orb`, `model-icons`.
+Blocks (product widgets): `block-ai-spend`, `block-fleet-health`, `block-model-evals`, `block-model-router`, `block-agent-runtime` (bundle: `blocks`).
 App shell: `app-nav`, `theme-toggle`, `theme-provider`.
-Surfaces (agent-composed UI, see `surfaces.md`): `surface` (runtime), `catalog`, `catalog-layout`, `catalog-display`, `catalog-data`, `catalog-input`, `catalog-blocks` (bundle: `surfaces`).
+Surfaces (agent-composed UI, see `surfaces.md`): `surface` (runtime), `catalog`, `catalog-layout`, `catalog-display`, `catalog-data`, `catalog-input`, `catalog-patterns`, `catalog-blocks` (optional product layer) (bundle: `surfaces`).
 Examples (fixtures over the widgets): `example-assistant`, `example-model-router`, `example-agent-runtime`, `example-ai-spend`, `example-fleet-health`, `example-model-evals`, `example-bottega`, `example-davinci`, `example-surface` (bundle: `examples`).
-Generative UI: `action-card`, `decision-card`, `ask-user`, `confirmation`, `preview-approval`, `decision-chip`, `draft-card`, `plan`, `connect-prompt`, `findings`, `chart-card`, `attachment`, `part-transition`, `tool-line`, `reasoning`, `sources`, `search-results`, `markdown`.
+Generative UI: `action-card`, `decision-card`, `status-card`, `activity`, `policy`, `diff`, `citation`, `ask-user`, `confirmation`, `preview-approval`, `decision-chip`, `draft-card`, `plan`, `connect-prompt`, `findings`, `chart-card`, `attachment`, `part-transition`, `tool-line`, `reasoning`, `sources`, `search-results`, `markdown`.
 Chat: `agent-chat`, `chat-thread`, `chat-turn`, `turn-actions`, `composer`, `chat-empty`, `chat-status`, `chat-error`, `chat-pill`.
 Lib: `motion`, `ai`, `url`, `highlighter`.
-Bundles: `uia` (everything), `chat`, `hitl`, `widgets`, `surfaces`, `examples`.
+Bundles: `uia` (everything), `chat`, `hitl`, `blocks`, `surfaces`, `examples`.
 Skill: `skill` (this file set).
 
 ---
 
-## 6. Widgets — `@/components/widgets/*` — and the app shell — `@/components/app/*`
+## 6. Blocks — `@/components/blocks/*` — and the app shell — `@/components/app/*`
 
 **A widget is a component with typed props; its demo data lives outside.**
 Each widget is a pure view: data in through props, only UI state inside
@@ -307,11 +312,11 @@ The `example-*` files are only fixtures: data, simulation timers, and a
 
 | Widget | Item | Key props |
 | --- | --- | --- |
-| `AiSpend` | `widget-ai-spend` | `models`, `periods`, `budget`, `alertAt`, `period`/`onPeriodChange`, `currency`, `locale`, `size` |
-| `FleetHealth` | `widget-fleet-health` | `nodes`, `tokens`, `queue`, `powerCap`, `interval`, `clusters`/`cluster`, `mode`, `onRebalance`, `rebalancing`, `live` |
-| `ModelEvals` | `widget-model-evals` | `model`, `suites`, `baselines`, `failures`, `target`, `min`, `baseline`, `onRerun`, `running`, `labels`, `locale` |
-| `ModelRouter` | `widget-model-router` | `models`, `policies`, `livePolicy`, `requestsPerSecond`, `environments`, `policy`, `fallback`, `onDeploy`, `deployState` |
-| `AgentRuntime` | `widget-agent-runtime` | `agents` (status, idle, coldStarts, startMs), `idleTimeout`, `requests`, `coldStartP50`, `onInvoke`, `selected`, `regions`/`region`, `live` |
+| `AiSpend` | `block-ai-spend` | `models`, `periods`, `budget`, `alertAt`, `period`/`onPeriodChange`, `currency`, `locale`, `size` |
+| `FleetHealth` | `block-fleet-health` | `nodes`, `tokens`, `queue`, `powerCap`, `interval`, `clusters`/`cluster`, `mode`, `onRebalance`, `rebalancing`, `live` |
+| `ModelEvals` | `block-model-evals` | `model`, `suites`, `baselines`, `failures`, `target`, `min`, `baseline`, `onRerun`, `running`, `labels`, `locale` |
+| `ModelRouter` | `block-model-router` | `models`, `policies`, `livePolicy`, `requestsPerSecond`, `environments`, `policy`, `fallback`, `onDeploy`, `deployState` |
+| `AgentRuntime` | `block-agent-runtime` | `agents` (status, idle, coldStarts, startMs), `idleTimeout`, `requests`, `coldStartP50`, `onInvoke`, `selected`, `regions`/`region`, `live` |
 
 The same widget answers in a chat: a tool whose output is the widget's data
 renders `<AiSpend size="sm" {...part.output} />` after its trace line

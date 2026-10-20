@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "policy",
+  "title": "Policy",
+  "author": "uia",
+  "description": "Policy + PolicyList: a standing rule as a switch row (the row is the label), applied count, off state says its effect.",
+  "registryDependencies": [
+    "franklinjavier/uia/theme",
+    "franklinjavier/uia/widget",
+    "switch"
+  ],
+  "files": [
+    {
+      "path": "registry/parts/policy.tsx",
+      "content": "import * as React from \"react\"\n\nimport { cn } from \"@/lib/utils\"\nimport { Switch } from \"@/components/ui/switch\"\nimport {\n  Widget,\n  WidgetHeader,\n  WidgetList,\n  WidgetListRow,\n  WidgetPanel,\n  WidgetTitle,\n} from \"@/components/ds/widget\"\n\n// Policy: a standing rule the agent applies on the person's behalf. A rule\n// is a state, not an action, so it's a Switch, and the whole row is its\n// label. The meta line says what kind of decision it covers and how often\n// it fired; off, it says its effect instead (\"Off · these come back to\n// your inbox\"). No confirmation: flipping it back undoes it.\n//\n//   <PolicyList title=\"Rules\">\n//     <Policy text=\"Auto-approve dependency bumps with green checks\"\n//       category=\"Reviews\" applied={14} on={on} onToggle={setOn} />\n//   </PolicyList>\n\nexport type PolicyLabels = {\n  applied: (n: React.ReactNode) => React.ReactNode\n  off: string\n}\n\nconst EN: PolicyLabels = {\n  applied: (n) => <>applied {n}×</>,\n  off: \"Off · these come back to your inbox\",\n}\n\nfunction PolicyList({\n  title,\n  size = \"default\",\n  className,\n  children,\n}: {\n  title?: React.ReactNode\n  size?: \"default\" | \"sm\"\n  className?: string\n  children: React.ReactNode\n}) {\n  return (\n    <Widget size={size} className={className}>\n      {title && (\n        <WidgetHeader>\n          <WidgetTitle>{title}</WidgetTitle>\n        </WidgetHeader>\n      )}\n      <WidgetPanel className=\"flex flex-col pt-3\">\n        <WidgetList>{children}</WidgetList>\n      </WidgetPanel>\n    </Widget>\n  )\n}\n\nfunction Policy({\n  text,\n  category,\n  applied,\n  on,\n  onToggle,\n  labels,\n}: {\n  text: React.ReactNode\n  category?: React.ReactNode\n  /** How many times it decided for the person. */\n  applied?: number\n  on: boolean\n  /** Omit when the host can't change it here: the switch only shows the state. */\n  onToggle?: (on: boolean) => void\n  labels?: Partial<PolicyLabels>\n}) {\n  const l = { ...EN, ...labels }\n  const id = React.useId()\n  return (\n    <WidgetListRow data-slot=\"policy\" className=\"grid-cols-1 py-0\">\n      <label\n        className={cn(\n          \"grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 py-2.5\",\n          onToggle && \"cursor-pointer\"\n        )}\n      >\n        <span className=\"flex min-w-0 flex-col gap-0.5\">\n          <span\n            id={id}\n            className={cn(\"transition-colors\", !on && \"text-muted-foreground\")}\n          >\n            {text}\n          </span>\n          <span className=\"eyebrow text-muted-foreground\">\n            {on ? (\n              <>\n                {category}\n                {category && applied !== undefined && \" · \"}\n                {applied !== undefined &&\n                  l.applied(<span className=\"tabular-nums\">{applied}</span>)}\n              </>\n            ) : (\n              <span className=\"text-foreground\">{l.off}</span>\n            )}\n          </span>\n        </span>\n        <Switch\n          aria-labelledby={id}\n          checked={on}\n          disabled={!onToggle}\n          onCheckedChange={(next) => onToggle?.(next)}\n          className=\"data-checked:border-brand data-checked:bg-brand\"\n        />\n      </label>\n    </WidgetListRow>\n  )\n}\n\nexport { Policy, PolicyList }\n",
+      "type": "registry:component",
+      "target": "@components/parts/policy.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

@@ -1,0 +1,88 @@
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "q",
+      "catalogId": "https://uia.imfrank.dev/catalog/v1.json"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateDataModel": {
+      "surfaceId": "q",
+      "path": "/",
+      "value": {
+        "stats": {
+          "waitAvg": 41,
+          "batched": 12
+        },
+        "agreement": {
+          "accepted": 5,
+          "total": 7,
+          "category": "Priority"
+        }
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "q",
+      "components": [
+        {
+          "id": "root",
+          "component": "Column",
+          "children": [
+            "wait",
+            "q"
+          ]
+        },
+        {
+          "id": "wait",
+          "component": "Stat",
+          "label": "Average wait for integration",
+          "value": {
+            "path": "/stats/waitAvg"
+          },
+          "format": "integer",
+          "unit": "min",
+          "size": "sm"
+        },
+        {
+          "id": "q",
+          "component": "DecisionCard",
+          "title": "Raise T-289 (batched integration) to high?",
+          "context": "Integration is serial today; batching would cut the wait sharply.",
+          "agreement": {
+            "path": "/agreement"
+          },
+          "actions": [
+            {
+              "label": "Yes, high",
+              "action": {
+                "event": {
+                  "name": "approve",
+                  "context": {
+                    "id": "t289"
+                  }
+                }
+              }
+            },
+            {
+              "label": "Keep normal",
+              "kind": "secondary",
+              "action": {
+                "event": {
+                  "name": "keep",
+                  "context": {
+                    "id": "t289"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

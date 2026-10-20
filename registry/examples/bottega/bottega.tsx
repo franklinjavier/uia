@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Sparkline } from "@/components/ds/sparkline"
-import { StageTrack, stageTrackGrid } from "@/components/ds/stage-track"
+import { Stepper, stepperGrid } from "@/components/ds/stepper"
 import { StatusBadge } from "@/components/ds/status"
 import {
   Widget,
@@ -127,7 +127,7 @@ export function Bottega() {
               <WidgetList onMouseLeave={() => setHovered(null)}>
                 <WidgetListHeader className={PROJECT_COLS}>
                   <span className="eyebrow text-muted-foreground">Projeto</span>
-                  <span className="grid max-md:hidden" style={stageTrackGrid(STAGES.length)}>
+                  <span className="grid max-md:hidden" style={stepperGrid(STAGES.length)}>
                     {STAGES.map((s) => (
                       <span key={s} className="truncate text-xs text-muted-foreground">
                         {s}
@@ -149,7 +149,7 @@ export function Bottega() {
                       <span className="truncate">{p.name}</span>
                       <span className="truncate text-xs text-muted-foreground">{p.goal}</span>
                     </span>
-                    <StageTrack
+                    <Stepper
                       className="col-span-2 order-last md:order-none md:col-span-1"
                       stages={p.stages.map((status, i) => ({ label: STAGES[i], status }))}
                       statusLabels={{ done: "concluída", active: "em andamento", waiting: "esperando você", failed: "falhou", todo: "a fazer" }}

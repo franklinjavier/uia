@@ -5,7 +5,7 @@ import {
   type FleetCluster,
   type FleetGpu,
   type FleetNode,
-} from "@/components/widgets/fleet-health"
+} from "@/components/blocks/fleet-health"
 
 // Example: the FleetHealth widget with a simulated fleet. The widget is a
 // pure view (components/widgets/fleet-health); this file is the fixture:

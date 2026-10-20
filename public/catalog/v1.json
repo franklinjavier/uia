@@ -1,5 +1,5 @@
 {
-  "$id": "https://uia.frank-47e.workers.dev/catalog/v1.json",
+  "$id": "https://uia.imfrank.dev/catalog/v1.json",
   "version": "v0.9",
   "components": {
     "Column": {
@@ -1843,7 +1843,7 @@
         "value"
       ]
     },
-    "StageTrack": {
+    "Stepper": {
       "description": "Where something is in a fixed sequence of stages.",
       "kind": "data",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -1853,7 +1853,7 @@
           "type": "string"
         },
         "component": {
-          "const": "StageTrack"
+          "const": "Stepper"
         },
         "span": {
           "description": "Columns to span inside a Grid.",
@@ -2606,7 +2606,7 @@
     },
     "DecisionCard": {
       "description": "One decision the agent needs from the person: what, why, options with the agent's pick, the consequence, and the answers. Use for anything waiting on a judgment.",
-      "kind": "block",
+      "kind": "pattern",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
       "properties": {
@@ -2886,7 +2886,7 @@
             }
           ]
         },
-        "irreversible": {
+        "urgent": {
           "anyOf": [
             {
               "type": "boolean"
@@ -2905,10 +2905,292 @@
             }
           ]
         },
-        "urgent": {
+        "agreement": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "path"
+          ],
+          "additionalProperties": false,
+          "description": "A fact: bind it to the data model; literals are rejected."
+        }
+      },
+      "required": [
+        "id",
+        "component",
+        "title"
+      ]
+    },
+    "Confirmation": {
+      "description": "A gate before something with side effects runs: who wants to do what, the specifics as fields, a trust note, and the two answers (allow, deny). The only place a destructive event may live besides DecisionCard.",
+      "kind": "pattern",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "component": {
+          "const": "Confirmation"
+        },
+        "span": {
+          "description": "Columns to span inside a Grid.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "title": {
           "anyOf": [
             {
-              "type": "boolean"
+              "type": "string",
+              "description": "Who wants to do what, or what happened."
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "status": {
+          "anyOf": [
+            {
+              "description": "Pill text, default \"Approval needed\" (\"Incident\").",
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "fields": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "label",
+                  "value"
+                ]
+              },
+              "description": "Label/value specifics. Bind values that are facts ({path}) rather than writing them."
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "note": {
+          "anyOf": [
+            {
+              "description": "Trust fine print, one line.",
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "allowLabel": {
+          "anyOf": [
+            {
+              "description": "The verb (\"Revert 3f2a1c\"), default \"Allow\".",
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "denyLabel": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "action": {
+          "description": "Fired by the allow answer.",
+          "type": "object",
+          "properties": {
+            "event": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Named event the agent handles, e.g. raise_limit."
+                },
+                "context": {
+                  "description": "Values sent with the event; bindings ({path}) resolve at click time.",
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {}
+                }
+              },
+              "required": [
+                "name"
+              ]
+            }
+          },
+          "required": [
+            "event"
+          ]
+        },
+        "denyAction": {
+          "anyOf": [
+            {
+              "description": "Fired by the deny answer.",
+              "type": "object",
+              "properties": {
+                "event": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Named event the agent handles, e.g. raise_limit."
+                    },
+                    "context": {
+                      "description": "Values sent with the event; bindings ({path}) resolve at click time.",
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "additionalProperties": {}
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ]
+                }
+              },
+              "required": [
+                "event"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "resolved": {
+          "anyOf": [
+            {
+              "description": "Set (by updating the data model) once it's settled: the card becomes one quiet row.",
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "summary": {
+                  "type": "string"
+                },
+                "declined": {
+                  "description": "It didn't go ahead (denied, sent back): the row dims.",
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "label",
+                "summary"
+              ]
             },
             {
               "type": "object",
@@ -2931,9 +3213,320 @@
         "title"
       ]
     },
+    "StatusCard": {
+      "description": "A state the person should know about, with the steps it went through and what comes next (an incident: detected → reverted → healthy; a deploy; a migration). Update its data to move steps; set resolved when it's over.",
+      "kind": "pattern",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "component": {
+          "const": "StatusCard"
+        },
+        "span": {
+          "description": "Columns to span inside a Grid.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "eyebrow": {
+          "anyOf": [
+            {
+              "description": "What it's about · what kind.",
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "title": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "tone": {
+          "anyOf": [
+            {
+              "description": "neutral → warning → destructive as it worsens; success when fine again.",
+              "type": "string",
+              "enum": [
+                "neutral",
+                "success",
+                "warning",
+                "destructive"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "status": {
+          "anyOf": [
+            {
+              "description": "Pill text (\"Reverting\").",
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "steps": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "done",
+                      "active",
+                      "waiting",
+                      "failed",
+                      "todo"
+                    ]
+                  }
+                },
+                "required": [
+                  "label",
+                  "status"
+                ]
+              }
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "fields": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "label",
+                  "value"
+                ]
+              },
+              "description": "Label/value specifics. Bind values that are facts ({path}) rather than writing them."
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "note": {
+          "anyOf": [
+            {
+              "description": "What happens next, one line.",
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "actions": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "description": "The verb: what clicking does."
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "primary",
+                      "secondary"
+                    ]
+                  },
+                  "action": {
+                    "type": "object",
+                    "properties": {
+                      "event": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Named event the agent handles, e.g. raise_limit."
+                          },
+                          "context": {
+                            "description": "Values sent with the event; bindings ({path}) resolve at click time.",
+                            "type": "object",
+                            "propertyNames": {
+                              "type": "string"
+                            },
+                            "additionalProperties": {}
+                          }
+                        },
+                        "required": [
+                          "name"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "event"
+                    ],
+                    "description": "What happens when the person triggers it: a named event back to the agent."
+                  }
+                },
+                "required": [
+                  "label",
+                  "action"
+                ]
+              }
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "resolved": {
+          "anyOf": [
+            {
+              "description": "Set (by updating the data model) once it's settled: the card becomes one quiet row.",
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "summary": {
+                  "type": "string"
+                },
+                "declined": {
+                  "description": "It didn't go ahead (denied, sent back): the row dims.",
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "label",
+                "summary"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "component",
+        "title",
+        "steps"
+      ]
+    },
     "Plan": {
       "description": "A multi-step job and where it is: steps todo → running → done (waiting = needs the person, failed). Update its data to tick steps off.",
-      "kind": "block",
+      "kind": "pattern",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
       "properties": {
@@ -3022,7 +3615,7 @@
     },
     "Findings": {
       "description": "What was pulled from a source, ranked by severity, each with its reference (page, line, timestamp) so it can be checked.",
-      "kind": "block",
+      "kind": "pattern",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
       "properties": {
@@ -3107,9 +3700,9 @@
         "items"
       ]
     },
-    "AiSpend": {
-      "description": "AI cost by model against a budget for a period: spent, left, projection, alert, models as the meter's legend.",
-      "kind": "block",
+    "ActivityList": {
+      "description": "What the agent did for the person without asking: a titled list whose children are ActivityItem (usually a template over the data).",
+      "kind": "pattern",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "type": "object",
       "properties": {
@@ -3117,7 +3710,7 @@
           "type": "string"
         },
         "component": {
-          "const": "AiSpend"
+          "const": "ActivityList"
         },
         "span": {
           "description": "Columns to span inside a Grid.",
@@ -3125,39 +3718,10 @@
           "minimum": 1,
           "maximum": 4
         },
-        "models": {
+        "title": {
           "anyOf": [
             {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string"
-                  },
-                  "name": {
-                    "type": "string"
-                  },
-                  "provider": {
-                    "type": "string"
-                  },
-                  "family": {
-                    "type": "string",
-                    "enum": [
-                      "claude",
-                      "openai",
-                      "gemini",
-                      "meta",
-                      "grok"
-                    ]
-                  }
-                },
-                "required": [
-                  "id",
-                  "name",
-                  "family"
-                ]
-              }
+              "type": "string"
             },
             {
               "type": "object",
@@ -3173,102 +3737,198 @@
             }
           ]
         },
-        "periods": {
+        "children": {
           "anyOf": [
             {
-              "minItems": 1,
               "type": "array",
               "items": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string"
-                  },
-                  "label": {
-                    "type": "string"
-                  },
-                  "short": {
-                    "type": "string"
-                  },
-                  "days": {
-                    "type": "number"
-                  },
-                  "day": {
-                    "type": "number"
-                  },
-                  "resets": {
-                    "type": "string"
-                  },
-                  "usage": {
-                    "type": "object",
-                    "propertyNames": {
-                      "type": "string"
+                "type": "string"
+              }
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "componentId": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path",
+                "componentId"
+              ],
+              "description": "Repeat componentId once per item of the array at path; inside it, relative paths read the item."
+            }
+          ],
+          "description": "Ids of child components, or a template over a data array."
+        }
+      },
+      "required": [
+        "id",
+        "component",
+        "children"
+      ]
+    },
+    "ActivityItem": {
+      "description": "One thing the agent did for the person: when, about what, what, why, the rule that did it, and Undo while the host says it can be undone (otherwise Final). Put inside ActivityList.",
+      "kind": "pattern",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "component": {
+          "const": "ActivityItem"
+        },
+        "span": {
+          "description": "Columns to span inside a Grid.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "time": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "path"
+          ],
+          "additionalProperties": false,
+          "description": "A fact: bind it to the data model; literals are rejected."
+        },
+        "subject": {
+          "anyOf": [
+            {
+              "description": "What it was about.",
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "what": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "why": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "rule": {
+          "anyOf": [
+            {
+              "description": "The standing rule that decided.",
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "undone": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "undoAction": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "event": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Named event the agent handles, e.g. raise_limit."
                     },
-                    "additionalProperties": {
+                    "context": {
+                      "description": "Values sent with the event; bindings ({path}) resolve at click time.",
                       "type": "object",
-                      "properties": {
-                        "cost": {
-                          "type": "number"
-                        },
-                        "tokens": {
-                          "type": "number"
-                        }
+                      "propertyNames": {
+                        "type": "string"
                       },
-                      "required": [
-                        "cost",
-                        "tokens"
-                      ]
+                      "additionalProperties": {}
                     }
-                  }
-                },
-                "required": [
-                  "id",
-                  "label",
-                  "short",
-                  "days",
-                  "day",
-                  "resets",
-                  "usage"
-                ]
-              }
-            },
-            {
-              "type": "object",
-              "properties": {
-                "path": {
-                  "type": "string"
+                  },
+                  "required": [
+                    "name"
+                  ]
                 }
               },
               "required": [
-                "path"
+                "event"
               ],
-              "additionalProperties": false
-            }
-          ]
-        },
-        "budget": {
-          "anyOf": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "object",
-              "properties": {
-                "path": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "path"
-              ],
-              "additionalProperties": false
-            }
-          ]
-        },
-        "alertAt": {
-          "anyOf": [
-            {
-              "type": "number"
+              "description": "What happens when the person triggers it: a named event back to the agent."
             },
             {
               "type": "object",
@@ -3288,9 +3948,1043 @@
       "required": [
         "id",
         "component",
-        "models",
-        "periods",
-        "budget"
+        "time",
+        "what"
+      ]
+    },
+    "PolicyList": {
+      "description": "The standing rules the agent applies: a titled list whose children are Policy.",
+      "kind": "pattern",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "component": {
+          "const": "PolicyList"
+        },
+        "span": {
+          "description": "Columns to span inside a Grid.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "title": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "children": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "componentId": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path",
+                "componentId"
+              ],
+              "description": "Repeat componentId once per item of the array at path; inside it, relative paths read the item."
+            }
+          ],
+          "description": "Ids of child components, or a template over a data array."
+        }
+      },
+      "required": [
+        "id",
+        "component",
+        "children"
+      ]
+    },
+    "Policy": {
+      "description": "A standing rule the agent applies on the person's behalf, as an on/off switch with its category and how often it applied. Flipping fires toggleAction with context.on. Put inside PolicyList.",
+      "kind": "pattern",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "component": {
+          "const": "Policy"
+        },
+        "span": {
+          "description": "Columns to span inside a Grid.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "text": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "The rule, as a sentence."
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "category": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "applied": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "path"
+          ],
+          "additionalProperties": false,
+          "description": "A fact: bind it to the data model; literals are rejected."
+        },
+        "on": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "toggleAction": {
+          "anyOf": [
+            {
+              "description": "Fired on flip; context.on is the new state.",
+              "type": "object",
+              "properties": {
+                "event": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Named event the agent handles, e.g. raise_limit."
+                    },
+                    "context": {
+                      "description": "Values sent with the event; bindings ({path}) resolve at click time.",
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "additionalProperties": {}
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ]
+                }
+              },
+              "required": [
+                "event"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "component",
+        "text",
+        "on"
+      ]
+    },
+    "Diff": {
+      "description": "A code change waiting for review: what it does in a few lines, then the hunks that matter per file, and the answers (approve, send back).",
+      "kind": "pattern",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "component": {
+          "const": "Diff"
+        },
+        "span": {
+          "description": "Columns to span inside a Grid.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "eyebrow": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "title": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "status": {
+          "anyOf": [
+            {
+              "description": "Pill text (\"High risk\").",
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "summary": {
+          "anyOf": [
+            {
+              "description": "What the change does, one plain line each.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "files": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "type": "string"
+                  },
+                  "lines": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Unified diff lines: \"+ added\", \"- removed\", else context."
+                  }
+                },
+                "required": [
+                  "path",
+                  "lines"
+                ]
+              }
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "actions": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "description": "The verb: what clicking does."
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "primary",
+                      "secondary"
+                    ]
+                  },
+                  "action": {
+                    "type": "object",
+                    "properties": {
+                      "event": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Named event the agent handles, e.g. raise_limit."
+                          },
+                          "context": {
+                            "description": "Values sent with the event; bindings ({path}) resolve at click time.",
+                            "type": "object",
+                            "propertyNames": {
+                              "type": "string"
+                            },
+                            "additionalProperties": {}
+                          }
+                        },
+                        "required": [
+                          "name"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "event"
+                    ],
+                    "description": "What happens when the person triggers it: a named event back to the agent."
+                  }
+                },
+                "required": [
+                  "label",
+                  "action"
+                ]
+              }
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "resolved": {
+          "anyOf": [
+            {
+              "description": "Set (by updating the data model) once it's settled: the card becomes one quiet row.",
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "summary": {
+                  "type": "string"
+                },
+                "declined": {
+                  "description": "It didn't go ahead (denied, sent back): the row dims.",
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "label",
+                "summary"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "component",
+        "title",
+        "files"
+      ]
+    },
+    "Citation": {
+      "description": "The evidence behind one claim: the quoted passage, its source (name + url, the host shown) and where in it (page, line, timestamp).",
+      "kind": "pattern",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "component": {
+          "const": "Citation"
+        },
+        "span": {
+          "description": "Columns to span inside a Grid.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "source": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "The source's name."
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^https?:\\/\\/",
+              "description": "An http(s) URL."
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "quote": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "The passage, verbatim."
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "description": "Where in the source (\"P. 12\").",
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "component",
+        "source",
+        "quote"
+      ]
+    },
+    "BeforeAfter": {
+      "description": "A visual change waiting for the person's eye: before and after images, a link to the live preview, and two answers — accept, or ask for changes in words (context.note carries them).",
+      "kind": "pattern",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "component": {
+          "const": "BeforeAfter"
+        },
+        "span": {
+          "description": "Columns to span inside a Grid.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "title": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "status": {
+          "anyOf": [
+            {
+              "description": "Pill text, default \"Needs your eye\".",
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "before": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "src": {
+                  "type": "string",
+                  "pattern": "^(https?:\\/\\/|data:image\\/)"
+                },
+                "alt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "src"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "after": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "src": {
+                  "type": "string",
+                  "pattern": "^(https?:\\/\\/|data:image\\/)"
+                },
+                "alt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "src"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "url": {
+          "anyOf": [
+            {
+              "description": "The live preview.",
+              "type": "string",
+              "pattern": "^https?:\\/\\/"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "acceptLabel": {
+          "anyOf": [
+            {
+              "description": "Default \"Accept and publish\".",
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "acceptAction": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "event": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Named event the agent handles, e.g. raise_limit."
+                    },
+                    "context": {
+                      "description": "Values sent with the event; bindings ({path}) resolve at click time.",
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "additionalProperties": {}
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ]
+                }
+              },
+              "required": [
+                "event"
+              ],
+              "description": "What happens when the person triggers it: a named event back to the agent."
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "changesAction": {
+          "anyOf": [
+            {
+              "description": "Fired with the person's request; context.note is the text.",
+              "type": "object",
+              "properties": {
+                "event": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Named event the agent handles, e.g. raise_limit."
+                    },
+                    "context": {
+                      "description": "Values sent with the event; bindings ({path}) resolve at click time.",
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "additionalProperties": {}
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ]
+                }
+              },
+              "required": [
+                "event"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "resolved": {
+          "anyOf": [
+            {
+              "description": "Set (by updating the data model) once it's settled: the card becomes one quiet row.",
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "summary": {
+                  "type": "string"
+                },
+                "declined": {
+                  "description": "It didn't go ahead (denied, sent back): the row dims.",
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "label",
+                "summary"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "component",
+        "title",
+        "before",
+        "after"
+      ]
+    },
+    "DecisionChip": {
+      "description": "A pending decision, compact, for a 'needs you' strip (a Row or Grid of chips): kind · subject and what's asked in one line. Clicking fires openAction to open the full decision.",
+      "kind": "pattern",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "component": {
+          "const": "DecisionChip"
+        },
+        "span": {
+          "description": "Columns to span inside a Grid.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "kind": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "What kind of decision (\"Preview\", \"Review\")."
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "subject": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "What it's about."
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "text": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "What's being asked, one short line."
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "openAction": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "event": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Named event the agent handles, e.g. raise_limit."
+                    },
+                    "context": {
+                      "description": "Values sent with the event; bindings ({path}) resolve at click time.",
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "additionalProperties": {}
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ]
+                }
+              },
+              "required": [
+                "event"
+              ],
+              "description": "What happens when the person triggers it: a named event back to the agent."
+            },
+            {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "component",
+        "kind",
+        "subject",
+        "text",
+        "openAction"
       ]
     }
   }

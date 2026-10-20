@@ -31,22 +31,28 @@ export const Button = defineComponent({
     variant: z.enum(["primary", "secondary", "ghost"]).optional(),
     action,
   }),
-  render: (p, ctx) => (
-    <ButtonView
-      size="sm"
-      variant={
-        p.variant === "secondary"
-          ? "secondary"
-          : p.variant === "ghost"
-            ? "ghost"
-            : "default"
-      }
-      className="rounded-full"
-      onClick={ctx.action(p.action)}
-    >
-      {p.label}
-    </ButtonView>
-  ),
+  // No handler (an event the host doesn't offer, or a destructive one on a
+  // plain button): nothing renders. Use Confirm for destructive actions.
+  render: (p, ctx) => {
+    const onClick = ctx.action(p.action)
+    if (!onClick) return null
+    return (
+      <ButtonView
+        size="sm"
+        variant={
+          p.variant === "secondary"
+            ? "secondary"
+            : p.variant === "ghost"
+              ? "ghost"
+              : "default"
+        }
+        className="rounded-full"
+        onClick={onClick}
+      >
+        {p.label}
+      </ButtonView>
+    )
+  },
 })
 
 export const TextField = defineComponent({
@@ -213,14 +219,17 @@ export const Confirm = defineComponent({
         <ActionCardDescription>{p.description}</ActionCardDescription>
       )}
       <ActionCardActions>
-        <ButtonView size="sm" onClick={ctx.action(p.action)}>
+        <ButtonView
+          size="sm"
+          onClick={ctx.action(p.action, { confirmed: true })}
+        >
           {p.confirmLabel}
         </ButtonView>
         {p.cancelAction && (
           <ButtonView
             size="sm"
             variant="secondary"
-            onClick={ctx.action(p.cancelAction)}
+            onClick={ctx.action(p.cancelAction, { confirmed: true })}
           >
             {p.cancelLabel ?? "Not now"}
           </ButtonView>

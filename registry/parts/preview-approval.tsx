@@ -25,6 +25,9 @@ import {
 //     before={<img …/>} after={<img …/>} href="https://…"
 //     onAccept={() => …} onRequestChanges={(note) => …}
 //   />
+//
+// Leave a handler out when the host can't offer that answer: its button
+// isn't drawn.
 
 type Labels = {
   status: string
@@ -69,8 +72,8 @@ export function PreviewApproval({
   href?: string
   note?: React.ReactNode
   labels?: Partial<Labels>
-  onAccept: () => void
-  onRequestChanges: (note: string) => void
+  onAccept?: () => void
+  onRequestChanges?: (note: string) => void
   className?: string
 }) {
   const l = { ...EN, ...labels }
@@ -83,15 +86,22 @@ export function PreviewApproval({
         <ActionCardTitle>{title}</ActionCardTitle>
         <ActionCardStatus tone="approval">{l.status}</ActionCardStatus>
       </ActionCardHeader>
-      {description && <ActionCardDescription>{description}</ActionCardDescription>}
+      {description && (
+        <ActionCardDescription>{description}</ActionCardDescription>
+      )}
 
       <ActionCardPanel className="grid grid-cols-2 gap-px bg-border/70">
         {[
           { label: l.before, view: before },
           { label: l.after, view: after },
         ].map((side) => (
-          <figure key={side.label} className="flex flex-col gap-2 bg-card p-2.5">
-            <figcaption className="eyebrow text-muted-foreground">{side.label}</figcaption>
+          <figure
+            key={side.label}
+            className="flex flex-col gap-2 bg-card p-2.5"
+          >
+            <figcaption className="eyebrow text-muted-foreground">
+              {side.label}
+            </figcaption>
             <div className="aspect-[4/3] overflow-hidden rounded-lg border border-border/70 bg-background">
               {side.view}
             </div>
@@ -123,7 +133,11 @@ export function PreviewApproval({
             className="min-h-16 rounded-xl bg-card text-sm"
           />
           <ActionCardActions>
-            <Button size="sm" disabled={!text.trim()} onClick={() => onRequestChanges(text.trim())}>
+            <Button
+              size="sm"
+              disabled={!text.trim()}
+              onClick={() => onRequestChanges?.(text.trim())}
+            >
               {l.send}
             </Button>
             <Button size="sm" variant="ghost" onClick={() => setAsking(false)}>
@@ -132,14 +146,24 @@ export function PreviewApproval({
           </ActionCardActions>
         </div>
       ) : (
-        <ActionCardActions>
-          <Button size="sm" onClick={onAccept}>
-            {l.accept}
-          </Button>
-          <Button size="sm" variant="secondary" onClick={() => setAsking(true)}>
-            {l.requestChanges}
-          </Button>
-        </ActionCardActions>
+        (onAccept || onRequestChanges) && (
+          <ActionCardActions>
+            {onAccept && (
+              <Button size="sm" onClick={onAccept}>
+                {l.accept}
+              </Button>
+            )}
+            {onRequestChanges && (
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => setAsking(true)}
+              >
+                {l.requestChanges}
+              </Button>
+            )}
+          </ActionCardActions>
+        )
       )}
     </ActionCard>
   )
@@ -161,7 +185,13 @@ export function PreviewApprovalResolved({
   className?: string
 }) {
   return (
-    <ResolvedRow icon={<EyeIcon />} label={label} summary={summary} muted={!accepted} className={className}>
+    <ResolvedRow
+      icon={<EyeIcon />}
+      label={label}
+      summary={summary}
+      muted={!accepted}
+      className={className}
+    >
       {note ? <p className="text-muted-foreground">“{note}”</p> : undefined}
     </ResolvedRow>
   )

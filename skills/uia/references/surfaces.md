@@ -16,7 +16,7 @@ Three tiers, use the first that fits:
 
 ```json
 [
-  { "version": "v0.9", "createSurface": { "surfaceId": "reviews", "catalogId": "https://uia.frank-47e.workers.dev/catalog/v1.json" } },
+  { "version": "v0.9", "createSurface": { "surfaceId": "reviews", "catalogId": "https://uia.imfrank.dev/catalog/v1.json" } },
   { "version": "v0.9", "updateDataModel": { "surfaceId": "reviews", "path": "/", "value": { "models": [{ "model": "Sonnet", "pass": 0.847, "cost": 0.09 }] } } },
   { "version": "v0.9", "updateComponents": { "surfaceId": "reviews", "components": [
     { "id": "root", "component": "Section", "title": "Code reviews", "children": ["table", "route"] },
@@ -45,23 +45,90 @@ Three tiers, use the first that fits:
 
 ## The catalog (`public/catalog/v1.json`, prompt text in `v1.txt`)
 
-| Group | Entries |
-| --- | --- |
-| block (prefer when the intent matches) | `DecisionCard`, `Plan`, `Findings`, `AiSpend` |
-| layout | `Column`, `Row`, `Grid` (columns 1–4, children `span`, follows its own width), `Section` (title + white panel — the unit of a dashboard), `Card`, `Tabs`, `Divider` |
-| data | `Stat` (value, format, unit, delta + `deltaIsGood`, meta), `Meter` (value or segments against max, markers), `Progress`, `BarSeries`, `Sparkline`, `Table`, `List` + `KeyValue`, `StageTrack` |
-| display | `Text` (title, body, muted, eyebrow, markdown), `Badge`, `Note` (badge + one sentence of new information), `Empty` |
-| input | `Button`, `TextField`, `ChoicePicker`, `CheckBox`, `Slider` (two-way bound through `value`), `Confirm` (required before anything destructive) |
+Three layers; the agent prefers them from the top. A test of the same
+incident composed from loose primitives vs one compound entry showed the
+compound pixel-identical to the hand-made card and the primitives visibly
+worse — the quality floor lives in the patterns.
 
-Composition rules the renderer can't enforce, so the agent must:
+| Layer | Entries |
+| --- | --- |
+| **pattern** — compound pieces the agent fills (prefer these) | `DecisionCard`, `Confirmation`, `Plan`, `Findings`, `StatusCard`, `ActivityItem` (+ `ActivityList`), `Policy`, `Diff`, `Citation`, `BeforeAfter`, `DecisionChip` |
+| **block** — product views, an optional layer a product registers | `AiSpend` (`catalog-blocks`; add yours with `extendCatalog`) |
+| layout | `Column`, `Row`, `Grid` (columns 1–4, children `span`, follows its own width), `Section` (title + white panel — the unit of a dashboard), `Card`, `Tabs`, `Divider` |
+| data | `Stat` (value, format, unit, delta + `deltaIsGood`, meta), `Meter` (value or segments against max, markers), `Progress`, `BarSeries`, `Sparkline`, `Table`, `List` + `KeyValue`, `Stepper` |
+| display | `Text` (title, body, muted, eyebrow, markdown), `Badge`, `Note` (badge + one sentence of new information), `Empty` |
+| input | `Button`, `TextField`, `ChoicePicker`, `CheckBox`, `Slider` (two-way bound through `value`), `Confirm` |
+
+Which pattern:
+- a judgment call with options and the agent's pick → `DecisionCard`
+- a gate before something happens (often destructive) → `Confirmation`
+- a state to read, with its steps (incident, deploy) → `StatusCard`
+- something done without asking → `ActivityItem` in an `ActivityList`
+- a standing rule → `Policy` in a `PolicyList` (a switch, never a button)
+- code to review → `Diff`; a visual change → `BeforeAfter`; the evidence
+  for one claim → `Citation`; a multi-step job → `Plan`; ranked findings
+  from a source → `Findings`; a pending decision in a "needs you" strip →
+  `DecisionChip`
+
+Composition rules (the runtime checks the ones marked ✓):
 - One `Section` per question the screen answers; `Grid` of 2 for peers,
   `span: 2` for the wide one (a series, a decision).
-- A `Section` leads with its answer: a `Stat` (or a block), then what
-  explains it (`Meter`, `BarSeries`, `List`), then at most one `Note`.
+- A `Section` leads with its answer: a `Stat` (or a pattern), then what
+  explains it (`Meter`, `BarSeries`, `List`), then at most one `Note` ✓.
 - Colour only for state: `tone` on `Badge`/`Note`/`KeyValue`; regressions
   get a tone, improvements stay muted.
-- At most one primary `Button` per surface; destructive verbs go through
-  `Confirm`.
+- One loose primary `Button` per surface ✓; decisions go in
+  `DecisionCard`/`Confirmation`, each with its own answer.
+- In a chat reply (`layout: "inline"`, the default at `size="sm"`): at most
+  2 loose buttons ✓, no `Tabs` ✓, grids of at most 2 columns ✓.
+
+## What the host owns
+
+**Facts.** Counts, rates, money, durations and dates come from the data
+model by binding. Entries list them in `facts` (e.g. `DecisionCard.agreement`,
+`Policy.applied`): a literal is rejected (`UNBOUND_FACT`), the schema
+published to the agent only accepts `{ "path" }` there, and the evals flag
+numbers written into prose. The agent writes the why, never the how much.
+
+**Settled is data.** A resolved card (`resolved` on `Confirmation`,
+`StatusCard`, `Diff`, `BeforeAfter`) comes from the host updating the data
+model, not from the agent deciding it's done.
+
+**Actions.** The host registers the events it accepts and what each one is:
+
+```ts
+const actions = defineActions({
+  approve: { reversible: true },
+  integrate: { reversible: false },          // shows "Irreversible"
+  rollback: { destructive: true },          // only inside a confirmation
+  undo: { reversible: (ctx) => isUndoable(ctx.id) }, // per call, still the host's call
+})
+<Surface … actions={actions} />
+```
+
+Unregistered events don't render (`UNKNOWN_ACTION`); a destructive event on
+a plain control doesn't render (`UNCONFIRMED_DESTRUCTIVE`); "Irreversible",
+Undo and "Final" come from the registry. Whatever the agent marks is
+ignored. In a product, each name maps to its real action contract
+(receipts, idempotency).
+
+**Look.** No classes, colours, fonts or spacing in any schema: only enums
+(`tone`, `variant`, `columns`, `gap`, `span`) and data.
+
+## Validate twice, and evaluate
+
+- `validateSurface(surface, catalog, { actions, layout })` is the same check
+  `<Surface>` runs, as a pure function: run it where the agent runs, before
+  sending, and send issues back so it fixes them.
+- `bun run eval:surfaces` checks agent outputs in
+  `evals/surfaces/outputs/<case>.<run>.json` against the cases in
+  `evals/surfaces/cases.ts`: inbox routing (only the owner's decisions ask),
+  facts bound (no numbers in prose), a resolved incident is a record not a
+  question, destructive actions only confirmed. `.good`/`.bad` runs show
+  what passes and what doesn't.
+- For visual quality, compare against the hand-made reference (the
+  `/compare` experiment): pixel-identical for patterns, pairwise judged for
+  free compositions.
 
 ## Rendering
 
@@ -108,6 +175,15 @@ const Deploys = defineComponent({
 })
 export const catalog = extendCatalog(uiaCatalog, [Deploys], "https://acme.dev/catalog/v1.json")
 ```
+
+Keep the agent's prompt small: load layers per surface
+(`catalogToPrompt(catalog, { kinds: ["pattern", "data", "display"] })` for a
+chat reply) and register only the product blocks you show. A domain name
+(davinci's "IncidentCard") belongs in the product's catalog, usually as a
+thin entry over a uia pattern (`Confirmation`).
+
+See `example-davinci-surface`: the davinci inbox as an agent sends it,
+bound to the factory's data, with the factory's action contract.
 
 Give the agent `catalogToPrompt(catalog)` (or the published `.txt`) in the
 tool description, and publish `catalogToJSONSchema(catalog)` at the

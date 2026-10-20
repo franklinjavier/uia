@@ -6,7 +6,7 @@ import {
   type ModelEvalsFailure,
   type ModelEvalsLabels,
   type ModelEvalsSuite,
-} from "@/components/widgets/model-evals"
+} from "@/components/blocks/model-evals"
 
 // Example: the ModelEvals widget with demo data, in pt-BR. The widget is a
 // pure view (components/widgets/model-evals); this file is the fixture and

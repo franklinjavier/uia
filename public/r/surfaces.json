@@ -11,6 +11,7 @@
     "franklinjavier/uia/catalog-display",
     "franklinjavier/uia/catalog-data",
     "franklinjavier/uia/catalog-input",
+    "franklinjavier/uia/catalog-patterns",
     "franklinjavier/uia/catalog-blocks"
   ],
   "type": "registry:block"

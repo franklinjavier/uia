@@ -6,7 +6,7 @@ import {
   type ModelRouterDeployState,
   type ModelRouterModel,
   type ModelRouterPolicy,
-} from "@/components/widgets/model-router"
+} from "@/components/blocks/model-router"
 
 // Example: the ModelRouter widget with demo data. The widget is a pure view
 // (components/widgets/model-router); this file is the fixture and fakes the

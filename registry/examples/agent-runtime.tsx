@@ -3,7 +3,7 @@ import * as React from "react"
 import {
   AgentRuntime,
   type AgentRuntimeAgent,
-} from "@/components/widgets/agent-runtime"
+} from "@/components/blocks/agent-runtime"
 
 // Example: the AgentRuntime widget with demo data. The widget is a pure view
 // (components/widgets/agent-runtime); this file is the fixture plus a

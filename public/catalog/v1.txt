@@ -1,14 +1,24 @@
-Compose UI as A2UI v0.9 messages with catalogId "https://uia.frank-47e.workers.dev/catalog/v1.json".
+Compose UI as A2UI v0.9 messages with catalogId "https://uia.imfrank.dev/catalog/v1.json".
 Components are a flat list with ids; children reference ids; the root component has id "root".
 Props take a literal or a binding {"path":"/pointer"} into the data model (updateDataModel).
-Actions are {"event":{"name","context"}}. Never send classes, colours or code; format numbers with `format`, not by hand.
-Prefer a block when it matches the intent; otherwise compose from layout + data components.
+Actions are {"event":{"name","context"}} with names the host registered; the host decides what is reversible or destructive (destructive ones only inside Confirmation/DecisionCard). Never send classes, colours or code; format numbers with `format`, not by hand.
+Facts (counts, rates, money, dates) come from the data model by binding, never written in props or prose. Prose says why, not how much.
+Prefer a pattern (or a product block) when it matches the intent; compose from layout + data primitives only for what none of them covers.
 
-BLOCK
-- DecisionCard(agent, eyebrow, title, context, options, pick, chooseAction, consequence, actions, irreversible, urgent): One decision the agent needs from the person: what, why, options with the agent's pick, the consequence, and the answers. Use for anything waiting on a judgment.
+PATTERN
+- DecisionCard(agent, eyebrow, title, context, options, pick, chooseAction, consequence, actions, urgent, agreement): One decision the agent needs from the person: what, why, options with the agent's pick, the consequence, and the answers. Use for anything waiting on a judgment.
+- Confirmation(title, description, status, fields, note, allowLabel, denyLabel, action, denyAction, resolved): A gate before something with side effects runs: who wants to do what, the specifics as fields, a trust note, and the two answers (allow, deny). The only place a destructive event may live besides DecisionCard.
+- StatusCard(eyebrow, title, tone, status, steps, fields, note, actions, resolved): A state the person should know about, with the steps it went through and what comes next (an incident: detected → reverted → healthy; a deploy; a migration). Update its data to move steps; set resolved when it's over.
 - Plan(title, steps): A multi-step job and where it is: steps todo → running → done (waiting = needs the person, failed). Update its data to tick steps off.
 - Findings(title, items): What was pulled from a source, ranked by severity, each with its reference (page, line, timestamp) so it can be checked.
-- AiSpend(models, periods, budget, alertAt): AI cost by model against a budget for a period: spent, left, projection, alert, models as the meter's legend.
+- ActivityList(title, children): What the agent did for the person without asking: a titled list whose children are ActivityItem (usually a template over the data).
+- ActivityItem(time, subject, what, why, rule, undone, undoAction): One thing the agent did for the person: when, about what, what, why, the rule that did it, and Undo while the host says it can be undone (otherwise Final). Put inside ActivityList.
+- PolicyList(title, children): The standing rules the agent applies: a titled list whose children are Policy.
+- Policy(text, category, applied, on, toggleAction): A standing rule the agent applies on the person's behalf, as an on/off switch with its category and how often it applied. Flipping fires toggleAction with context.on. Put inside PolicyList.
+- Diff(eyebrow, title, status, summary, files, actions, resolved): A code change waiting for review: what it does in a few lines, then the hunks that matter per file, and the answers (approve, send back).
+- Citation(source, url, quote, ref): The evidence behind one claim: the quoted passage, its source (name + url, the host shown) and where in it (page, line, timestamp).
+- BeforeAfter(title, description, status, before, after, url, note, acceptLabel, acceptAction, changesAction, resolved): A visual change waiting for the person's eye: before and after images, a link to the live preview, and two answers — accept, or ask for changes in words (context.note carries them).
+- DecisionChip(kind, subject, text, openAction): A pending decision, compact, for a 'needs you' strip (a Row or Grid of chips): kind · subject and what's asked in one line. Clicking fires openAction to open the full decision.
 LAYOUT
 - Column(children, gap): Stack children vertically. The usual root.
 - Row(children, gap, align): Lay children side by side; wraps on narrow widths.
@@ -26,7 +36,7 @@ DATA
 - Table(columns, rows): Rows × columns when the person compares across several attributes. For one value per item, use List + KeyValue.
 - List(children, title): Rows separated by hairlines; usually a template of KeyValue over a data array.
 - KeyValue(label, value, format, meta, tone): One row: a label, an optional meta, and a formatted value on the right.
-- StageTrack(stages): Where something is in a fixed sequence of stages.
+- Stepper(stages): Where something is in a fixed sequence of stages.
 DISPLAY
 - Text(text, variant): Words. title: a heading; body; muted: secondary; eyebrow: a mono label; markdown: rich prose.
 - Badge(label, tone): A state, in one or two words (Healthy, 86% used, Over budget). Colour comes from tone.

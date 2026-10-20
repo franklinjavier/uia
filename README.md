@@ -45,7 +45,7 @@ Building UI with uia in another project? Do this first:
 registry/              everything that ships, one registry item per piece
   ui/                  shadcn primitives (owned; tuned ones ship as overrides)
   ds/                  system: Widget (+ WidgetList), Stat, Segmented, Status,
-                       TickMeter, MeterBar, Sparkline, BarSeries, StageTrack,
+                       TickMeter, MeterBar, Sparkline, BarSeries, Stepper,
                        TaskList, NumberTicker, AgentOrb, ModelIcon
   parts/               generative UI / human-in-the-loop: ActionCard, DecisionCard,
                        AskUser, Confirmation, PreviewApproval, DecisionChip,
@@ -123,7 +123,7 @@ npx shadcn@latest add @uia/chat
 | --- | --- |
 | Foundation | `theme`, `font-inter`, `font-geist-mono`, `typeset` |
 | Primitives (tuned) | `button`, `select`, `bubble`, `code-block`, `questionnaire`, `spinner`, `message-scroller` |
-| System | `widget`, `stat`, `segmented`, `status`, `tick-meter`, `meter-bar`, `sparkline`, `stage-track`, `number-ticker`, `agent-orb`, `model-icons` |
+| System | `widget`, `stat`, `segmented`, `status`, `tick-meter`, `meter-bar`, `sparkline`, `stepper`, `number-ticker`, `agent-orb`, `model-icons` |
 | Generative UI | `action-card`, `ask-user`, `confirmation`, `preview-approval`, `decision-chip`, `draft-card`, `part-transition`, `tool-line`, `reasoning`, `sources`, `search-results`, `markdown` |
 | Chat | `agent-chat`, `chat-thread`, `chat-turn`, `turn-actions`, `composer`, `chat-empty`, `chat-status` |
 | Bundles | `uia`, `chat`, `hitl` |
@@ -177,7 +177,7 @@ as Workers static assets, so `/r/<item>.json` is a public registry too.
 
 ```bash
 bunx wrangler login     # once
-bun run deploy          # build + publish to uia.<your-subdomain>.workers.dev
+bun run deploy          # build + publish (uia.imfrank.dev, also uia.<subdomain>.workers.dev)
 bun run cf:preview      # build + serve locally like production
 ```
 

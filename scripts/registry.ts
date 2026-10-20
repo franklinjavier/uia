@@ -76,14 +76,19 @@ const ITEMS: Item[] = [
   item("model-icons", "registry:component", "Monochrome marks of the major LLM families (Claude, OpenAI, Gemini, Meta, Grok).", ["registry/ds/model-icons.tsx"]),
   item("agent-orb", "registry:component", "The assistant's presence; one animated state per agent phase.", ["registry/ds/agent-orb.tsx"]),
   item("meter-bar", "registry:component", "A value against its limit: segments, threshold markers, highlight.", ["registry/ds/meter-bar.tsx"]),
-  item("stage-track", "registry:component", "Where something is in a fixed sequence of stages, on one line.", ["registry/ds/stage-track.tsx"]),
+  item("stepper", "registry:component", "Where something is in a fixed sequence of stages, on one line.", ["registry/ds/stepper.tsx"]),
   item("sparkline", "registry:component", "A recent series as a line over a soft area, latest point marked.", ["registry/ds/sparkline.tsx"]),
-  item("task-list", "registry:component", "TaskRow + TaskListHeader: tasks through a fixed flow with StageTrack, container-query columns, counts per stage, taskRank to sort.", ["registry/ds/task-list.tsx"]),
+  item("task-list", "registry:component", "TaskRow + TaskListHeader: tasks through a fixed flow with Stepper, container-query columns, counts per stage, taskRank to sort.", ["registry/ds/task-list.tsx"]),
   item("bar-series", "registry:component", "A short series as bars in one hue, the latest at full strength, hover to read.", ["registry/ds/bar-series.tsx"]),
 
   // parts
   item("action-card", "registry:component", "One shape for every human-in-the-loop moment, plus ResolvedRow and TranscriptEvent.", ["registry/parts/action-card.tsx"]),
   item("decision-card", "registry:component", "One decision the agent needs: what, why, options with the agent's pick, consequence, actions as data, urgent glow that drains, agreement → make it a rule.", ["registry/parts/decision-card.tsx"]),
+  item("status-card", "registry:component", "A state with its steps and what's next (incident, deploy, migration): status pill, labelled Stepper, fields, note, answers; collapses to a ResolvedRow when resolved.", ["registry/parts/status-card.tsx"]),
+  item("activity", "registry:component", "ActivityItem + ActivityList: what the agent did for you — time, what, why, the rule that did it, Undo or Final (host-decided).", ["registry/parts/activity.tsx"]),
+  item("policy", "registry:component", "Policy + PolicyList: a standing rule as a switch row (the row is the label), applied count, off state says its effect.", ["registry/parts/policy.tsx"]),
+  item("diff", "registry:component", "A code change for review: summary, files with +/- lines (success/destructive washes), answers; resolves to a row.", ["registry/parts/diff.tsx"]),
+  item("citation", "registry:component", "Evidence behind a claim: source host as eyebrow, the quote, a mono reference, a link out (http(s) only).", ["registry/parts/citation.tsx"]),
   item("plan", "registry:component", "A multi-step job the agent runs in front of you: steps check off, the running one spins, a tick meter fills.", ["registry/parts/plan.tsx"]),
   item("connect-prompt", "registry:component", "Docked above the composer when the agent needs access: ask → connecting → connected.", ["registry/parts/connect-prompt.tsx"]),
   item("attachment", "registry:component", "File chips (type badge + name, removable in the composer) and a hover preview with the file's gist.", ["registry/parts/attachment.tsx"]),
@@ -124,13 +129,13 @@ const ITEMS: Item[] = [
   item("chat-error", "registry:component", "A turn that didn't happen: one quiet line with what it cost and Retry.", ["registry/chat/chat-error.tsx"]),
   item("chat-pill", "registry:component", "The assistant minimised: orb, live phase, Open (attention when it needs you).", ["registry/chat/chat-pill.tsx"]),
 
-  // Widgets: whole, data-driven views with typed props. The same component
+  // Blocks: whole product views (data-driven widgets) with typed props. The same component
   // renders on a dashboard and, at size="sm", inside a chat reply.
-  item("widget-ai-spend", "registry:component", "AiSpend: a period's AI cost by model against a budget, projection, alert, models as the meter's legend.", ["registry/widgets/ai-spend.tsx"]),
-  item("widget-fleet-health", "registry:component", "FleetHealth: tokens/s with sparkline, fleet meters, GPU heatmap with modes, rebalance.", ["registry/widgets/fleet-health.tsx"]),
-  item("widget-model-evals", "registry:component", "ModelEvals: pass rate vs a baseline and a target, per-suite comparison, failures filtered by suite, re-run.", ["registry/widgets/model-evals.tsx"]),
-  item("widget-model-router", "registry:component", "ModelRouter: routing policy with a flow graph and routes list, fallback, deploy.", ["registry/widgets/model-router.tsx"]),
-  item("widget-agent-runtime", "registry:component", "AgentRuntime: sandboxes with lifecycle (cold → warm → idle → zero), invoke.", ["registry/widgets/agent-runtime.tsx"]),
+  item("block-ai-spend", "registry:component", "AiSpend: a period's AI cost by model against a budget, projection, alert, models as the meter's legend.", ["registry/blocks/ai-spend.tsx"]),
+  item("block-fleet-health", "registry:component", "FleetHealth: tokens/s with sparkline, fleet meters, GPU heatmap with modes, rebalance.", ["registry/blocks/fleet-health.tsx"]),
+  item("block-model-evals", "registry:component", "ModelEvals: pass rate vs a baseline and a target, per-suite comparison, failures filtered by suite, re-run.", ["registry/blocks/model-evals.tsx"]),
+  item("block-model-router", "registry:component", "ModelRouter: routing policy with a flow graph and routes list, fallback, deploy.", ["registry/blocks/model-router.tsx"]),
+  item("block-agent-runtime", "registry:component", "AgentRuntime: sandboxes with lifecycle (cold → warm → idle → zero), invoke.", ["registry/blocks/agent-runtime.tsx"]),
 
   // Surfaces: the agent composes UI (A2UI v0.9) from a catalog. The runtime
   // has no styling; the catalog entries wrap uia pieces. Install the groups
@@ -140,13 +145,15 @@ const ITEMS: Item[] = [
     "registry/surface/store.ts",
     "registry/surface/format.ts",
     "registry/surface/catalog.ts",
+    "registry/surface/validate.ts",
     "registry/surface/surface.tsx",
   ]),
   item("catalog-layout", "registry:component", "Catalog entries: Column, Row, Grid (container-query columns, span), Section, Card, Tabs, Divider.", ["registry/catalog/layout.tsx"]),
   item("catalog-display", "registry:component", "Catalog entries: Text, Badge, Note (alert line), Empty.", ["registry/catalog/display.tsx"]),
-  item("catalog-data", "registry:component", "Catalog entries: Stat, Meter, Progress, BarSeries, Sparkline, Table, List, KeyValue, StageTrack.", ["registry/catalog/data.tsx"]),
+  item("catalog-data", "registry:component", "Catalog entries: Stat, Meter, Progress, BarSeries, Sparkline, Table, List, KeyValue, Stepper.", ["registry/catalog/data.tsx"]),
   item("catalog-input", "registry:component", "Catalog entries: Button, TextField, ChoicePicker, CheckBox, Slider, Confirm (two-way bindings, named actions).", ["registry/catalog/input.tsx"]),
-  item("catalog-blocks", "registry:component", "Catalog entries for whole pieces: DecisionCard, Plan, Findings, AiSpend.", ["registry/catalog/blocks.tsx"]),
+  item("catalog-patterns", "registry:component", "Catalog entries the agent fills (compound agent patterns): DecisionCard, Confirmation, Plan, Findings, ActivityItem, Policy, Diff, Citation, BeforeAfter, StatusCard.", ["registry/catalog/patterns.tsx"]),
+  item("catalog-blocks", "registry:component", "Optional catalog layer of product blocks (AiSpend…): register only the ones your product shows.", ["registry/catalog/blocks.tsx"]),
   item("catalog", "registry:component", "The uia catalog (all groups) with its published id.", ["registry/catalog/index.ts"]),
 
   // App shell for agent products.
@@ -173,6 +180,11 @@ const ITEMS: Item[] = [
     "registry/examples/davinci/cards.tsx",
     "registry/examples/davinci/data.ts",
   ]),
+  item("example-davinci-surface", "registry:block", "Example: the davinci inbox as an agent sends it — A2UI messages built only from patterns, every fact bound to the factory's data, the factory's action contract deciding what's reversible; Inbox, Decided for you, Rules.", [
+    "registry/examples/davinci-surface/factory.ts",
+    "registry/examples/davinci-surface/compose.ts",
+    "registry/examples/davinci-surface/davinci-surface.tsx",
+  ]),
   item("example-surface", "registry:block", "Example: screens an agent assembles for the moment (A2UI against the uia catalog) — a cost & quality dashboard and an incident view, streamed in, with actions back as named events.", [
     "registry/examples/surface/specs.ts",
     "registry/examples/surface/surface-demo.tsx",
@@ -190,16 +202,16 @@ const BUNDLES = [
     "agent-chat", "chat-thread", "chat-turn", "turn-actions", "composer", "chat-empty", "chat-status", "chat-error", "chat-pill", "attachment",
   ]),
   bundle("surfaces", "Agent-composed UI: the A2UI runtime and the whole uia catalog.", [
-    "surface", "catalog", "catalog-layout", "catalog-display", "catalog-data", "catalog-input", "catalog-blocks",
+    "surface", "catalog", "catalog-layout", "catalog-display", "catalog-data", "catalog-input", "catalog-patterns", "catalog-blocks",
   ]),
   bundle("hitl", "All human-in-the-loop parts.", [
-    "action-card", "ask-user", "confirmation", "draft-card", "preview-approval", "decision-chip", "part-transition", "tool-line", "decision-card", "plan", "connect-prompt", "findings", "chart-card",
+    "action-card", "ask-user", "confirmation", "draft-card", "preview-approval", "decision-chip", "part-transition", "tool-line", "decision-card", "status-card", "activity", "policy", "diff", "citation", "plan", "connect-prompt", "findings", "chart-card",
   ]),
-  bundle("widgets", "Every data-driven widget, ready to feed with your data.", [
-    "widget-ai-spend", "widget-fleet-health", "widget-model-evals", "widget-model-router", "widget-agent-runtime",
+  bundle("blocks", "Every product block (data-driven widget), ready to feed with your data.", [
+    "block-ai-spend", "block-fleet-health", "block-model-evals", "block-model-router", "block-agent-runtime",
   ]),
   bundle("examples", "Every reference widget, to read, run and adapt.", [
-    "example-assistant", "example-model-router", "example-agent-runtime", "example-ai-spend", "example-fleet-health", "example-model-evals", "example-bottega", "example-davinci", "example-surface",
+    "example-assistant", "example-model-router", "example-agent-runtime", "example-ai-spend", "example-fleet-health", "example-model-evals", "example-bottega", "example-davinci", "example-surface", "example-davinci-surface",
   ]),
 ]
 
@@ -417,7 +429,7 @@ const items = [
     registryDependencies: [
       "font-inter", "font-geist-mono", "theme", "typeset",
       ...UI_OVERRIDES.map(([n]) => n),
-      "widget", "stat", "segmented", "status", "tick-meter", "meter-bar", "sparkline", "stage-track", "number-ticker", "agent-orb", "model-icons",
+      "widget", "stat", "segmented", "status", "tick-meter", "meter-bar", "sparkline", "stepper", "number-ticker", "agent-orb", "model-icons",
       "hitl", "reasoning", "sources", "search-results", "markdown", "chat", "skill",
     ].map((n) => `${NS}/${n}`),
   },

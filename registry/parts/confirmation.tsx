@@ -17,6 +17,8 @@ import {
 // `approval-requested`). A ready-made composition of ActionCard parts:
 // for a different layout, compose ActionCard* directly. Title states who wants to do what; details hide
 // behind a disclosure; Allow is the primary action, Deny always available.
+// A host that can't offer an answer leaves its handler out and the button
+// isn't drawn (an agent-composed surface only shows what the host runs).
 export function Confirmation({
   title,
   description,
@@ -37,9 +39,9 @@ export function Confirmation({
   details?: React.ReactNode
   detailsLabel?: string
   note?: React.ReactNode
-  onAllow: () => void
+  onAllow?: () => void
   onAlwaysAllow?: () => void
-  onDeny: () => void
+  onDeny?: () => void
   /** Verb for the primary action ("Create issues", "Fazer rollback"). */
   allowLabel?: string
   denyLabel?: string
@@ -55,27 +57,38 @@ export function Confirmation({
         <ActionCardTitle>{title}</ActionCardTitle>
         <ActionCardStatus tone="approval">{status}</ActionCardStatus>
       </ActionCardHeader>
-      {description && <ActionCardDescription>{description}</ActionCardDescription>}
+      {description && (
+        <ActionCardDescription>{description}</ActionCardDescription>
+      )}
       {details && (
-        <ActionCardDisclosure show={`Show the ${detailsLabel}`} hide={`Hide the ${detailsLabel}`}>
+        <ActionCardDisclosure
+          show={`Show the ${detailsLabel}`}
+          hide={`Hide the ${detailsLabel}`}
+        >
           <ActionCardPanel>{details}</ActionCardPanel>
         </ActionCardDisclosure>
       )}
       {children}
       {note && <ActionCardNote>{note}</ActionCardNote>}
-      <ActionCardActions>
-        <Button size="sm" onClick={onAllow}>
-          {allowLabel}
-        </Button>
-        {onAlwaysAllow && (
-          <Button size="sm" variant="secondary" onClick={onAlwaysAllow}>
-            Always allow
-          </Button>
-        )}
-        <Button size="sm" variant="secondary" onClick={onDeny}>
-          {denyLabel}
-        </Button>
-      </ActionCardActions>
+      {(onAllow || onAlwaysAllow || onDeny) && (
+        <ActionCardActions>
+          {onAllow && (
+            <Button size="sm" onClick={onAllow}>
+              {allowLabel}
+            </Button>
+          )}
+          {onAlwaysAllow && (
+            <Button size="sm" variant="secondary" onClick={onAlwaysAllow}>
+              Always allow
+            </Button>
+          )}
+          {onDeny && (
+            <Button size="sm" variant="secondary" onClick={onDeny}>
+              {denyLabel}
+            </Button>
+          )}
+        </ActionCardActions>
+      )}
     </ActionCard>
   )
 }

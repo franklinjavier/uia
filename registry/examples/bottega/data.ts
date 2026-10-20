@@ -1,4 +1,4 @@
-import type { StageStatus } from "@/components/ds/stage-track"
+import type { StepStatus } from "@/components/ds/stepper"
 
 // The Bottega example's world: a few projects at different points of the
 // flow, the decisions that wait on the person, production and the work the
@@ -12,7 +12,7 @@ export type Project = {
   id: string
   name: string
   goal: string
-  stages: StageStatus[]
+  stages: StepStatus[]
   /** What is happening now, in one short line. */
   now: string
   live?: {

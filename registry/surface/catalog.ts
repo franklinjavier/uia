@@ -98,8 +98,21 @@ export type RenderContext = {
   child: (id: string | undefined) => React.ReactNode
   /** Render `children` (ids or a template). */
   children: (ref: unknown) => React.ReactNode[]
-  /** A click handler for an action spec, or undefined when there is none. */
-  action: (spec: ActionSpec | undefined) => (() => void) | undefined
+  /**
+   * A click handler for an action, or undefined when it can't run here: no
+   * spec, an event the host didn't register, or a destructive event outside
+   * a confirmation (`{ confirmed: true }` is for Confirm-like entries only).
+   * Entries render nothing for an undefined handler.
+   */
+  action: (
+    spec: ActionSpec | undefined,
+    opts?: { confirmed?: boolean }
+  ) => (() => void) | undefined
+  /**
+   * What the host says about this event (reversible resolved for its
+   * context): decided by the host, never the agent.
+   */
+  actionInfo: (spec: ActionSpec | undefined) => ResolvedHostAction | undefined
   /** For two-way bindings: the data path a prop was bound to, if any. */
   boundPath: (prop: string) => string | undefined
   /** Write a bound value (inputs). */
@@ -112,8 +125,16 @@ export type RenderContext = {
 export type CatalogEntry<P = Record<string, unknown>> = {
   name: string
   description: string
-  /** Higher-level entries the agent should prefer when the intent matches. */
-  kind: "layout" | "display" | "data" | "input" | "block"
+  /**
+   * Props that state facts (counts, rates, money, dates): they must be bound
+   * to the data model, never written by the agent. A literal is rejected.
+   */
+  facts?: string[]
+  /**
+   * pattern: compound pieces the agent fills (prefer these); block: whole
+   * product views (an optional layer); the rest are primitives.
+   */
+  kind: "pattern" | "layout" | "display" | "data" | "input" | "block"
   props: z.ZodType<P>
   render: (props: P, ctx: RenderContext) => React.ReactNode
   /** Example for the prompt: one component node. */
@@ -123,12 +144,43 @@ export type CatalogEntry<P = Record<string, unknown>> = {
 export function defineComponent<S extends z.ZodObject>(entry: {
   name: string
   description: string
+  facts?: (keyof z.infer<S> & string)[]
   kind: CatalogEntry["kind"]
   props: S
   render: (props: z.infer<S>, ctx: RenderContext) => React.ReactNode
   example?: Record<string, unknown>
 }): CatalogEntry {
   return entry as unknown as CatalogEntry
+}
+
+/* ----------------------------- host actions ---------------------------- */
+
+/**
+ * The host's contract for an event the agent may wire to a control. The
+ * host decides what an action is — reversible, destructive — and the
+ * renderer derives "Irreversible", Undo and the mandatory confirmation from
+ * it. Whatever the agent marks is ignored. Events the host didn't register
+ * don't render.
+ */
+export type HostAction = {
+  /**
+   * Can be undone after it runs (enables Undo, no "Irreversible"). A
+   * function decides per call from the event's resolved context — e.g. some
+   * decisions are final and others aren't — still on the host's side.
+   */
+  reversible?: boolean | ((context: Record<string, unknown>) => boolean)
+  /** Destroys or changes something for real: only inside a confirmation. */
+  destructive?: boolean
+  /** One line for the confirmation and the record ("Reverts checkout-api to v41"). */
+  describe?: string
+}
+
+export type HostActions = Record<string, HostAction>
+
+export type ResolvedHostAction = Omit<HostAction, "reversible"> & { reversible?: boolean }
+
+export function defineActions<T extends HostActions>(actions: T): T {
+  return actions
 }
 
 export type Catalog = {
@@ -187,7 +239,14 @@ export function catalogToJSONSchema(catalog: Catalog) {
       [k: string]: unknown
     }
     for (const [k, v] of Object.entries(schema.properties ?? {})) {
-      if (!RESERVED.has(k)) schema.properties![k] = { anyOf: [v, pathRef] }
+      if (RESERVED.has(k)) continue
+      schema.properties![k] = e.facts?.includes(k)
+        ? {
+            ...pathRef,
+            description:
+              "A fact: bind it to the data model; literals are rejected.",
+          }
+        : { anyOf: [v, pathRef] }
     }
     schema.properties!.component = { const: name }
     components[name] = { description: e.description, kind: e.kind, ...schema }
@@ -196,17 +255,29 @@ export function catalogToJSONSchema(catalog: Catalog) {
 }
 
 /** A compact description for a system prompt or tool description. */
-export function catalogToPrompt(catalog: Catalog) {
-  const order = ["block", "layout", "data", "display", "input"] as const
+export function catalogToPrompt(
+  catalog: Catalog,
+  /** Load only some layers (e.g. a chat reply doesn't need page layouts). */
+  { kinds }: { kinds?: CatalogEntry["kind"][] } = {}
+) {
+  const order = [
+    "pattern",
+    "block",
+    "layout",
+    "data",
+    "display",
+    "input",
+  ] as const
   const lines = [
     `Compose UI as A2UI v0.9 messages with catalogId "${catalog.id}".`,
     'Components are a flat list with ids; children reference ids; the root component has id "root".',
     'Props take a literal or a binding {"path":"/pointer"} into the data model (updateDataModel).',
-    'Actions are {"event":{"name","context"}}. Never send classes, colours or code; format numbers with `format`, not by hand.',
-    "Prefer a block when it matches the intent; otherwise compose from layout + data components.",
+    'Actions are {"event":{"name","context"}} with names the host registered; the host decides what is reversible or destructive (destructive ones only inside Confirmation/DecisionCard). Never send classes, colours or code; format numbers with `format`, not by hand.',
+    "Facts (counts, rates, money, dates) come from the data model by binding, never written in props or prose. Prose says why, not how much.",
+    "Prefer a pattern (or a product block) when it matches the intent; compose from layout + data primitives only for what none of them covers.",
     "",
   ]
-  for (const kind of order) {
+  for (const kind of order.filter((k) => !kinds || kinds.includes(k))) {
     const entries = Object.values(catalog.components).filter(
       (e) => e.kind === kind
     )

@@ -1,0 +1,65 @@
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "q",
+      "catalogId": "https://uia.imfrank.dev/catalog/v1.json"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateDataModel": {
+      "surfaceId": "q",
+      "path": "/",
+      "value": {
+        "stats": {
+          "waitAvg": 41,
+          "batched": 12
+        },
+        "agreement": {
+          "accepted": 5,
+          "total": 7,
+          "category": "Priority"
+        }
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "q",
+      "components": [
+        {
+          "id": "root",
+          "component": "Column",
+          "children": [
+            "q"
+          ]
+        },
+        {
+          "id": "q",
+          "component": "DecisionCard",
+          "title": "Raise T-289 (batched integration) to high?",
+          "context": "6 tasks waited 41 min on average yesterday; batching cuts it to 12.",
+          "agreement": {
+            "accepted": 5,
+            "total": 7
+          },
+          "actions": [
+            {
+              "label": "Yes, high",
+              "action": {
+                "event": {
+                  "name": "approve",
+                  "context": {
+                    "id": "t289"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

@@ -4,10 +4,10 @@ import { motion } from "motion/react"
 import { cn } from "@/lib/utils"
 import { springSoft } from "@/lib/motion"
 
-// StageTrack: where something is in a fixed sequence of stages, on one line.
+// Stepper: where something is in a fixed sequence of stages, on one line.
 // Dots joined by hairlines; each dot says its stage's state. In a list, put
 // the stage names once, in a header that uses the same grid
-// (`stageTrackGrid`), not under every track. A track that stands alone
+// (`stepperGrid`), not under every track. A track that stands alone
 // (a detail panel) names its own stages with `labeled`.
 //
 //   done     filled ink              the stage is behind us
@@ -16,9 +16,9 @@ import { springSoft } from "@/lib/motion"
 //   failed   destructive             it broke; see the detail
 //   todo     hollow hairline         not reached yet
 
-type StageStatus = "done" | "active" | "waiting" | "failed" | "todo"
+type StepStatus = "done" | "active" | "waiting" | "failed" | "todo"
 
-const DOT: Record<StageStatus, string> = {
+const DOT: Record<StepStatus, string> = {
   done: "border-foreground bg-foreground",
   active: "border-foreground bg-[linear-gradient(90deg,var(--foreground)_50%,transparent_50%)]",
   waiting: "border-attention bg-attention",
@@ -26,7 +26,7 @@ const DOT: Record<StageStatus, string> = {
   todo: "border-border bg-card",
 }
 
-const LABELS: Record<StageStatus, string> = {
+const LABELS: Record<StepStatus, string> = {
   done: "done",
   active: "in progress",
   waiting: "waiting for you",
@@ -35,37 +35,37 @@ const LABELS: Record<StageStatus, string> = {
 }
 
 /** Grid template for a track with `n` stages; reuse it for the header. */
-function stageTrackGrid(n: number) {
+function stepperGrid(n: number) {
   return { gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }
 }
 
-function StageTrack({
+function Stepper({
   stages,
   statusLabels,
   labeled = false,
   className,
   ...props
 }: Omit<React.ComponentProps<"ol">, "children"> & {
-  stages: { label: string; status: StageStatus }[]
+  stages: { label: string; status: StepStatus }[]
   /** Screen-reader words for each state, in the product's language. */
-  statusLabels?: Partial<Record<StageStatus, string>>
+  statusLabels?: Partial<Record<StepStatus, string>>
   /** Stage names under the dots, for a track that stands alone. */
   labeled?: boolean
 }) {
   const words = { ...LABELS, ...statusLabels }
   if (labeled) {
     return (
-      <div data-slot="stage-track-labeled" className={cn("flex flex-col gap-1.5", className)}>
-        <StageTrack stages={stages} statusLabels={statusLabels} {...props} />
-        <StageTrackLabels stages={stages} />
+      <div data-slot="stepper-labeled" className={cn("flex flex-col gap-1.5", className)}>
+        <Stepper stages={stages} statusLabels={statusLabels} {...props} />
+        <StepperLabels stages={stages} />
       </div>
     )
   }
   return (
     <ol
-      data-slot="stage-track"
+      data-slot="stepper"
       className={cn("grid items-center", className)}
-      style={stageTrackGrid(stages.length)}
+      style={stepperGrid(stages.length)}
       {...props}
     >
       {stages.map((s, i) => {
@@ -102,16 +102,16 @@ function StageTrack({
  * The stage names on the track's grid: a list header, or under a lone
  * track. The stage you're at (not done, not to do) reads in ink.
  */
-function StageTrackLabels({
+function StepperLabels({
   stages,
   className,
 }: {
   /** `count`: how many items sit at that stage, for a header over many tracks. */
-  stages: { label: string; status?: StageStatus; count?: number }[]
+  stages: { label: string; status?: StepStatus; count?: number }[]
   className?: string
 }) {
   return (
-    <div aria-hidden className={cn("grid", className)} style={stageTrackGrid(stages.length)}>
+    <div aria-hidden className={cn("grid", className)} style={stepperGrid(stages.length)}>
       {stages.map((s) => (
         <span
           key={s.label}
@@ -130,4 +130,4 @@ function StageTrackLabels({
   )
 }
 
-export { StageTrack, StageTrackLabels, stageTrackGrid, type StageStatus }
+export { Stepper, StepperLabels, stepperGrid, type StepStatus }

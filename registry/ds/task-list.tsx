@@ -1,7 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
-import { StageTrack, StageTrackLabels, type StageStatus } from "@/components/ds/stage-track"
+import { Stepper, StepperLabels, type StepStatus } from "@/components/ds/stepper"
 import { WidgetListRow } from "@/components/ds/widget"
 
 // Task list: work moving through a fixed flow (Plan → Build → … → Main),
@@ -18,18 +18,18 @@ import { WidgetListRow } from "@/components/ds/widget"
 // the track full width below, with the stage names over the list in the
 // same grid. Sort with `taskRank` so what needs the person comes first.
 
-export type TaskStage = { label: string; status: StageStatus }
+export type TaskStage = { label: string; status: StepStatus }
 
 const COLS =
   "grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-y-2.5 @xl:grid-cols-[minmax(8rem,1fr)_minmax(12rem,18rem)_minmax(6rem,8rem)]"
 
 /** 0 needs the person (waiting/failed), 1 moving, 2 queued (nothing started). */
-function taskRank(stages: StageStatus[]) {
+function taskRank(stages: StepStatus[]) {
   return stages.some((s) => s === "waiting" || s === "failed") ? 0 : stages.every((s) => s === "todo") ? 2 : 1
 }
 
 /** Index of the stage the task is at (the first not done). */
-function taskStage(stages: StageStatus[]) {
+function taskStage(stages: StepStatus[]) {
   const i = stages.findIndex((s) => s !== "done")
   return i === -1 ? stages.length - 1 : i
 }
@@ -48,11 +48,11 @@ function TaskListHeader({
     <>
       <div data-slot="task-list-header" className={cn("grid items-center gap-x-3 px-2 pb-2 @max-xl:hidden", COLS)}>
         <span className="eyebrow text-muted-foreground">{taskLabel}</span>
-        <StageTrackLabels stages={stages} />
+        <StepperLabels stages={stages} />
         <span className="text-right eyebrow text-muted-foreground">{nowLabel}</span>
       </div>
       {/* Narrow: the tracks span the row, so do the names. */}
-      <StageTrackLabels className="px-2 pb-2 @xl:hidden" stages={stages} />
+      <StepperLabels className="px-2 pb-2 @xl:hidden" stages={stages} />
     </>
   )
 }
@@ -85,7 +85,7 @@ function TaskRow({
         <span className="shrink-0 eyebrow text-muted-foreground">{id}</span>
         <span className="truncate">{title}</span>
       </span>
-      <StageTrack className="order-last col-span-2 @xl:order-none @xl:col-span-1" stages={stages} />
+      <Stepper className="order-last col-span-2 @xl:order-none @xl:col-span-1" stages={stages} />
       <span className={cn("truncate text-right text-xs", needsYou ? "text-foreground" : "text-muted-foreground")}>
         {now}
       </span>

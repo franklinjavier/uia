@@ -1,0 +1,76 @@
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "inc",
+      "catalogId": "https://uia.imfrank.dev/catalog/v1.json"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateDataModel": {
+      "surfaceId": "inc",
+      "path": "/",
+      "value": {
+        "incident": {
+          "title": "Blog RSS back to healthy",
+          "when": "09:12",
+          "steps": [
+            {
+              "label": "Detected",
+              "status": "done"
+            },
+            {
+              "label": "Reverted",
+              "status": "done"
+            },
+            {
+              "label": "Healthy",
+              "status": "done"
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "inc",
+      "components": [
+        {
+          "id": "root",
+          "component": "Column",
+          "children": [
+            "i1"
+          ]
+        },
+        {
+          "id": "i1",
+          "component": "Section",
+          "title": {
+            "path": "/incident/title"
+          },
+          "children": [
+            "state",
+            "steps"
+          ]
+        },
+        {
+          "id": "state",
+          "component": "Note",
+          "tone": "success",
+          "badge": "Resolved",
+          "text": "Reverted the culprit; the production check is green again."
+        },
+        {
+          "id": "steps",
+          "component": "Stepper",
+          "stages": {
+            "path": "/incident/steps"
+          }
+        }
+      ]
+    }
+  }
+]

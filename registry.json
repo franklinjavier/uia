@@ -593,9 +593,9 @@
       ]
     },
     {
-      "name": "stage-track",
+      "name": "stepper",
       "type": "registry:component",
-      "title": "Stage Track",
+      "title": "Stepper",
       "description": "Where something is in a fixed sequence of stages, on one line.",
       "author": "uia",
       "dependencies": [
@@ -607,9 +607,9 @@
       ],
       "files": [
         {
-          "path": "registry/ds/stage-track.tsx",
+          "path": "registry/ds/stepper.tsx",
           "type": "registry:component",
-          "target": "@components/ds/stage-track.tsx"
+          "target": "@components/ds/stepper.tsx"
         }
       ]
     },
@@ -634,10 +634,10 @@
       "name": "task-list",
       "type": "registry:component",
       "title": "Task List",
-      "description": "TaskRow + TaskListHeader: tasks through a fixed flow with StageTrack, container-query columns, counts per stage, taskRank to sort.",
+      "description": "TaskRow + TaskListHeader: tasks through a fixed flow with Stepper, container-query columns, counts per stage, taskRank to sort.",
       "author": "uia",
       "registryDependencies": [
-        "franklinjavier/uia/stage-track",
+        "franklinjavier/uia/stepper",
         "franklinjavier/uia/theme",
         "franklinjavier/uia/widget"
       ],
@@ -714,6 +714,117 @@
           "path": "registry/parts/decision-card.tsx",
           "type": "registry:component",
           "target": "@components/parts/decision-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "status-card",
+      "type": "registry:component",
+      "title": "Status Card",
+      "description": "A state with its steps and what's next (incident, deploy, migration): status pill, labelled Stepper, fields, note, answers; collapses to a ResolvedRow when resolved.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react",
+        "motion"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/action-card",
+        "franklinjavier/uia/button",
+        "franklinjavier/uia/motion",
+        "franklinjavier/uia/status",
+        "franklinjavier/uia/stepper",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/parts/status-card.tsx",
+          "type": "registry:component",
+          "target": "@components/parts/status-card.tsx"
+        }
+      ]
+    },
+    {
+      "name": "activity",
+      "type": "registry:component",
+      "title": "Activity",
+      "description": "ActivityItem + ActivityList: what the agent did for you — time, what, why, the rule that did it, Undo or Final (host-decided).",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/button",
+        "franklinjavier/uia/theme",
+        "franklinjavier/uia/widget"
+      ],
+      "files": [
+        {
+          "path": "registry/parts/activity.tsx",
+          "type": "registry:component",
+          "target": "@components/parts/activity.tsx"
+        }
+      ]
+    },
+    {
+      "name": "policy",
+      "type": "registry:component",
+      "title": "Policy",
+      "description": "Policy + PolicyList: a standing rule as a switch row (the row is the label), applied count, off state says its effect.",
+      "author": "uia",
+      "registryDependencies": [
+        "franklinjavier/uia/theme",
+        "franklinjavier/uia/widget",
+        "switch"
+      ],
+      "files": [
+        {
+          "path": "registry/parts/policy.tsx",
+          "type": "registry:component",
+          "target": "@components/parts/policy.tsx"
+        }
+      ]
+    },
+    {
+      "name": "diff",
+      "type": "registry:component",
+      "title": "Diff",
+      "description": "A code change for review: summary, files with +/- lines (success/destructive washes), answers; resolves to a row.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/action-card",
+        "franklinjavier/uia/button",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/parts/diff.tsx",
+          "type": "registry:component",
+          "target": "@components/parts/diff.tsx"
+        }
+      ]
+    },
+    {
+      "name": "citation",
+      "type": "registry:component",
+      "title": "Citation",
+      "description": "Evidence behind a claim: source host as eyebrow, the quote, a mono reference, a link out (http(s) only).",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react",
+        "motion"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/motion",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/parts/citation.tsx",
+          "type": "registry:component",
+          "target": "@components/parts/citation.tsx"
         }
       ]
     },
@@ -1300,9 +1411,9 @@
       ]
     },
     {
-      "name": "widget-ai-spend",
+      "name": "block-ai-spend",
       "type": "registry:component",
-      "title": "Widget Ai Spend",
+      "title": "Block Ai Spend",
       "description": "AiSpend: a period's AI cost by model against a budget, projection, alert, models as the meter's legend.",
       "author": "uia",
       "dependencies": [
@@ -1320,16 +1431,16 @@
       ],
       "files": [
         {
-          "path": "registry/widgets/ai-spend.tsx",
+          "path": "registry/blocks/ai-spend.tsx",
           "type": "registry:component",
-          "target": "@components/widgets/ai-spend.tsx"
+          "target": "@components/blocks/ai-spend.tsx"
         }
       ]
     },
     {
-      "name": "widget-fleet-health",
+      "name": "block-fleet-health",
       "type": "registry:component",
-      "title": "Widget Fleet Health",
+      "title": "Block Fleet Health",
       "description": "FleetHealth: tokens/s with sparkline, fleet meters, GPU heatmap with modes, rebalance.",
       "author": "uia",
       "dependencies": [
@@ -1352,16 +1463,16 @@
       ],
       "files": [
         {
-          "path": "registry/widgets/fleet-health.tsx",
+          "path": "registry/blocks/fleet-health.tsx",
           "type": "registry:component",
-          "target": "@components/widgets/fleet-health.tsx"
+          "target": "@components/blocks/fleet-health.tsx"
         }
       ]
     },
     {
-      "name": "widget-model-evals",
+      "name": "block-model-evals",
       "type": "registry:component",
-      "title": "Widget Model Evals",
+      "title": "Block Model Evals",
       "description": "ModelEvals: pass rate vs a baseline and a target, per-suite comparison, failures filtered by suite, re-run.",
       "author": "uia",
       "dependencies": [
@@ -1381,16 +1492,16 @@
       ],
       "files": [
         {
-          "path": "registry/widgets/model-evals.tsx",
+          "path": "registry/blocks/model-evals.tsx",
           "type": "registry:component",
-          "target": "@components/widgets/model-evals.tsx"
+          "target": "@components/blocks/model-evals.tsx"
         }
       ]
     },
     {
-      "name": "widget-model-router",
+      "name": "block-model-router",
       "type": "registry:component",
-      "title": "Widget Model Router",
+      "title": "Block Model Router",
       "description": "ModelRouter: routing policy with a flow graph and routes list, fallback, deploy.",
       "author": "uia",
       "dependencies": [
@@ -1411,16 +1522,16 @@
       ],
       "files": [
         {
-          "path": "registry/widgets/model-router.tsx",
+          "path": "registry/blocks/model-router.tsx",
           "type": "registry:component",
-          "target": "@components/widgets/model-router.tsx"
+          "target": "@components/blocks/model-router.tsx"
         }
       ]
     },
     {
-      "name": "widget-agent-runtime",
+      "name": "block-agent-runtime",
       "type": "registry:component",
-      "title": "Widget Agent Runtime",
+      "title": "Block Agent Runtime",
       "description": "AgentRuntime: sandboxes with lifecycle (cold → warm → idle → zero), invoke.",
       "author": "uia",
       "dependencies": [
@@ -1439,9 +1550,9 @@
       ],
       "files": [
         {
-          "path": "registry/widgets/agent-runtime.tsx",
+          "path": "registry/blocks/agent-runtime.tsx",
           "type": "registry:component",
-          "target": "@components/widgets/agent-runtime.tsx"
+          "target": "@components/blocks/agent-runtime.tsx"
         }
       ]
     },
@@ -1477,6 +1588,11 @@
           "path": "registry/surface/catalog.ts",
           "type": "registry:lib",
           "target": "@components/surface/catalog.ts"
+        },
+        {
+          "path": "registry/surface/validate.ts",
+          "type": "registry:lib",
+          "target": "@components/surface/validate.ts"
         },
         {
           "path": "registry/surface/surface.tsx",
@@ -1536,7 +1652,7 @@
       "name": "catalog-data",
       "type": "registry:component",
       "title": "Catalog Data",
-      "description": "Catalog entries: Stat, Meter, Progress, BarSeries, Sparkline, Table, List, KeyValue, StageTrack.",
+      "description": "Catalog entries: Stat, Meter, Progress, BarSeries, Sparkline, Table, List, KeyValue, Stepper.",
       "author": "uia",
       "dependencies": [
         "zod"
@@ -1545,9 +1661,9 @@
         "franklinjavier/uia/bar-series",
         "franklinjavier/uia/meter-bar",
         "franklinjavier/uia/sparkline",
-        "franklinjavier/uia/stage-track",
         "franklinjavier/uia/stat",
         "franklinjavier/uia/status",
+        "franklinjavier/uia/stepper",
         "franklinjavier/uia/surface",
         "franklinjavier/uia/theme",
         "franklinjavier/uia/tick-meter",
@@ -1592,21 +1708,53 @@
       ]
     },
     {
+      "name": "catalog-patterns",
+      "type": "registry:component",
+      "title": "Catalog Patterns",
+      "description": "Catalog entries the agent fills (compound agent patterns): DecisionCard, Confirmation, Plan, Findings, ActivityItem, Policy, Diff, Citation, BeforeAfter, StatusCard.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react",
+        "zod"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/action-card",
+        "franklinjavier/uia/activity",
+        "franklinjavier/uia/citation",
+        "franklinjavier/uia/confirmation",
+        "franklinjavier/uia/decision-card",
+        "franklinjavier/uia/decision-chip",
+        "franklinjavier/uia/diff",
+        "franklinjavier/uia/findings",
+        "franklinjavier/uia/part-transition",
+        "franklinjavier/uia/plan",
+        "franklinjavier/uia/policy",
+        "franklinjavier/uia/preview-approval",
+        "franklinjavier/uia/status-card",
+        "franklinjavier/uia/surface",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/catalog/patterns.tsx",
+          "type": "registry:component",
+          "target": "@components/catalog/patterns.tsx"
+        }
+      ]
+    },
+    {
       "name": "catalog-blocks",
       "type": "registry:component",
       "title": "Catalog Blocks",
-      "description": "Catalog entries for whole pieces: DecisionCard, Plan, Findings, AiSpend.",
+      "description": "Optional catalog layer of product blocks (AiSpend…): register only the ones your product shows.",
       "author": "uia",
       "dependencies": [
         "zod"
       ],
       "registryDependencies": [
-        "franklinjavier/uia/decision-card",
-        "franklinjavier/uia/findings",
-        "franklinjavier/uia/plan",
+        "franklinjavier/uia/block-ai-spend",
         "franklinjavier/uia/surface",
-        "franklinjavier/uia/theme",
-        "franklinjavier/uia/widget-ai-spend"
+        "franklinjavier/uia/theme"
       ],
       "files": [
         {
@@ -1623,11 +1771,11 @@
       "description": "The uia catalog (all groups) with its published id.",
       "author": "uia",
       "registryDependencies": [
-        "franklinjavier/uia/catalog-blocks",
         "franklinjavier/uia/catalog-data",
         "franklinjavier/uia/catalog-display",
         "franklinjavier/uia/catalog-input",
         "franklinjavier/uia/catalog-layout",
+        "franklinjavier/uia/catalog-patterns",
         "franklinjavier/uia/surface",
         "franklinjavier/uia/theme"
       ],
@@ -1690,8 +1838,8 @@
       "description": "Example: model router with policy, routing flow, routes list and deploy.",
       "author": "uia",
       "registryDependencies": [
-        "franklinjavier/uia/theme",
-        "franklinjavier/uia/widget-model-router"
+        "franklinjavier/uia/block-model-router",
+        "franklinjavier/uia/theme"
       ],
       "files": [
         {
@@ -1708,8 +1856,8 @@
       "description": "Example: scale-to-zero sandboxes with an isometric scene and invoke.",
       "author": "uia",
       "registryDependencies": [
-        "franklinjavier/uia/theme",
-        "franklinjavier/uia/widget-agent-runtime"
+        "franklinjavier/uia/block-agent-runtime",
+        "franklinjavier/uia/theme"
       ],
       "files": [
         {
@@ -1726,8 +1874,8 @@
       "description": "Example: monthly AI spend by model against a budget, with alert and projection.",
       "author": "uia",
       "registryDependencies": [
-        "franklinjavier/uia/theme",
-        "franklinjavier/uia/widget-ai-spend"
+        "franklinjavier/uia/block-ai-spend",
+        "franklinjavier/uia/theme"
       ],
       "files": [
         {
@@ -1744,8 +1892,8 @@
       "description": "Example (pt-BR): pass rate vs a baseline and a target, per-suite comparison, failures filtered by suite, re-run.",
       "author": "uia",
       "registryDependencies": [
-        "franklinjavier/uia/theme",
-        "franklinjavier/uia/widget-model-evals"
+        "franklinjavier/uia/block-model-evals",
+        "franklinjavier/uia/theme"
       ],
       "files": [
         {
@@ -1762,8 +1910,8 @@
       "description": "Example: tokens/s with sparkline, fleet meters and a GPU heatmap.",
       "author": "uia",
       "registryDependencies": [
-        "franklinjavier/uia/theme",
-        "franklinjavier/uia/widget-fleet-health"
+        "franklinjavier/uia/block-fleet-health",
+        "franklinjavier/uia/theme"
       ],
       "files": [
         {
@@ -1798,8 +1946,8 @@
         "franklinjavier/uia/preview-approval",
         "franklinjavier/uia/select",
         "franklinjavier/uia/sparkline",
-        "franklinjavier/uia/stage-track",
         "franklinjavier/uia/status",
+        "franklinjavier/uia/stepper",
         "franklinjavier/uia/theme",
         "franklinjavier/uia/widget"
       ],
@@ -1857,8 +2005,8 @@
         "franklinjavier/uia/preview-approval",
         "franklinjavier/uia/select",
         "franklinjavier/uia/sparkline",
-        "franklinjavier/uia/stage-track",
         "franklinjavier/uia/status",
+        "franklinjavier/uia/stepper",
         "franklinjavier/uia/task-list",
         "franklinjavier/uia/theme",
         "franklinjavier/uia/theme-toggle",
@@ -1891,6 +2039,42 @@
           "path": "registry/examples/davinci/data.ts",
           "type": "registry:file",
           "target": "~/src/examples/davinci/data.ts"
+        }
+      ]
+    },
+    {
+      "name": "example-davinci-surface",
+      "type": "registry:block",
+      "title": "Example Davinci Surface",
+      "description": "Example: the davinci inbox as an agent sends it — A2UI messages built only from patterns, every fact bound to the factory's data, the factory's action contract deciding what's reversible; Inbox, Decided for you, Rules.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/action-card",
+        "franklinjavier/uia/button",
+        "franklinjavier/uia/catalog",
+        "franklinjavier/uia/example-davinci",
+        "franklinjavier/uia/segmented",
+        "franklinjavier/uia/surface",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/examples/davinci-surface/factory.ts",
+          "type": "registry:file",
+          "target": "~/src/examples/davinci-surface/factory.ts"
+        },
+        {
+          "path": "registry/examples/davinci-surface/compose.ts",
+          "type": "registry:file",
+          "target": "~/src/examples/davinci-surface/compose.ts"
+        },
+        {
+          "path": "registry/examples/davinci-surface/davinci-surface.tsx",
+          "type": "registry:file",
+          "target": "~/src/examples/davinci-surface/davinci-surface.tsx"
         }
       ]
     },
@@ -1943,6 +2127,7 @@
         "franklinjavier/uia/ask-user",
         "franklinjavier/uia/attachment",
         "franklinjavier/uia/bar-series",
+        "franklinjavier/uia/block-ai-spend",
         "franklinjavier/uia/button",
         "franklinjavier/uia/catalog",
         "franklinjavier/uia/chart-card",
@@ -1965,7 +2150,6 @@
         "franklinjavier/uia/theme",
         "franklinjavier/uia/tool-line",
         "franklinjavier/uia/widget",
-        "franklinjavier/uia/widget-ai-spend",
         "tooltip",
         "trace"
       ],
@@ -2019,6 +2203,7 @@
         "franklinjavier/uia/catalog-display",
         "franklinjavier/uia/catalog-data",
         "franklinjavier/uia/catalog-input",
+        "franklinjavier/uia/catalog-patterns",
         "franklinjavier/uia/catalog-blocks"
       ]
     },
@@ -2038,6 +2223,11 @@
         "franklinjavier/uia/part-transition",
         "franklinjavier/uia/tool-line",
         "franklinjavier/uia/decision-card",
+        "franklinjavier/uia/status-card",
+        "franklinjavier/uia/activity",
+        "franklinjavier/uia/policy",
+        "franklinjavier/uia/diff",
+        "franklinjavier/uia/citation",
         "franklinjavier/uia/plan",
         "franklinjavier/uia/connect-prompt",
         "franklinjavier/uia/findings",
@@ -2045,17 +2235,17 @@
       ]
     },
     {
-      "name": "widgets",
+      "name": "blocks",
       "type": "registry:block",
-      "title": "Widgets",
-      "description": "Every data-driven widget, ready to feed with your data.",
+      "title": "Blocks",
+      "description": "Every product block (data-driven widget), ready to feed with your data.",
       "author": "uia",
       "registryDependencies": [
-        "franklinjavier/uia/widget-ai-spend",
-        "franklinjavier/uia/widget-fleet-health",
-        "franklinjavier/uia/widget-model-evals",
-        "franklinjavier/uia/widget-model-router",
-        "franklinjavier/uia/widget-agent-runtime"
+        "franklinjavier/uia/block-ai-spend",
+        "franklinjavier/uia/block-fleet-health",
+        "franklinjavier/uia/block-model-evals",
+        "franklinjavier/uia/block-model-router",
+        "franklinjavier/uia/block-agent-runtime"
       ]
     },
     {
@@ -2073,7 +2263,8 @@
         "franklinjavier/uia/example-model-evals",
         "franklinjavier/uia/example-bottega",
         "franklinjavier/uia/example-davinci",
-        "franklinjavier/uia/example-surface"
+        "franklinjavier/uia/example-surface",
+        "franklinjavier/uia/example-davinci-surface"
       ]
     },
     {
@@ -2155,7 +2346,7 @@
         "franklinjavier/uia/tick-meter",
         "franklinjavier/uia/meter-bar",
         "franklinjavier/uia/sparkline",
-        "franklinjavier/uia/stage-track",
+        "franklinjavier/uia/stepper",
         "franklinjavier/uia/number-ticker",
         "franklinjavier/uia/agent-orb",
         "franklinjavier/uia/model-icons",

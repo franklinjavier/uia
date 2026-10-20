@@ -1,0 +1,134 @@
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "inbox",
+      "catalogId": "https://uia.imfrank.dev/catalog/v1.json"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateDataModel": {
+      "surfaceId": "inbox",
+      "path": "/",
+      "value": {
+        "events": [
+          {
+            "id": "e1",
+            "title": "T-583 \u00b7 session tokens",
+            "why": "Adds a session table and a migration."
+          },
+          {
+            "id": "e3",
+            "title": "BLOG-5 \u00b7 Open Source page",
+            "why": "Repos as cards, same list as the tag pages."
+          }
+        ],
+        "log": [
+          {
+            "what": "T-361 approved by rule",
+            "by": "rule"
+          },
+          {
+            "what": "Retried BLOG-4 after a flaky e2e",
+            "by": "davinci"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "inbox",
+      "components": [
+        {
+          "id": "root",
+          "component": "Column",
+          "children": [
+            "e1",
+            "e3",
+            "e2"
+          ]
+        },
+        {
+          "id": "e1",
+          "component": "DecisionCard",
+          "title": {
+            "path": "/events/0/title"
+          },
+          "context": {
+            "path": "/events/0/why"
+          },
+          "actions": [
+            {
+              "label": "Approve",
+              "action": {
+                "event": {
+                  "name": "integrate",
+                  "context": {
+                    "id": "e1"
+                  }
+                }
+              }
+            },
+            {
+              "label": "Keep for now",
+              "kind": "secondary",
+              "action": {
+                "event": {
+                  "name": "keep",
+                  "context": {
+                    "id": "e1"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "e3",
+          "component": "DecisionCard",
+          "title": {
+            "path": "/events/1/title"
+          },
+          "context": {
+            "path": "/events/1/why"
+          },
+          "actions": [
+            {
+              "label": "Promote",
+              "action": {
+                "event": {
+                  "name": "approve",
+                  "context": {
+                    "id": "e3"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "e2",
+          "component": "DecisionCard",
+          "title": "T-361 \u00b7 capacity fix",
+          "consequence": "Saves 41 min a day.",
+          "actions": [
+            {
+              "label": "Approve",
+              "action": {
+                "event": {
+                  "name": "approve",
+                  "context": {
+                    "id": "e2"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

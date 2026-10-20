@@ -15,7 +15,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { MeterBar } from "@/components/ds/meter-bar"
 import { ModelIcon } from "@/components/ds/model-icons"
 import { Sparkline } from "@/components/ds/sparkline"
-import { StageTrack } from "@/components/ds/stage-track"
+import { Stepper } from "@/components/ds/stepper"
 import { StatusBadge } from "@/components/ds/status"
 import {
   ActionCard,
@@ -179,7 +179,7 @@ export function TaskCard({ task: t }: { task: Task }) {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <StageTrack
+        <Stepper
           stages={FLOW.map((label, i) => ({
             label,
             status:
