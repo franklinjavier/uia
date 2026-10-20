@@ -121,9 +121,16 @@ point marked. Pair with a big number and an eyebrow for the window ("Last 64 s")
 
 ### StageTrack (`stage-track`)
 Where something is in a fixed sequence, on one line: dots joined by
-hairlines, each `done | active | waiting | failed | todo`. Put the stage
-names once in a header using `stageTrackGrid(n)`; pass `statusLabels` in
-the product's language for screen readers.
+hairlines, each `done | active | waiting | failed | todo`. Dots without
+names are a puzzle: every track must have its stage names in view. In a
+list, put them once in a header with `<StageTrackLabels stages={…} />`
+(same grid as the tracks; when rows stack on narrow widths and the track
+spans the row, give the stacked layout its own labels row too). A track that
+stands alone (a detail panel) uses `<StageTrack labeled />`. Over many tracks
+(dozens of tasks), give each label a `count` (how many sit at that stage),
+sort what needs the person first, and fold the list after a handful: the
+counts show where work piles up without reading every row. Pass
+`statusLabels` in the product's language for screen readers.
 
 ### TickMeter (`tick-meter`)
 Progress as hairline ticks: `<TickMeter value={0.62} className="text-brand" />`.
@@ -191,6 +198,11 @@ Read `hitl.md` for when to use which. Summary:
 `ActionCardStatus tone`: `approval` / `action` (attention + spinner, waiting on
 the person), `ready`, `done`, `error`, `neutral`.
 `ActionCardFields size="sm"` for dense key/value rows.
+`ActionCard tone="attention"`: a faint warm glow in two opposite corners for
+the one decision that can't wait (an incident, a "Now" item). Never on every
+card: when everything glows, nothing does. When the person answers, set
+`tone="default"` first and let the glow drain (~300 ms) before the card
+resolves or leaves; the fade is the acknowledgement.
 
 ### ToolLine
 

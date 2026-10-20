@@ -83,3 +83,29 @@ the rule, it's missing the uia `theme` item.
 
 **Select items touching the edges.** Padding is on the list, not on groups —
 keep uia's `select`; don't wrap items in extra padded divs.
+
+**The orb shrinks to a dim dot in a nav.** `[&_svg]:size-4` on a button
+resizes every nested SVG, including the `AgentOrb`, and a still orb is
+already at 60% opacity. Size icons in their own wrapper
+(`[&>svg]:size-4`) and give the orb `opacity-100` when it stands for a place.
+
+**A row's divider curls at the ends.** `border-t` on a `rounded-*` element
+follows the radius. Draw separators as an inset `before:` hairline
+(`WidgetListRow` does) and never border one side of a rounded box.
+
+**The first message enters dry.** An empty state that swaps to the thread
+on the first send mounts the thread *with* that message, so "present at
+mount" would read it as history. `ChatThread` treats a thread that opens
+on ≤2 turns as live; don't re-implement turn entrances around it.
+
+**Motion keyframes with `as const` don't type-check** (readonly arrays).
+Type the map with `satisfies Record<string, TargetAndTransition>` instead.
+
+**Deep links 404 in production.** Path routes need the host to serve
+`index.html` for unknown paths: Cloudflare Workers assets
+`"not_found_handling": "single-page-application"` (Vite's dev server
+already does it). Keep query flags (`?bare`, `?busy`) when navigating.
+
+**The glow vanishes instead of fading.** Unmounting a card kills its
+transition. Switch `tone` to `"default"` first, wait for the drain
+(~300 ms), then remove or resolve the card.

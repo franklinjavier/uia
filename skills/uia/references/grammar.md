@@ -15,6 +15,7 @@ avoid; this says what to do. Read it with the closest example open
 7. Spacing and type, in numbers
 8. Pages
 9. Mobile first
+10. Agent apps: an inbox, not one chat
 
 ---
 
@@ -209,3 +210,51 @@ tap target shrinks).
   won't go below ~500 px, so headless screenshots at 390 px lie. Then run
   the overflow check from `pitfalls.md`.
 
+## 10. Agent apps: an inbox, not one chat
+
+When an agent works *for* someone (a coordinator, an operator, a reviewer
+bot), their attention is the scarce thing. One chat for everything buries
+the urgent decision under yesterday's small talk, makes "what's pending?"
+a scroll, and loses what was decided. Build the app the example
+`example-davinci` shows instead:
+
+```
+┌ nav ───────────┬ view (route) ─────────────────────┬ panel ─────┐
+│ ◌ davinci      │ 6 decisions need you              │ task / diff│
+│ Inbox       6  │ Since 21:00: 7 shipped, 1 stuck,  │ / preview  │
+│ THREADS        │ 7 decided for you.                │ (sheet on  │
+│ ◌ blog         │ NOW    [card, attention glow]     │  phones)   │
+│ ◌ bottega      │ TODAY  [card] [card]              │            │
+│ LOOK           │ CAN WAIT [card]                   │            │
+│ Projects       │ Answered today · Undo             │            │
+│ Decided     7  │                                   │            │
+│ Rules       3  │                                   │            │
+│ ─ ─ ─ ─ ─ ─ ─  │                                   │            │
+│ digest 21:00 ☾ │                                   │            │
+└────────────────┴───────────────────────────────────┴────────────┘
+```
+
+- **Decisions are state, not messages.** The inbox holds only what needs
+  the person, grouped by urgency (Now / Today / Can wait). Each card stands
+  alone: what, why in one line, the agent's pick marked on its option, and
+  the consequence ("If you go with davinci: …"). Mark the exception only
+  ("Irreversible"); most things can be undone, so don't badge them.
+- **Only the urgent card glows** (`ActionCard tone="attention"`); answering
+  drains the glow, then the card leaves and becomes an "Answered today" row
+  with Undo. When the urgent card scrolls away, a compact "Now" bar pins it.
+- **The summary line links**: every count in it ("7 shipped", "1 stuck",
+  "7 decided for you") opens the place that explains it.
+- **Threads are for talking**, one per project, under the agent's still
+  orb. A thread can reference an inbox item; the reference shows the
+  item's live status, it doesn't duplicate the card.
+- **Look, don't act**: Projects (stage tracks; nothing there needs you, the
+  copy says so), "Decided for you" (time, what, why, the rule that did it,
+  Undo or Final), Rules.
+- **Rules come from agreement.** When the person has gone with the agent's
+  pick every time in a category (14 of 14), offer "Make it a rule" on the
+  card. Rules list as switches (see SKILL.md, verbs vs switches) with how
+  often each applied. Undoing a decision a rule made also offers to drop
+  the rule.
+- **Nav counts**: only the inbox count uses `attention`; the rest are
+  faint. Phones: the nav becomes a `Select` in the header, next to the
+  orb (home) and the theme toggle.

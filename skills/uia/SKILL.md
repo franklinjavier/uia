@@ -57,7 +57,7 @@ to compose the existing pieces so the result looks like the designer built it.
   `Widget` is just header + white panels + footer, aligned on one edge. Use
   `<Widget variant="framed">` (grey `surface` shell + shadow) only when the
   widget must read as an object among neighbours (dashboards, floating
-  panels). Never add a grey page or decorative backdrop. Inside a message, cards use `bg-muted/60` (ActionCard) or
+  panels). Never add a grey page or decorative backdrop. Inside a message, cards use a faint `bg-muted/30` with no shadow (ActionCard) or
   `bg-card` with a hairline `border`. Prefer hairline borders over filled
   blocks; solid grey fills read as heavy (the user asked for minimalism).
 - **One indicator per meaning.** The `AgentOrb` is the only thing that moves
@@ -73,6 +73,39 @@ to compose the existing pieces so the result looks like the designer built it.
   layout animations inside a streaming transcript: content moves under them
   and they fly in from the top. When a part changes state, wrap it in
   `PartTransition`.
+- **Chat turns animate themselves.** `ChatTurn` plays the entrance: what
+  the person sends lands with a fade, a 8px lift and a blur clearing; the
+  answer follows 120 ms later; a thread's history (opened, reloaded) just
+  appears. Don't add your own wrapper animations around turns.
+- **Navigation icons nudge on hover**: one small gesture per icon that says
+  what the place is (inbox drops, layers lift, history rewinds, scale
+  weighs), played once per hover, never looping — motion variants on the
+  button, see `NUDGE` in `example-davinci`. A conversation entry uses the
+  still `AgentOrb` (no chat-bubble icon) and wakes it on hover. Don't size
+  nav icons with `[&_svg]:size-4` on the button: it shrinks the orb too.
+- **Verbs for actions, switches for policies.** Something done once
+  (approve, revert, deploy) is a button whose label is the verb. Something
+  that stays on until changed (a rule, an automation, a fallback) is a
+  `Switch`, with the whole row as its label; the off state says its effect
+  in the meta line ("Off · these come back to your inbox"). No confirmation
+  for a switch: it's undoable by flipping it back.
+- **Separators are straight hairlines.** A `border-t` on a rounded row
+  curls up at both ends; draw the line inside the padding instead
+  (`WidgetListRow` does). Never put a border on one side of a rounded box.
+- **Every screen has an address.** In an app, each view and sub-view is a
+  route (`/app/rules`, `/app/threads/blog`): reload keeps the place, back
+  and forward work, a link can point at it. Views take `view` +
+  `onViewChange` from the router rather than holding it in state; the logo
+  or orb goes home. Simulations and modes ride in the query (`?busy`).
+- **An app carries its own theme toggle** (sun/moon ghost icon button at
+  the foot of the side nav, in the header on phones), using `useTheme`
+  from `theme-provider`. Don't rely on the host page to offer it.
+- **Design for load.** Before calling a list done, run it with ten times
+  the data (dozens of tasks, not three). What needs the person sorts
+  first, the list folds after a handful ("Show 20 more" in the footer), and
+  an aggregate carries the shape (counts per stage under the stage names,
+  "22 in flight · 4 queued" in the header). Keep that simulation behind a
+  dashed "Simulation" switch or a URL flag, never in the default state.
 - **Errors point at what is missing**, in one quiet line, without painting
   fields red.
 - **Every control does something.** No info icons, settings sliders, close
@@ -154,13 +187,18 @@ is decoration. Fix what differs before reporting.
 - [ ] Typecheck the app for real: in the Vite template `tsc --noEmit` on the
       root config checks nothing (`files: []`); run
       `tsc -p tsconfig.app.json --noEmit`.
+- [ ] Reloaded on every view: you stay where you were; back/forward work.
+- [ ] Ran it with 10× the data: nothing truncates into nonsense, what needs
+      the person is on top, long lists fold.
+- [ ] Every switch, toggle and icon has its hover/focus state; the theme
+      toggle is reachable from the app itself.
 - [ ] Console clean after a fresh reload.
 - [ ] Re-read `references/pitfalls.md` for anything you touched.
 
 ## References
 
 - `references/examples.md` — the reference widgets: what each shows, how to install and copy them. Open first.
-- `references/grammar.md` — the moves the examples are made of: anatomy, hero, lists as legends, data viz, copy, spacing.
+- `references/grammar.md` — the moves the examples are made of: anatomy, hero, lists as legends, data viz, copy, spacing, pages, mobile, agent apps (inbox, threads, rules).
 - `references/tokens.md` — every token, what it means, when to use it.
 - `references/components.md` — catalog: what to reach for, imports, examples, registry item names.
 - `references/hitl.md` — the human-in-the-loop patterns, states and copy.
