@@ -283,7 +283,11 @@ export const Table = defineComponent({
             {p.columns.map((c) => (
               <TableCell
                 key={c.key}
-                className={cn(c.align === "end" && "text-right tabular-nums")}
+                className={cn(
+                  c.align === "end" && "text-right",
+                  // Only numbers get tabular figures: in Inter it widens hyphens.
+                  typeof r[c.key] === "number" && "tabular-nums"
+                )}
               >
                 {ctx.format(r[c.key], c.format ?? "text")}
               </TableCell>
@@ -332,7 +336,11 @@ export const KeyValue = defineComponent({
         )}
       </span>
       <span
-        className={cn("text-right tabular-nums", p.tone && TONE_TEXT[p.tone])}
+        className={cn(
+          "text-right",
+          typeof p.value === "number" && "tabular-nums",
+          p.tone && TONE_TEXT[p.tone]
+        )}
       >
         {ctx.format(p.value, p.format)}
       </span>

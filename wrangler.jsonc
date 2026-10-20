@@ -3,6 +3,9 @@
 //
 //   bun run deploy           # build + publish
 //   bun run cf:preview       # build + serve locally like production
+//
+// Served at uia.imfrank.dev (custom domain: Cloudflare creates the DNS
+// record and certificate) and at uia.<account>.workers.dev.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "uia",
@@ -10,5 +13,8 @@
   "assets": {
     "directory": "./dist",
     "not_found_handling": "single-page-application"
-  }
+  },
+  "routes": [{ "pattern": "uia.imfrank.dev", "custom_domain": true }],
+  // Declaring routes turns workers.dev off unless it's explicit.
+  "workers_dev": true
 }
