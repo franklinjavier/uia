@@ -6,6 +6,9 @@ import { FileBadge } from "@/components/parts/attachment"
 import { Findings } from "@/components/parts/findings"
 import { Plan } from "@/components/parts/plan"
 import { AiSpend } from "@/components/widgets/ai-spend"
+import { Surface } from "@/components/surface/surface"
+import { surfaceFromMessages } from "@/components/surface/store"
+import { uiaCatalog } from "@/components/catalog"
 
 import { Trace } from "@/components/ui/trace"
 import { TranscriptEvent, ResolvedRow } from "@/components/parts/action-card"
@@ -129,6 +132,27 @@ export const tools = defineTools<ChatMessage>()({
   connectApp: {
     client: true,
     render: () => null,
+  },
+
+  // A screen the agent composed for this question (A2UI messages against
+  // the uia catalog). Client tool: the person's action is the output, and
+  // the turn continues with it.
+  renderUI: {
+    client: true,
+    render: (part, ctx) => {
+      const surface = surfaceFromMessages(part.input?.messages as unknown[] | undefined)
+      const answered = part.state === "output-available"
+      return (
+        <div className={answered ? "pointer-events-none opacity-60 transition-opacity" : undefined}>
+          <Surface
+            surface={surface}
+            catalog={uiaCatalog}
+            size="sm"
+            onAction={(a) => !answered && ctx.addOutput({ name: a.name, context: a.context })}
+          />
+        </div>
+      )
+    },
   },
 
   // A whole widget as the answer: the same AiSpend the dashboard renders,

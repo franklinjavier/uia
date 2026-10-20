@@ -107,6 +107,13 @@ to compose the existing pieces so the result looks like the designer built it.
   keep fixtures and simulations in the example. The same component renders
   on a page and, at `Widget size="sm"`, inside a chat reply — one shell,
   two densities, never a chat-only copy.
+- **shadcn first.** Before building a piece, check the shadcn catalog
+  (`bunx shadcn add <name>`): Badge, Alert, Sheet, Attachment, Marker,
+  HoverCard, Table, Tabs, Field… uia's pieces are built on them
+  (`StatusBadge` = Badge, `ChatError` = Alert, `AttachmentChip` =
+  Attachment, `TranscriptEvent` = Marker). Keep uia's look and motion with
+  `className` on top of the shadcn API; customise the copied file only when
+  that can't work.
 - **Every screen has an address.** In an app, each view and sub-view is a
   route (`/app/rules`, `/app/threads/blog`): reload keeps the place, back
   and forward work, a link can point at it. Views take `view` +
@@ -180,6 +187,12 @@ agent uses them, attachments with a hover gist, a chart in the reply, a
 `ChatError` with a retry that can switch model, Regenerate, and `ChatPill`
 when minimised.
 
+When nothing prebuilt fits, the agent **composes a surface**: A2UI v0.9
+messages against the uia catalog (layout, data, display, input and whole
+blocks), rendered by `<Surface>` on a page or `size="sm"` in a reply. The
+agent sends names, enums and data, never styling or code. Read
+`references/surfaces.md` before building agent-composed screens.
+
 ## Human-in-the-loop in one paragraph
 
 Ask before guessing (`AskUser`: one question at a time, A/B/C keys, free
@@ -226,4 +239,5 @@ is decoration. Fix what differs before reporting.
 - `references/components.md` — catalog: what to reach for, imports, examples, registry item names.
 - `references/hitl.md` — the human-in-the-loop patterns, states and copy.
 - `references/chat.md` — `useAgentChat`, the tool registry, assembling a chat (widget or full page).
+- `references/surfaces.md` — agent-composed UI: the A2UI format, the uia catalog, rendering, streaming, actions, extending.
 - `references/pitfalls.md` — real bugs met while building uia and how to avoid them.

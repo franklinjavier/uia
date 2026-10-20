@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "surfaces",
+  "title": "Surfaces",
+  "author": "uia",
+  "description": "Agent-composed UI: the A2UI runtime and the whole uia catalog.",
+  "registryDependencies": [
+    "franklinjavier/uia/surface",
+    "franklinjavier/uia/catalog",
+    "franklinjavier/uia/catalog-layout",
+    "franklinjavier/uia/catalog-display",
+    "franklinjavier/uia/catalog-data",
+    "franklinjavier/uia/catalog-input",
+    "franklinjavier/uia/catalog-blocks"
+  ],
+  "type": "registry:block"
+}

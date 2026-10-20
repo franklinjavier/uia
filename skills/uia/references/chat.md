@@ -111,6 +111,10 @@ task phrased as the person would type it).
   bubble (`UserTurn` renders `file` parts; pass `renderFile` to wrap them in
   `AttachmentPreview`). Reading a file is a trace line ("Read
   q3-board-deck.pdf · 24 pages") followed by what it found (`Findings`).
+- **A screen composed for the question**: when no part or widget fits, a
+  client tool `renderUI` whose input is A2UI messages renders a `<Surface
+  size="sm">`; the person's action is the tool output (scenario
+  *compose*). See `surfaces.md`.
 - **A whole widget as the answer**: when a widget exists for the data (spend,
   evals, fleet), the tool returns its props and renders it at `size="sm"`
   (`<AiSpend size="sm" {...part.output} />`). Compose a `ChartCard` only

@@ -21,6 +21,7 @@ import { Bottega } from "@/examples/bottega/bottega"
 import { Davinci } from "@/examples/davinci/davinci"
 import { DavinciInbox, type View as DavinciView } from "@/examples/davinci2/davinci2"
 import { ModelRouterExample as ModelRouter } from "@/examples/model-router"
+import { SurfaceExample } from "@/examples/surface/surface-demo"
 
 const scenario =
   new URLSearchParams(window.location.search).get("scenario") ?? undefined
@@ -59,6 +60,7 @@ const WIDGETS = {
   bottega: { label: "Bottega", component: Bottega, full: true },
   davinci: { label: "davinci (one chat)", component: Davinci, full: true },
   davinci2: { label: "davinci (inbox)", component: DavinciInboxPage, full: true },
+  surface: { label: "Agent-built screen", component: SurfaceExample, full: true },
 } as const
 
 type WidgetKey = keyof typeof WIDGETS

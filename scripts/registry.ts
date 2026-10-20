@@ -132,6 +132,23 @@ const ITEMS: Item[] = [
   item("widget-model-router", "registry:component", "ModelRouter: routing policy with a flow graph and routes list, fallback, deploy.", ["registry/widgets/model-router.tsx"]),
   item("widget-agent-runtime", "registry:component", "AgentRuntime: sandboxes with lifecycle (cold → warm → idle → zero), invoke.", ["registry/widgets/agent-runtime.tsx"]),
 
+  // Surfaces: the agent composes UI (A2UI v0.9) from a catalog. The runtime
+  // has no styling; the catalog entries wrap uia pieces. Install the groups
+  // you need and extend the catalog with your own entries.
+  item("surface", "registry:lib", "A2UI v0.9 runtime: messages → surfaces (store, JSON Pointer bindings), <Surface> renderer with validation, streaming placeholders and actions; defineComponent/defineCatalog, catalogToJSONSchema/catalogToPrompt.", [
+    "registry/surface/types.ts",
+    "registry/surface/store.ts",
+    "registry/surface/format.ts",
+    "registry/surface/catalog.ts",
+    "registry/surface/surface.tsx",
+  ]),
+  item("catalog-layout", "registry:component", "Catalog entries: Column, Row, Grid (container-query columns, span), Section, Card, Tabs, Divider.", ["registry/catalog/layout.tsx"]),
+  item("catalog-display", "registry:component", "Catalog entries: Text, Badge, Note (alert line), Empty.", ["registry/catalog/display.tsx"]),
+  item("catalog-data", "registry:component", "Catalog entries: Stat, Meter, Progress, BarSeries, Sparkline, Table, List, KeyValue, StageTrack.", ["registry/catalog/data.tsx"]),
+  item("catalog-input", "registry:component", "Catalog entries: Button, TextField, ChoicePicker, CheckBox, Slider, Confirm (two-way bindings, named actions).", ["registry/catalog/input.tsx"]),
+  item("catalog-blocks", "registry:component", "Catalog entries for whole pieces: DecisionCard, Plan, Findings, AiSpend.", ["registry/catalog/blocks.tsx"]),
+  item("catalog", "registry:component", "The uia catalog (all groups) with its published id.", ["registry/catalog/index.ts"]),
+
   // App shell for agent products.
   item("app-nav", "registry:component", "Side nav of an agent app: brand orb (home), sections, counts (attention where needed), hover nudges, orb for conversations; AppNavSelect for phones.", ["registry/app/app-nav.tsx"]),
   item("theme-toggle", "registry:component", "Sun/moon ghost button for an app's own chrome.", ["registry/app/theme-toggle.tsx"]),
@@ -156,6 +173,10 @@ const ITEMS: Item[] = [
     "registry/examples/davinci/cards.tsx",
     "registry/examples/davinci/data.ts",
   ]),
+  item("example-surface", "registry:block", "Example: screens an agent assembles for the moment (A2UI against the uia catalog) — a cost & quality dashboard and an incident view, streamed in, with actions back as named events.", [
+    "registry/examples/surface/specs.ts",
+    "registry/examples/surface/surface-demo.tsx",
+  ]),
   item("example-assistant", "registry:block", "Example: a scripted agent chat with questions, a draft and an approval.", [
     "registry/examples/assistant/assistant.tsx",
     "registry/examples/assistant/scripts.ts",
@@ -168,6 +189,9 @@ const BUNDLES = [
   bundle("chat", "Everything to build an agent chat.", [
     "agent-chat", "chat-thread", "chat-turn", "turn-actions", "composer", "chat-empty", "chat-status", "chat-error", "chat-pill", "attachment",
   ]),
+  bundle("surfaces", "Agent-composed UI: the A2UI runtime and the whole uia catalog.", [
+    "surface", "catalog", "catalog-layout", "catalog-display", "catalog-data", "catalog-input", "catalog-blocks",
+  ]),
   bundle("hitl", "All human-in-the-loop parts.", [
     "action-card", "ask-user", "confirmation", "draft-card", "preview-approval", "decision-chip", "part-transition", "tool-line", "decision-card", "plan", "connect-prompt", "findings", "chart-card",
   ]),
@@ -175,7 +199,7 @@ const BUNDLES = [
     "widget-ai-spend", "widget-fleet-health", "widget-model-evals", "widget-model-router", "widget-agent-runtime",
   ]),
   bundle("examples", "Every reference widget, to read, run and adapt.", [
-    "example-assistant", "example-model-router", "example-agent-runtime", "example-ai-spend", "example-fleet-health", "example-model-evals", "example-bottega", "example-davinci",
+    "example-assistant", "example-model-router", "example-agent-runtime", "example-ai-spend", "example-fleet-health", "example-model-evals", "example-bottega", "example-davinci", "example-surface",
   ]),
 ]
 
@@ -208,7 +232,7 @@ function resolveAlias(spec: string): string | null {
     .replace(/^@\/lib\//, "registry/lib/")
     .replace(/^@\/hooks\//, "registry/hooks/")
     .replace(/^@\/examples\//, "registry/examples/")
-  for (const ext of [".tsx", ".ts"]) if (fileOwner.has(base + ext)) return base + ext
+  for (const ext of [".tsx", ".ts", "/index.ts", "/index.tsx"]) if (fileOwner.has(base + ext)) return base + ext
   return null
 }
 
@@ -348,7 +372,7 @@ const typeset = {
 // The agent skill: one copy, in .agents/skills (where Codex and most agents
 // look). Claude Code reaches it through CLAUDE.md → AGENTS.md; the registry
 // never writes those two files, since projects already have their own.
-const SKILL_FILES = ["SKILL.md", "references/tokens.md", "references/components.md", "references/hitl.md", "references/chat.md", "references/pitfalls.md", "references/examples.md", "references/grammar.md"]
+const SKILL_FILES = ["SKILL.md", "references/tokens.md", "references/components.md", "references/hitl.md", "references/chat.md", "references/pitfalls.md", "references/examples.md", "references/grammar.md", "references/surfaces.md"]
 const skill = {
   name: "skill",
   type: "registry:file",

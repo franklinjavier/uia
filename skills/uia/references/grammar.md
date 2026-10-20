@@ -196,6 +196,11 @@ tap target shrinks).
   corner becomes static (`self-start sm:absolute …`).
 - **Meta lines and footers wrap** (`flex-wrap`, `gap-y-*`); badges never wrap
   inside (`StatusBadge` is `whitespace-nowrap`).
+- **Side panels: a column at `lg`, a Sheet below.** At `lg` a detail panel
+  is an inline third column (non-modal, the list stays usable); below it's a
+  full-screen shadcn `Sheet` (focus trap, Esc, scroll lock) with the same
+  header and content, rendered once for both (`matchMedia("(min-width:
+  64rem)")`). See `example-davinci`.
 - **Rails become sheets.** Below `lg` the conversation rail is a full-screen
   sheet opened by a floating `brand` button ("Conversa" + attention count);
   decision chips open the sheet and scroll to their card.

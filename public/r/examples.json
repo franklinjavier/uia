@@ -12,7 +12,8 @@
     "franklinjavier/uia/example-fleet-health",
     "franklinjavier/uia/example-model-evals",
     "franklinjavier/uia/example-bottega",
-    "franklinjavier/uia/example-davinci"
+    "franklinjavier/uia/example-davinci",
+    "franklinjavier/uia/example-surface"
   ],
   "type": "registry:block"
 }

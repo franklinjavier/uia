@@ -8,6 +8,8 @@ import type { PlanStep } from "@/components/parts/plan"
 import type { BarDatum } from "@/components/ds/bar-series"
 import type { AiSpendModel, AiSpendPeriod } from "@/components/widgets/ai-spend"
 import { BUDGET, MODELS as SPEND_MODELS, PERIODS } from "@/examples/ai-spend"
+import type { SurfaceMessage } from "@/components/surface/types"
+import { UIA_CATALOG_ID } from "@/components/catalog"
 
 // Typed parts shared by the scripts and the renderer.
 type Tools = {
@@ -34,6 +36,10 @@ type Tools = {
   connectApp: {
     input: { app: "Slack"; reason: string; done: string }
     output: { connected: boolean }
+  }
+  renderUI: {
+    input: { messages: SurfaceMessage[] }
+    output: { name: string; context: Record<string, unknown> }
   }
   reportSpend: {
     input: { period: string }
@@ -380,6 +386,69 @@ const spend = createChat<ChatMessage>()
     )
   })
 
+/* ---- Compose: the agent builds a screen for this question (A2UI) ---- */
+
+const REVIEW_UI: SurfaceMessage[] = [
+  { version: "v0.9", createSurface: { surfaceId: "reviews", catalogId: UIA_CATALOG_ID } },
+  {
+    version: "v0.9",
+    updateDataModel: {
+      surfaceId: "reviews",
+      path: "/",
+      value: {
+        models: [
+          { model: "Claude Opus", pass: 0.851, p95: 9.4, cost: 0.42 },
+          { model: "Claude Sonnet", pass: 0.847, p95: 4.1, cost: 0.09 },
+          { model: "GPT", pass: 0.812, p95: 5.2, cost: 0.11 },
+        ],
+      },
+    },
+  },
+  {
+    version: "v0.9",
+    updateComponents: {
+      surfaceId: "reviews",
+      components: [
+        { id: "root", component: "Section", title: "Code reviews, last 30 days", description: "1,284 reviews · Code suite", children: ["table", "note", "actions"] },
+        {
+          id: "table",
+          component: "Table",
+          columns: [
+            { key: "model", label: "Model" },
+            { key: "pass", label: "Pass", align: "end", format: "percent" },
+            { key: "p95", label: "p95", align: "end", format: "duration" },
+            { key: "cost", label: "$ / review", align: "end", format: "currency" },
+          ],
+          rows: { path: "/models" },
+        },
+        { id: "note", component: "Note", tone: "success", badge: "−79% cost", text: "Sonnet is 0.4 points behind Opus on the Code suite at a fifth of the price." },
+        { id: "actions", component: "Row", children: ["route", "keep"] },
+        { id: "route", component: "Button", label: "Route reviews to Sonnet", action: { event: { name: "route_reviews", context: { to: "sonnet" } } } },
+        { id: "keep", component: "Button", label: "Keep Opus", variant: "secondary", action: { event: { name: "route_reviews", context: { to: "opus" } } } },
+      ],
+    },
+  },
+]
+
+const compose = createChat<ChatMessage>()
+  .user("Which model should handle code reviews?")
+  .sleep(400)
+  .assistant(({ writer }) => {
+    writer.reasoning("Compare the three models on the Code suite: pass rate, latency and cost per review. A small table and the two real options.")
+    writer.sleep(200)
+    writer.text("Here's how they compare on our reviews.")
+    writer.tool("renderUI", { input: { messages: REVIEW_UI } })
+  })
+  .assistant(({ writer, toolCall }) => {
+    const to = toolCall?.name === "renderUI" ? toolCall.output?.context?.to : undefined
+    writer.sleep(300)
+    writer.text(
+      to === "sonnet"
+        ? "Done. Reviews go to **Sonnet** from the next run; I'll watch the Code suite and tell you if the pass rate drops below 84%."
+        : "Okay, reviews stay on **Opus**."
+    )
+  })
+
 export const SCENARIOS = {
   research: { label: "What shipped in the last release?", icon: "globe", turns: 3, chat: research },
   draft: { label: "Draft a launch announcement", icon: "pen", turns: 1, chat: draft },
@@ -387,6 +456,7 @@ export const SCENARIOS = {
   metrics: { label: "How did weekly signups trend?", icon: "chart", turns: 3, chat: metrics },
   deck: { label: "Summarize the risks in a deck", icon: "file", turns: 1, chat: deck },
   spend: { label: "How's our AI spend this month?", icon: "chart", turns: 1, chat: spend },
+  compose: { label: "Which model should handle code reviews?", icon: "code", turns: 1, chat: compose },
 } as const
 
 export type ScenarioKey = keyof typeof SCENARIOS

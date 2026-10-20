@@ -109,3 +109,18 @@ already does it). Keep query flags (`?bare`, `?busy`) when navigating.
 **The glow vanishes instead of fading.** Unmounting a card kills its
 transition. Switch `tone` to `"default"` first, wait for the drain
 (~300 ms), then remove or resolve the card.
+
+**A panel's right edge disappears inside a message.** `WidgetPanel` draws
+its hairline with `ring`, which the transcript clips. `Widget size="sm"`
+switches it to a real `border`; anything you put in a reply should use
+`size="sm"` (or a `border`, never a `ring`).
+
+**shadcn parts fight the eyebrow type.** `cn` can't see inside the
+`eyebrow` utility, so a shadcn part's `text-xs font-medium` survives next
+to it. Restate `text-[11px]/4 font-normal` when you put eyebrow type on a
+shadcn component (StatusBadge does).
+
+**A Sheet's content vanishes while it closes.** A controlled `Sheet` fed by
+nullable state renders nothing during its exit animation; keep the last
+value until it has closed.
+

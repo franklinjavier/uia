@@ -1,0 +1,41 @@
+Compose UI as A2UI v0.9 messages with catalogId "https://uia.frank-47e.workers.dev/catalog/v1.json".
+Components are a flat list with ids; children reference ids; the root component has id "root".
+Props take a literal or a binding {"path":"/pointer"} into the data model (updateDataModel).
+Actions are {"event":{"name","context"}}. Never send classes, colours or code; format numbers with `format`, not by hand.
+Prefer a block when it matches the intent; otherwise compose from layout + data components.
+
+BLOCK
+- DecisionCard(agent, eyebrow, title, context, options, pick, chooseAction, consequence, actions, irreversible, urgent): One decision the agent needs from the person: what, why, options with the agent's pick, the consequence, and the answers. Use for anything waiting on a judgment.
+- Plan(title, steps): A multi-step job and where it is: steps todo → running → done (waiting = needs the person, failed). Update its data to tick steps off.
+- Findings(title, items): What was pulled from a source, ranked by severity, each with its reference (page, line, timestamp) so it can be checked.
+- AiSpend(models, periods, budget, alertAt): AI cost by model against a budget for a period: spent, left, projection, alert, models as the meter's legend.
+LAYOUT
+- Column(children, gap): Stack children vertically. The usual root.
+- Row(children, gap, align): Lay children side by side; wraps on narrow widths.
+- Grid(children, columns, gap): A dashboard grid. Children may set `span`. Collapses to one column when narrow.
+- Section(title, description, children, aside): A titled block: title outside, content in a white panel. The unit of a dashboard.
+- Card(children, child): A white panel without a title, for a second block inside a Section or on its own.
+- Tabs(tabs): Switch between a few views of the same thing (2–4).
+- Divider(): A hairline between groups inside a panel.
+DATA
+- Stat(label, value, format, unit, delta, deltaIsGood, meta, size): One number that answers the question: label, value, optional unit, delta and a meta line (what changed, by when).
+- Meter(label, value, segments, max, min, format, markers, tone): A value against its limit, the limit visible; or a breakdown (segments) of a total. Markers label thresholds.
+- Progress(value, label, tone): Progress toward done as hairline ticks (0–1).
+- BarSeries(data, format, highlight): A short series as bars (days, weeks, releases); the latest (or `highlight`) at full strength.
+- Sparkline(values, label): A recent trend as a line, next to a Stat. No axes.
+- Table(columns, rows): Rows × columns when the person compares across several attributes. For one value per item, use List + KeyValue.
+- List(children, title): Rows separated by hairlines; usually a template of KeyValue over a data array.
+- KeyValue(label, value, format, meta, tone): One row: a label, an optional meta, and a formatted value on the right.
+- StageTrack(stages): Where something is in a fixed sequence of stages.
+DISPLAY
+- Text(text, variant): Words. title: a heading; body; muted: secondary; eyebrow: a mono label; markdown: rich prose.
+- Badge(label, tone): A state, in one or two words (Healthy, 86% used, Over budget). Colour comes from tone.
+- Note(tone, badge, text): An alert line: a state badge plus one sentence with new information (when, how much, what happens next). Not advice.
+- Empty(title, description): Nothing here, said plainly in one line (and why, if it helps).
+INPUT
+- Button(label, variant, action): One action, labelled with its verb ('Raise limit', 'Deploy'). primary: the main one; secondary; ghost: tertiary.
+- TextField(label, value, placeholder, multiline): Free text, bound to the data model through `value`.
+- ChoicePicker(label, options, value): Pick one of a few options (2–6), each with an optional hint. Bound through `value`.
+- CheckBox(label, value): One yes/no, bound through `value`.
+- Slider(label, value, min, max, step, format): A number in a range, bound through `value`; shows the formatted value.
+- Confirm(title, description, confirmLabel, cancelLabel, action, cancelAction): An approval gate: what will happen, and the two answers. Required before anything destructive or irreversible.

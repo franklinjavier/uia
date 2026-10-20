@@ -1,0 +1,25 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "catalog-display",
+  "title": "Catalog Display",
+  "author": "uia",
+  "description": "Catalog entries: Text, Badge, Note (alert line), Empty.",
+  "dependencies": [
+    "zod"
+  ],
+  "registryDependencies": [
+    "franklinjavier/uia/markdown",
+    "franklinjavier/uia/status",
+    "franklinjavier/uia/surface",
+    "franklinjavier/uia/theme"
+  ],
+  "files": [
+    {
+      "path": "registry/catalog/display.tsx",
+      "content": "import { z } from \"zod\"\n\nimport { cn } from \"@/lib/utils\"\nimport { StatusBadge } from \"@/components/ds/status\"\nimport { Markdown } from \"@/components/parts/markdown\"\nimport { defineComponent, tone } from \"@/components/surface/catalog\"\n\n// Display: words. Hierarchy by size and colour, never bold; one quiet line\n// for a note, a badge only for state.\n\nconst BADGE_TONE = {\n  neutral: \"neutral\",\n  success: \"success\",\n  warning: \"warning\",\n  destructive: \"destructive\",\n  attention: \"attention\",\n  info: \"info\",\n} as const\n\nexport const Text = defineComponent({\n  name: \"Text\",\n  kind: \"display\",\n  description:\n    \"Words. title: a heading; body; muted: secondary; eyebrow: a mono label; markdown: rich prose.\",\n  props: z.object({\n    text: z.string(),\n    variant: z\n      .enum([\"title\", \"body\", \"muted\", \"eyebrow\", \"markdown\"])\n      .optional(),\n  }),\n  render: (p) =>\n    p.variant === \"markdown\" ? (\n      <Markdown>{p.text}</Markdown>\n    ) : (\n      <p\n        className={cn(\n          \"text-pretty\",\n          p.variant === \"title\" && \"text-base tracking-[-0.011em]\",\n          (!p.variant || p.variant === \"body\") && \"text-sm\",\n          p.variant === \"muted\" && \"text-sm text-muted-foreground\",\n          p.variant === \"eyebrow\" && \"eyebrow text-muted-foreground\"\n        )}\n      >\n        {p.text}\n      </p>\n    ),\n})\n\nexport const Badge = defineComponent({\n  name: \"Badge\",\n  kind: \"display\",\n  description:\n    \"A state, in one or two words (Healthy, 86% used, Over budget). Colour comes from tone.\",\n  props: z.object({ label: z.string(), tone: tone.optional() }),\n  render: (p) => (\n    <StatusBadge tone={BADGE_TONE[p.tone ?? \"neutral\"]}>{p.label}</StatusBadge>\n  ),\n})\n\nexport const Note = defineComponent({\n  name: \"Note\",\n  kind: \"display\",\n  description:\n    \"An alert line: a state badge plus one sentence with new information (when, how much, what happens next). Not advice.\",\n  props: z.object({ tone, badge: z.string(), text: z.string() }),\n  render: (p) => (\n    <div className=\"flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm\">\n      <StatusBadge tone={BADGE_TONE[p.tone]}>{p.badge}</StatusBadge>\n      <span className=\"text-muted-foreground\">{p.text}</span>\n    </div>\n  ),\n})\n\nexport const Empty = defineComponent({\n  name: \"Empty\",\n  kind: \"display\",\n  description: \"Nothing here, said plainly in one line (and why, if it helps).\",\n  props: z.object({ title: z.string(), description: z.string().optional() }),\n  render: (p) => (\n    <div className=\"flex flex-col items-center gap-1 py-6 text-center\">\n      <span className=\"text-sm\">{p.title}</span>\n      {p.description && (\n        <span className=\"text-sm text-muted-foreground\">{p.description}</span>\n      )}\n    </div>\n  ),\n})\n\nexport const display = [Text, Badge, Note, Empty]\n",
+      "type": "registry:component",
+      "target": "@components/catalog/display.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

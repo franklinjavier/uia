@@ -486,6 +486,7 @@
         "class-variance-authority"
       ],
       "registryDependencies": [
+        "badge",
         "franklinjavier/uia/theme"
       ],
       "files": [
@@ -683,7 +684,8 @@
         "collapsible",
         "franklinjavier/uia/motion",
         "franklinjavier/uia/spinner",
-        "franklinjavier/uia/theme"
+        "franklinjavier/uia/theme",
+        "marker"
       ],
       "files": [
         {
@@ -751,6 +753,7 @@
         "motion"
       ],
       "registryDependencies": [
+        "alert",
         "franklinjavier/uia/button",
         "franklinjavier/uia/motion",
         "franklinjavier/uia/spinner",
@@ -771,11 +774,12 @@
       "description": "File chips (type badge + name, removable in the composer) and a hover preview with the file's gist.",
       "author": "uia",
       "dependencies": [
-        "@base-ui/react",
         "lucide-react"
       ],
       "registryDependencies": [
-        "franklinjavier/uia/theme"
+        "attachment",
+        "franklinjavier/uia/theme",
+        "hover-card"
       ],
       "files": [
         {
@@ -1260,6 +1264,7 @@
         "motion"
       ],
       "registryDependencies": [
+        "alert",
         "franklinjavier/uia/button",
         "franklinjavier/uia/motion",
         "franklinjavier/uia/theme"
@@ -1437,6 +1442,200 @@
           "path": "registry/widgets/agent-runtime.tsx",
           "type": "registry:component",
           "target": "@components/widgets/agent-runtime.tsx"
+        }
+      ]
+    },
+    {
+      "name": "surface",
+      "type": "registry:lib",
+      "title": "Surface",
+      "description": "A2UI v0.9 runtime: messages → surfaces (store, JSON Pointer bindings), <Surface> renderer with validation, streaming placeholders and actions; defineComponent/defineCatalog, catalogToJSONSchema/catalogToPrompt.",
+      "author": "uia",
+      "dependencies": [
+        "zod"
+      ],
+      "registryDependencies": [
+        "skeleton"
+      ],
+      "files": [
+        {
+          "path": "registry/surface/types.ts",
+          "type": "registry:lib",
+          "target": "@components/surface/types.ts"
+        },
+        {
+          "path": "registry/surface/store.ts",
+          "type": "registry:lib",
+          "target": "@components/surface/store.ts"
+        },
+        {
+          "path": "registry/surface/format.ts",
+          "type": "registry:lib",
+          "target": "@components/surface/format.ts"
+        },
+        {
+          "path": "registry/surface/catalog.ts",
+          "type": "registry:lib",
+          "target": "@components/surface/catalog.ts"
+        },
+        {
+          "path": "registry/surface/surface.tsx",
+          "type": "registry:lib",
+          "target": "@components/surface/surface.tsx"
+        }
+      ]
+    },
+    {
+      "name": "catalog-layout",
+      "type": "registry:component",
+      "title": "Catalog Layout",
+      "description": "Catalog entries: Column, Row, Grid (container-query columns, span), Section, Card, Tabs, Divider.",
+      "author": "uia",
+      "dependencies": [
+        "zod"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/segmented",
+        "franklinjavier/uia/surface",
+        "franklinjavier/uia/theme",
+        "franklinjavier/uia/widget",
+        "separator"
+      ],
+      "files": [
+        {
+          "path": "registry/catalog/layout.tsx",
+          "type": "registry:component",
+          "target": "@components/catalog/layout.tsx"
+        }
+      ]
+    },
+    {
+      "name": "catalog-display",
+      "type": "registry:component",
+      "title": "Catalog Display",
+      "description": "Catalog entries: Text, Badge, Note (alert line), Empty.",
+      "author": "uia",
+      "dependencies": [
+        "zod"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/markdown",
+        "franklinjavier/uia/status",
+        "franklinjavier/uia/surface",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/catalog/display.tsx",
+          "type": "registry:component",
+          "target": "@components/catalog/display.tsx"
+        }
+      ]
+    },
+    {
+      "name": "catalog-data",
+      "type": "registry:component",
+      "title": "Catalog Data",
+      "description": "Catalog entries: Stat, Meter, Progress, BarSeries, Sparkline, Table, List, KeyValue, StageTrack.",
+      "author": "uia",
+      "dependencies": [
+        "zod"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/bar-series",
+        "franklinjavier/uia/meter-bar",
+        "franklinjavier/uia/sparkline",
+        "franklinjavier/uia/stage-track",
+        "franklinjavier/uia/stat",
+        "franklinjavier/uia/status",
+        "franklinjavier/uia/surface",
+        "franklinjavier/uia/theme",
+        "franklinjavier/uia/tick-meter",
+        "franklinjavier/uia/widget",
+        "table"
+      ],
+      "files": [
+        {
+          "path": "registry/catalog/data.tsx",
+          "type": "registry:component",
+          "target": "@components/catalog/data.tsx"
+        }
+      ]
+    },
+    {
+      "name": "catalog-input",
+      "type": "registry:component",
+      "title": "Catalog Input",
+      "description": "Catalog entries: Button, TextField, ChoicePicker, CheckBox, Slider, Confirm (two-way bindings, named actions).",
+      "author": "uia",
+      "dependencies": [
+        "zod"
+      ],
+      "registryDependencies": [
+        "checkbox",
+        "franklinjavier/uia/action-card",
+        "franklinjavier/uia/button",
+        "franklinjavier/uia/surface",
+        "franklinjavier/uia/theme",
+        "input",
+        "label",
+        "radio-group",
+        "slider",
+        "textarea"
+      ],
+      "files": [
+        {
+          "path": "registry/catalog/input.tsx",
+          "type": "registry:component",
+          "target": "@components/catalog/input.tsx"
+        }
+      ]
+    },
+    {
+      "name": "catalog-blocks",
+      "type": "registry:component",
+      "title": "Catalog Blocks",
+      "description": "Catalog entries for whole pieces: DecisionCard, Plan, Findings, AiSpend.",
+      "author": "uia",
+      "dependencies": [
+        "zod"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/decision-card",
+        "franklinjavier/uia/findings",
+        "franklinjavier/uia/plan",
+        "franklinjavier/uia/surface",
+        "franklinjavier/uia/theme",
+        "franklinjavier/uia/widget-ai-spend"
+      ],
+      "files": [
+        {
+          "path": "registry/catalog/blocks.tsx",
+          "type": "registry:component",
+          "target": "@components/catalog/blocks.tsx"
+        }
+      ]
+    },
+    {
+      "name": "catalog",
+      "type": "registry:component",
+      "title": "Catalog",
+      "description": "The uia catalog (all groups) with its published id.",
+      "author": "uia",
+      "registryDependencies": [
+        "franklinjavier/uia/catalog-blocks",
+        "franklinjavier/uia/catalog-data",
+        "franklinjavier/uia/catalog-display",
+        "franklinjavier/uia/catalog-input",
+        "franklinjavier/uia/catalog-layout",
+        "franklinjavier/uia/surface",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/catalog/index.ts",
+          "type": "registry:component",
+          "target": "@components/catalog/index.ts"
         }
       ]
     },
@@ -1664,6 +1863,7 @@
         "franklinjavier/uia/theme",
         "franklinjavier/uia/theme-toggle",
         "franklinjavier/uia/widget",
+        "sheet",
         "switch"
       ],
       "files": [
@@ -1695,6 +1895,36 @@
       ]
     },
     {
+      "name": "example-surface",
+      "type": "registry:block",
+      "title": "Example Surface",
+      "description": "Example: screens an agent assembles for the moment (A2UI against the uia catalog) — a cost & quality dashboard and an incident view, streamed in, with actions back as named events.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/action-card",
+        "franklinjavier/uia/button",
+        "franklinjavier/uia/catalog",
+        "franklinjavier/uia/segmented",
+        "franklinjavier/uia/surface",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/examples/surface/specs.ts",
+          "type": "registry:file",
+          "target": "~/src/examples/surface/specs.ts"
+        },
+        {
+          "path": "registry/examples/surface/surface-demo.tsx",
+          "type": "registry:file",
+          "target": "~/src/examples/surface/surface-demo.tsx"
+        }
+      ]
+    },
+    {
       "name": "example-assistant",
       "type": "registry:block",
       "title": "Example Assistant",
@@ -1714,6 +1944,7 @@
         "franklinjavier/uia/attachment",
         "franklinjavier/uia/bar-series",
         "franklinjavier/uia/button",
+        "franklinjavier/uia/catalog",
         "franklinjavier/uia/chart-card",
         "franklinjavier/uia/chat-empty",
         "franklinjavier/uia/chat-error",
@@ -1730,6 +1961,7 @@
         "franklinjavier/uia/part-transition",
         "franklinjavier/uia/plan",
         "franklinjavier/uia/search-results",
+        "franklinjavier/uia/surface",
         "franklinjavier/uia/theme",
         "franklinjavier/uia/tool-line",
         "franklinjavier/uia/widget",
@@ -1772,6 +2004,22 @@
         "franklinjavier/uia/chat-error",
         "franklinjavier/uia/chat-pill",
         "franklinjavier/uia/attachment"
+      ]
+    },
+    {
+      "name": "surfaces",
+      "type": "registry:block",
+      "title": "Surfaces",
+      "description": "Agent-composed UI: the A2UI runtime and the whole uia catalog.",
+      "author": "uia",
+      "registryDependencies": [
+        "franklinjavier/uia/surface",
+        "franklinjavier/uia/catalog",
+        "franklinjavier/uia/catalog-layout",
+        "franklinjavier/uia/catalog-display",
+        "franklinjavier/uia/catalog-data",
+        "franklinjavier/uia/catalog-input",
+        "franklinjavier/uia/catalog-blocks"
       ]
     },
     {
@@ -1824,7 +2072,8 @@
         "franklinjavier/uia/example-fleet-health",
         "franklinjavier/uia/example-model-evals",
         "franklinjavier/uia/example-bottega",
-        "franklinjavier/uia/example-davinci"
+        "franklinjavier/uia/example-davinci",
+        "franklinjavier/uia/example-surface"
       ]
     },
     {
@@ -1872,6 +2121,11 @@
           "path": "skills/uia/references/grammar.md",
           "type": "registry:file",
           "target": "~/.agents/skills/uia/references/grammar.md"
+        },
+        {
+          "path": "skills/uia/references/surfaces.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/uia/references/surfaces.md"
         }
       ],
       "docs": "Point your agents at it: add the uia section to AGENTS.md, and make CLAUDE.md import AGENTS.md (see the README)."

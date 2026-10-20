@@ -170,7 +170,7 @@ Read `hitl.md` for when to use which. Summary:
 | --- | --- | --- |
 | `ActionCard` + parts | `action-card` | The shape of every HITL moment. Compose your own cards from it. |
 | `ResolvedRow` | `action-card` | A settled moment: one line, expandable record, `muted` when it didn't go ahead. |
-| `TranscriptEvent` | `action-card` | Small centred line for in-progress or system events ("Creating 4 issues…"). |
+| `TranscriptEvent` | `action-card` | Small centred line for in-progress or system events ("Creating 4 issues…"); shadcn `Marker` with a fade-in. A line with a rule on each side: `Marker variant="separator"`. |
 | `AskUser` / `AskUserAnswered` / `AnswerKey` | `ask-user` | Clarifying questions → answered record. |
 | `Confirmation` | `confirmation` | Ready-made approval gate; `allowLabel`/`denyLabel`/`status` take the action's own words ("Reverter para v41"); `children` for a fields panel. |
 | `PreviewApproval` / `PreviewApprovalResolved` | `preview-approval` | A visual change waits for the person's eye: before/after, preview link, accept or ask for changes in words. |
@@ -179,7 +179,7 @@ Read `hitl.md` for when to use which. Summary:
 | `ConnectPrompt` | `connect-prompt` | The agent needs access (Slack, a calendar): docked **above the composer**, not in the transcript; `ask → connecting → connected` in place, then says what happens next and leaves. Back it with a client tool that waits. |
 | `Findings` + `SeveritySignal` | `findings` | What the agent pulled from a source, ranked by a 3-bar severity signal (the only colour), each with its reference ("P. 12") in mono so the claim can be checked. |
 | `ChartCard` | `chart-card` | A chart inside a reply: title, the 2–4 numbers that answer the question, then the chart (`BarSeries`, `Sparkline`, `MeterBar`). |
-| `AttachmentChip` / `AttachmentPreview` / `FileBadge` | `attachment` | Files: a chip with a type badge (PDF, CSV…); removable (`onRemove`) in the composer; wrap in `AttachmentPreview` for a hover card with meta and the file's gist. |
+| `AttachmentChip` / `AttachmentPreview` / `FileBadge` | `attachment` | Files: a pill chip (shadcn `Attachment` at `size="xs"`) with a type badge; `state="idle\|uploading\|processing\|error\|done"`; removable (`onRemove`) in the composer; wrap in `AttachmentPreview` (shadcn `HoverCard`: hover on mouse, tap on touch) for meta and the file's gist. For card-style attachments with media, use `@/components/ui/attachment` directly. |
 | `DraftCard` / `DraftCardResolved` | `draft-card` | Editable draft that is its own approval. |
 | `PartTransition` | `part-transition` | Animates a part between states (height + crossfade). |
 | `ToolLine` + `toolPhase()` | `tool-line` | A tool call as a quiet trace line; expandable when done. |
@@ -283,11 +283,12 @@ Primitives: `button`, `select`, `bubble`, `code-block`, `questionnaire`, `spinne
 System: `widget`, `stat`, `segmented`, `status`, `tick-meter`, `meter-bar`, `sparkline`, `bar-series`, `stage-track`, `task-list`, `number-ticker`, `agent-orb`, `model-icons`.
 Widgets: `widget-ai-spend`, `widget-fleet-health`, `widget-model-evals`, `widget-model-router`, `widget-agent-runtime` (bundle: `widgets`).
 App shell: `app-nav`, `theme-toggle`, `theme-provider`.
-Examples (fixtures over the widgets): `example-assistant`, `example-model-router`, `example-agent-runtime`, `example-ai-spend`, `example-fleet-health`, `example-model-evals`, `example-bottega`, `example-davinci` (bundle: `examples`).
+Surfaces (agent-composed UI, see `surfaces.md`): `surface` (runtime), `catalog`, `catalog-layout`, `catalog-display`, `catalog-data`, `catalog-input`, `catalog-blocks` (bundle: `surfaces`).
+Examples (fixtures over the widgets): `example-assistant`, `example-model-router`, `example-agent-runtime`, `example-ai-spend`, `example-fleet-health`, `example-model-evals`, `example-bottega`, `example-davinci`, `example-surface` (bundle: `examples`).
 Generative UI: `action-card`, `decision-card`, `ask-user`, `confirmation`, `preview-approval`, `decision-chip`, `draft-card`, `plan`, `connect-prompt`, `findings`, `chart-card`, `attachment`, `part-transition`, `tool-line`, `reasoning`, `sources`, `search-results`, `markdown`.
 Chat: `agent-chat`, `chat-thread`, `chat-turn`, `turn-actions`, `composer`, `chat-empty`, `chat-status`, `chat-error`, `chat-pill`.
 Lib: `motion`, `ai`, `url`, `highlighter`.
-Bundles: `uia` (everything), `chat`, `hitl`, `widgets`, `examples`.
+Bundles: `uia` (everything), `chat`, `hitl`, `widgets`, `surfaces`, `examples`.
 Skill: `skill` (this file set).
 
 ---
