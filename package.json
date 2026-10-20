@@ -12,7 +12,9 @@
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "registry": "bun scripts/registry.ts",
-    "registry:build": "bun scripts/registry.ts && shadcn build --output public/r"
+    "registry:build": "bun scripts/registry.ts && shadcn build --output public/r",
+    "deploy": "bun run build && wrangler deploy",
+    "cf:preview": "bun run build && wrangler dev"
   },
   "dependencies": {
     "@ai-sdk/react": "^4.0.149",
@@ -51,6 +53,7 @@
     "prettier-plugin-tailwindcss": "^0.8.1",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8",
-    "vite": "^8"
+    "vite": "^8",
+    "wrangler": "^4.151.2"
   }
 }

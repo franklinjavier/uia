@@ -165,6 +165,31 @@ const chat = useAgentChat<MyMessage>({ transport, tools })
 
 See `src/examples/assistant/tools.tsx` for a complete example.
 
+## Deploy (Cloudflare)
+
+The playground and the registry are static: `wrangler.jsonc` serves `dist/`
+as Workers static assets, so `/r/<item>.json` is a public registry too.
+
+```bash
+bunx wrangler login     # once
+bun run deploy          # build + publish to uia.<your-subdomain>.workers.dev
+bun run cf:preview      # build + serve locally like production
+```
+
+To deploy on every push instead: Cloudflare dashboard → Workers & Pages →
+Create → Import a repository → this repo, build command `bun run build`,
+deploy command `npx wrangler deploy`.
+
+Once deployed, projects can install from it without GitHub:
+
+```json
+// components.json
+{ "registries": { "@uia": "https://uia.<your-subdomain>.workers.dev/r/{name}.json" } }
+```
+
+(Build with `UIA_REGISTRY=@uia bun run registry:build` first, so items
+reference each other through the namespace.)
+
 ## License
 
 MIT. Model marks in `model-icons` come from [LobeHub Icons](https://github.com/lobehub/lobe-icons) (MIT).

@@ -1,0 +1,14 @@
+// Cloudflare Workers, static assets only: the playground (Vite build) plus
+// the registry JSON under /r/ (public/r is copied into dist).
+//
+//   bun run deploy           # build + publish
+//   bun run cf:preview       # build + serve locally like production
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "uia",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  }
+}

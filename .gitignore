@@ -25,3 +25,6 @@ dist-ssr
 
 # Reference videos (large, not part of the system)
 refs/
+
+# Cloudflare
+.wrangler/
