@@ -1,7 +1,8 @@
 import * as React from "react"
-import { MoonIcon, SunIcon } from "lucide-react"
+import { ChevronUpIcon, MoonIcon, SunIcon } from "lucide-react"
 
 import { useTheme } from "@/components/theme-provider"
+import { PlaygroundDock } from "@/playground-dock"
 import { Button } from "@/components/ui/button"
 import {
   Select,
@@ -69,13 +70,13 @@ export function App() {
   return (
     <div className="relative min-h-svh bg-background">
       {!bare && (
-        // The playground's own chrome floats bottom-left, out of every example's way.
-        <header className="fixed bottom-4 left-4 z-50 flex items-center gap-2 rounded-full bg-background/90 p-1 shadow-lg ring-1 ring-border backdrop-blur">
+        // The playground's own chrome: a draggable pill, out of every example's way.
+        <PlaygroundDock>
           <Select value={active} onValueChange={(v) => v && go(v as WidgetKey)}>
-            <SelectTrigger aria-label="Example">
+            <SelectTrigger aria-label="Example" icon={<ChevronUpIcon />}>
               <SelectValue>{(v: WidgetKey) => WIDGETS[v].label}</SelectValue>
             </SelectTrigger>
-            <SelectContent alignItemWithTrigger={false}>
+            <SelectContent side="top" alignItemWithTrigger={false}>
               {Object.entries(WIDGETS).map(([key, w]) => (
                 <SelectItem key={key} value={key}>
                   {w.label}
@@ -90,7 +91,7 @@ export function App() {
           >
             {isDark ? <SunIcon /> : <MoonIcon />}
           </Button>
-        </header>
+        </PlaygroundDock>
       )}
 
       {full ? (

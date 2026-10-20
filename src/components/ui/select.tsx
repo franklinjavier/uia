@@ -28,10 +28,13 @@ function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
 function SelectTrigger({
   className,
   size = "default",
+  icon,
   children,
   ...props
 }: SelectPrimitive.Trigger.Props & {
   size?: "sm" | "default"
+  /** uia: replaces the chevron, e.g. a ChevronUpIcon for a menu that opens upward. */
+  icon?: React.ReactNode
 }) {
   return (
     <SelectPrimitive.Trigger
@@ -46,7 +49,9 @@ function SelectTrigger({
       {children}
       <SelectPrimitive.Icon
         render={
-          <ChevronDownIcon className="pointer-events-none size-4 text-muted-foreground" />
+          <span className="pointer-events-none flex text-muted-foreground [&_svg]:size-4">
+            {icon ?? <ChevronDownIcon />}
+          </span>
         }
       />
     </SelectPrimitive.Trigger>
