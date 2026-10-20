@@ -5,6 +5,7 @@ import { useTheme } from "@/components/theme-provider"
 import { Button } from "@/components/ui/button"
 import { Segmented, SegmentedItem } from "@/components/ds/segmented"
 import { Assistant } from "@/playground/assistant/assistant"
+import { AgentRuntime } from "@/playground/agent-runtime"
 import { ModelRouter } from "@/playground/model-router"
 
 function FullChat() {
@@ -15,6 +16,7 @@ const WIDGETS = {
   chat: { label: "Full chat", component: FullChat, full: true },
   assistant: { label: "Assistant", component: Assistant, full: false },
   router: { label: "Model router", component: ModelRouter, full: false },
+  runtime: { label: "Agent runtime", component: AgentRuntime, full: false },
 } as const
 
 type WidgetKey = keyof typeof WIDGETS
