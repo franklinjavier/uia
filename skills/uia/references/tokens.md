@@ -9,12 +9,12 @@ doesn't need it.
 
 | Token | Utility | Meaning |
 | --- | --- | --- |
-| `--surface` | `bg-surface` | A widget's shell (`Widget`). The only grey layer; sits on the page, holds panels. |
+| `--surface` | `bg-surface` | The shell of a `Widget variant="framed"`. The only grey layer; most widgets don't use it. |
 | `--background` / `--card` | `bg-background`, `bg-card` | The page (body default) and card level: panels, the composer, resolved rows. Plain white in light. Don't add a grey page behind widgets. |
 | `--muted` | `bg-muted`, `bg-muted/60` | Inset or pending: ActionCard body, hover, code blocks (`bg-muted/25`). Use translucent steps rather than new greys. |
 | `--popover` | `bg-popover` | Menus and select popups. |
 
-Shadow: `shadow-widget` only on the widget shell; `shadow-xs` on cards; nothing
+Shadow: `shadow-widget` only on a framed widget's shell; `shadow-xs` on cards; nothing
 heavier inside a transcript.
 
 Borders are hairlines: `border-border` (or `/70`, `/80`). In dark mode the border

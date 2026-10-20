@@ -107,9 +107,12 @@ the middle, content column `mx-auto max-w-[720px]`, composer in a card at the
 bottom (`rounded-2xl border bg-card shadow-xs`) inside the same column. Page
 background `bg-background`. Nothing under the composer.
 
-**Widget** — `Widget` shell: `WidgetHeader` (orb + title), a `WidgetPanel
-className="h-[480px] p-0"` holding the thread, a `WidgetPanel className="p-0"`
-holding the composer, and an optional `WidgetFooter` with `ChatStatus`.
+**Widget** — `WidgetHeader` (orb + title), **one** `WidgetPanel
+className="flex flex-col overflow-hidden p-0"` holding the thread
+(`<div className="h-[480px]">`) and the composer below a hairline
+(`<div className="border-t border-border/70">`), and an optional
+`WidgetFooter` with `ChatStatus`. The conversation and its composer are one
+object; don't split them into two panels.
 
 **Embedded parts only** — when the host app already has its chat and you only
 add tool UIs, you only need the registry entries (`render`) and the

@@ -203,9 +203,12 @@ function Session({
   return (
     <Widget className="max-w-[620px]">
       <WidgetHeader>{header}</WidgetHeader>
-      <WidgetPanel className="h-[480px] p-0">{conversation}</WidgetPanel>
-      <WidgetPanel className="p-0">{composer}</WidgetPanel>
-      <WidgetFooter className="pl-5">{status}</WidgetFooter>
+      {/* One panel: the conversation and its composer belong together. */}
+      <WidgetPanel className="flex flex-col overflow-hidden p-0">
+        <div className="h-[480px]">{conversation}</div>
+        <div className="border-t border-border/70">{composer}</div>
+      </WidgetPanel>
+      <WidgetFooter>{status}</WidgetFooter>
     </Widget>
   )
 }

@@ -29,7 +29,7 @@ forking the component.
 ## 1. System pieces — `@/components/ds/*`
 
 ### Widget (`widget`)
-A self-contained tool surface: shell → header → panels → footer.
+A self-contained tool surface: header → panels → footer.
 
 ```tsx
 <Widget className="max-w-[620px]">
@@ -39,15 +39,19 @@ A self-contained tool surface: shell → header → panels → footer.
     <WidgetActions><Segmented …/></WidgetActions>
   </WidgetHeader>
   <WidgetPanel>…main content…</WidgetPanel>
-  <WidgetPanel className="p-0">…secondary block, e.g. composer…</WidgetPanel>
+  <WidgetPanel>…a second, separate block…</WidgetPanel>
   <WidgetFooter className="pl-5"><WidgetMeta>Synced 2m ago</WidgetMeta></WidgetFooter>
 </Widget>
 ```
 
-- `Widget`: `rounded-3xl bg-surface p-1 shadow-widget`, children gap 1.
+- `Widget variant="plain"` (default): no shell; children gap 2; header and
+  footer align with the panels' edge. Right inside chats and white pages.
+- `Widget variant="framed"`: the floating shell (`rounded-3xl bg-surface p-1
+  shadow-widget`, gap 1). For dashboards with neighbours, floating panels.
 - `WidgetPanel`: `rounded-2xl bg-card p-5` hairline ring. Use several panels
   rather than dividers inside one.
-- `WidgetHeader`/`WidgetFooter`: `min-h-16`, sit on the shell (no card).
+- `WidgetHeader`/`WidgetFooter`: no card of their own; padding follows the
+  variant (don't override it).
 - `WidgetDescription` for one muted line under the title; `WidgetMeta` is
   eyebrow-styled.
 

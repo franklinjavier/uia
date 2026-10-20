@@ -1,16 +1,32 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
-// Widget: the floating "card-in-card" shell every surface is built from.
+// Widget: a tool surface built from parts.
 // Anatomy: Widget > WidgetHeader > WidgetPanel(s) > WidgetFooter.
-// The shell is `surface`, panels are `card`, separated by a 4px gutter.
+//
+// variant="plain" (default): no shell. Panels sit on the page; header and
+// footer align with the panels' edge. Use inside a chat or anywhere the
+// host already frames the content.
+// variant="framed": the floating card-in-card shell (`surface` + widget
+// shadow, 4px gutter). Use when the widget must read as an object of its
+// own: dashboards with neighbours, floating panels, demos.
 
-function Widget({ className, ...props }: React.ComponentProps<"section">) {
+type WidgetVariant = "plain" | "framed"
+
+function Widget({
+  variant = "plain",
+  className,
+  ...props
+}: React.ComponentProps<"section"> & { variant?: WidgetVariant }) {
   return (
     <section
       data-slot="widget"
+      data-variant={variant}
       className={cn(
-        "flex w-full flex-col gap-1 rounded-3xl bg-surface p-1 text-card-foreground shadow-widget",
+        "group/widget flex w-full flex-col text-card-foreground",
+        variant === "framed"
+          ? "gap-1 rounded-3xl bg-surface p-1 shadow-widget"
+          : "gap-2",
         className
       )}
       {...props}
@@ -22,7 +38,10 @@ function WidgetHeader({ className, ...props }: React.ComponentProps<"header">) {
   return (
     <header
       data-slot="widget-header"
-      className={cn("flex min-h-16 items-center gap-2 pr-3 pl-5", className)}
+      className={cn(
+        "flex min-h-12 items-center gap-2 px-1 group-data-[variant=framed]/widget:min-h-16 group-data-[variant=framed]/widget:pr-3 group-data-[variant=framed]/widget:pl-5",
+        className
+      )}
       {...props}
     />
   )
@@ -78,7 +97,10 @@ function WidgetFooter({ className, ...props }: React.ComponentProps<"footer">) {
   return (
     <footer
       data-slot="widget-footer"
-      className={cn("flex min-h-16 items-center gap-3 pr-3 pl-3", className)}
+      className={cn(
+        "flex min-h-12 items-center gap-3 px-1 group-data-[variant=framed]/widget:min-h-16 group-data-[variant=framed]/widget:px-3",
+        className
+      )}
       {...props}
     />
   )
@@ -95,6 +117,7 @@ function WidgetMeta({ className, ...props }: React.ComponentProps<"span">) {
 }
 
 export {
+  type WidgetVariant,
   Widget,
   WidgetActions,
   WidgetDescription,

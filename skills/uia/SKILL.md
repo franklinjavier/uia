@@ -7,7 +7,7 @@ description: Build AI-product interfaces with the uia design system (shadcn + Ba
 
 uia is a design system for AI products. It already encodes the taste: calm
 greys, one ink for actions, one colour for "this needs you", mono micro-labels,
-card-in-card surfaces and quiet motion. Your job is not to invent a style but
+white pages with hairline cards and quiet motion. Your job is not to invent a style but
 to compose the existing pieces so the result looks like the designer built it.
 
 ## How to work
@@ -43,9 +43,11 @@ to compose the existing pieces so the result looks like the designer built it.
 - **Mono uppercase `eyebrow` is the second voice**: labels, units, meta lines,
   provider names, counters (`<span className="eyebrow text-muted-foreground">`).
   It carries metadata so body text can stay plain.
-- **Surfaces nest**: the page is plain `background` (white) → `surface`
-  (widget shell, `Widget`) → `card` (panels). No grey page, no decorative
-  backdrop behind widgets. Inside a message, cards use `bg-muted/60` (ActionCard) or
+- **No frames by default.** The page is plain `background` (white); a
+  `Widget` is just header + white panels + footer, aligned on one edge. Use
+  `<Widget variant="framed">` (grey `surface` shell + shadow) only when the
+  widget must read as an object among neighbours (dashboards, floating
+  panels). Never add a grey page or decorative backdrop. Inside a message, cards use `bg-muted/60` (ActionCard) or
   `bg-card` with a hairline `border`. Prefer hairline borders over filled
   blocks; solid grey fills read as heavy (the user asked for minimalism).
 - **One indicator per meaning.** The `AgentOrb` is the only thing that moves
