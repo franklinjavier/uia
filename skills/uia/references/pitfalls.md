@@ -51,5 +51,13 @@ card ("Approval needed" pill) is acceptable only because it signals *waiting
 on you*, not *working*. Don't add spinners to tool lines or buttons while the
 agent works.
 
+**Typecheck that checks nothing.** The shadcn Vite template's root
+`tsconfig.json` has `files: []` and only references the app config, so
+`tsc --noEmit` passes no matter what. Use `tsc -p tsconfig.app.json --noEmit`.
+
+**State survives hot reload.** Fast refresh keeps `useState` values, so
+changing initial data (positions, mocks) doesn't show until a full reload.
+Reload before judging a layout change.
+
 **Select items touching the edges.** Padding is on the list, not on groups —
 keep uia's `select`; don't wrap items in extra padded divs.

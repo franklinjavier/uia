@@ -65,6 +65,14 @@ to compose the existing pieces so the result looks like the designer built it.
   `PartTransition`.
 - **Errors point at what is missing**, in one quiet line, without painting
   fields red.
+- **Every control does something.** No info icons, settings sliders, close
+  buttons, ⋮ menus or status footers that are only there to look complete.
+  If it has no action or no information the person needs, leave it out;
+  empty space is fine.
+- **Adapting a reference or mockup:** keep its structure and behaviour, not
+  its decoration. Its accent colour becomes `brand` (ink); its "needs you"
+  moments become `attention`; repeated indicators (a dot *and* a badge for
+  the same state) collapse into one.
 - **Say each fact once.** If the meter already reads "86% used", the label,
   the meta line and the alert don't repeat it; each says something new
   (what's left, when it resets, what to do). Repetition is noise that
@@ -114,6 +122,9 @@ claim something happened that didn't. Details and copy rules:
 - [ ] Ran it: light **and** dark, at the real container size.
 - [ ] Walked every state: empty, streaming, waiting on the person, each answer
       (approve, deny, discard, skip), resolved, error.
+- [ ] Typecheck the app for real: in the Vite template `tsc --noEmit` on the
+      root config checks nothing (`files: []`); run
+      `tsc -p tsconfig.app.json --noEmit`.
 - [ ] Console clean after a fresh reload.
 - [ ] Re-read `references/pitfalls.md` for anything you touched.
 
