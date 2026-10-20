@@ -197,7 +197,7 @@ export function FleetHealth() {
       </WidgetHeader>
 
       <WidgetPanel className="flex flex-col gap-5">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <Stat>
             <StatLabel>Tokens served / s</StatLabel>
             <StatValue>
@@ -208,13 +208,13 @@ export function FleetHealth() {
             </StatValue>
             <StatMeta>vs 64 s ago · TTFT p50 218 ms · 5 models</StatMeta>
           </Stat>
-          <div className="mt-4 flex shrink-0 flex-col items-end gap-1">
+          <div className="flex shrink-0 flex-col gap-1 sm:mt-4 sm:items-end">
             <Sparkline values={tokens} />
             <span className="eyebrow text-muted-foreground">Last {Math.round((tokens.length * TICK) / 1000)} s</span>
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-6 border-t border-dashed border-border pt-5">
+        <div className="grid grid-cols-3 gap-4 sm:gap-6 border-t border-dashed border-border pt-5">
           <Meter label="Fleet util" value={`${Math.round(fleetUtil * 100)}`} unit="%" ratio={fleetUtil} />
           <Meter label="Queue depth" value={`${queue}`} unit="req" ratio={queue / 300} />
           <Meter label="Power" value={power.toFixed(1)} unit={`/ ${POWER_CAP} kW`} ratio={power / POWER_CAP} />
@@ -222,7 +222,7 @@ export function FleetHealth() {
       </WidgetPanel>
 
       <WidgetPanel className="flex flex-col gap-4">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex flex-col gap-0.5">
             <WidgetSectionTitle>
               GPUs <span className="text-muted-foreground">· {all.length}</span>
@@ -302,7 +302,7 @@ function Heatmap({
           <div
             key={node.id}
             className={cn(
-              "grid grid-cols-[96px_1fr_40px] items-center gap-3 transition-opacity duration-200",
+              "grid grid-cols-[52px_1fr_36px] items-center gap-2 transition-opacity duration-200 sm:grid-cols-[96px_1fr_40px] sm:gap-3",
               dim && "opacity-35"
             )}
           >
@@ -313,7 +313,7 @@ function Heatmap({
               className="flex items-baseline gap-2 rounded-md text-left text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/30"
             >
               <span className={cn(focused === node.id && "underline decoration-foreground/30 underline-offset-4")}>{node.id}</span>
-              <span className="eyebrow text-faint-foreground">{node.kind}</span>
+              <span className="eyebrow text-faint-foreground max-sm:hidden">{node.kind}</span>
             </button>
             <div className="grid grid-cols-8 gap-1">
               {node.gpus.map((g, i) => (

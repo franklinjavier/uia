@@ -23,7 +23,7 @@ function Widget({
       data-slot="widget"
       data-variant={variant}
       className={cn(
-        "group/widget flex w-full flex-col text-card-foreground",
+        "group/widget flex w-full min-w-0 flex-col text-card-foreground",
         variant === "framed"
           ? "gap-1 rounded-3xl bg-surface p-1 shadow-widget"
           : "gap-2",
@@ -166,7 +166,7 @@ function WidgetFooter({ className, ...props }: React.ComponentProps<"footer">) {
     <footer
       data-slot="widget-footer"
       className={cn(
-        "flex min-h-12 items-center gap-3 px-1 group-data-[variant=framed]/widget:min-h-16 group-data-[variant=framed]/widget:px-3",
+        "flex min-h-12 flex-wrap items-center gap-x-3 gap-y-2 px-1 group-data-[variant=framed]/widget:min-h-16 group-data-[variant=framed]/widget:px-3",
         className
       )}
       {...props}

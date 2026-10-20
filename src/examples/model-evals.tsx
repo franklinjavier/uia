@@ -67,7 +67,8 @@ const pct = (v: number, digits = 1) =>
   (v * 100).toLocaleString("pt-BR", { minimumFractionDigits: digits, maximumFractionDigits: digits })
 const int = (v: number) => v.toLocaleString("pt-BR")
 
-const COLS = "grid-cols-[1fr_96px_56px_64px]"
+// Mobile drops the comparison bar; the Δ column still says it.
+const COLS = "grid-cols-[minmax(0,1fr)_56px_56px] sm:grid-cols-[minmax(0,1fr)_96px_56px_64px]"
 
 export function ModelEvals() {
   const [baselineKey, setBaselineKey] = React.useState("v12")
@@ -122,7 +123,7 @@ export function ModelEvals() {
       </WidgetHeader>
 
       <WidgetPanel className="flex flex-col gap-5">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <Stat>
             <StatLabel>Taxa de acerto · {CURRENT}</StatLabel>
             <StatValue>
@@ -133,10 +134,10 @@ export function ModelEvals() {
               </StatusBadge>
             </StatValue>
             <StatMeta>
-              {baseline.label} tinha {pct(basePass)}%
+              {baseline.label} tinha {pct(basePass)}% · meta {pct(TARGET, 0)}%
             </StatMeta>
           </Stat>
-          <Stat className="items-end text-right">
+          <Stat className="sm:items-end sm:text-right">
             <StatLabel>Casos</StatLabel>
             <StatValue size="sm">{int(total)}</StatValue>
             <StatMeta>{running ? "Rodando…" : `Rodou ${ranAt}`}</StatMeta>
@@ -149,7 +150,7 @@ export function ModelEvals() {
           segments={[{ id: "pass", value: pass, color: "var(--chart-1)" }]}
           markers={[
             { value: basePass, label: baseline.label.replace("atlas-", "") },
-            { value: TARGET, label: `Meta ${pct(TARGET, 0)}%` },
+            { value: TARGET, label: "Meta" },
           ]}
         />
       </WidgetPanel>
@@ -158,7 +159,7 @@ export function ModelEvals() {
         <WidgetList onMouseLeave={() => setHovered(null)}>
           <WidgetListHeader className={COLS}>
             <WidgetSectionTitle>Por suíte</WidgetSectionTitle>
-            <span className="eyebrow text-muted-foreground">vs {baseline.label.replace("atlas-", "")}</span>
+            <span className="eyebrow text-muted-foreground max-sm:hidden">vs {baseline.label.replace("atlas-", "")}</span>
             <span className="eyebrow text-right text-muted-foreground">Acerto</span>
             <span className="eyebrow text-right text-muted-foreground">Δ pp</span>
           </WidgetListHeader>
@@ -178,7 +179,9 @@ export function ModelEvals() {
                   <span>{s.name}</span>
                   <span className="eyebrow text-muted-foreground">{int(s.cases)} casos</span>
                 </span>
-                <Comparison value={s.pass} baseline={base} />
+                <span className="block max-sm:hidden">
+                  <Comparison value={s.pass} baseline={base} />
+                </span>
                 <span className="text-right tabular-nums">{pct(s.pass)}%</span>
                 <span className={cn("text-right tabular-nums", d < 0 ? "text-destructive" : "text-muted-foreground")}>
                   {d >= 0 ? "+" : "−"}

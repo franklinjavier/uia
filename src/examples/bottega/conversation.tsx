@@ -1,7 +1,8 @@
 import * as React from "react"
-import { ListChecksIcon, RotateCcwIcon } from "lucide-react"
+import { ListChecksIcon, RotateCcwIcon, XIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 import { AgentOrb } from "@/components/ds/agent-orb"
 import { ActionCardFields, ActionCardPanel, ResolvedRow } from "@/components/parts/action-card"
 import { Confirmation } from "@/components/parts/confirmation"
@@ -21,10 +22,13 @@ import type { Outcome, useBottega } from "@/examples/bottega/use-bottega"
 export function Conversation({
   state,
   flash,
+  onClose,
 }: {
   state: ReturnType<typeof useBottega>
   /** Decision id to briefly highlight (opened from the dashboard strip). */
   flash: string | null
+  /** Shown as a close button when the conversation is a sheet. */
+  onClose?: () => void
 }) {
   const { messages, decisions, projects, typing, decide, send } = state
   const [input, setInput] = React.useState("")
@@ -60,9 +64,14 @@ export function Conversation({
       <header className="flex h-14 shrink-0 items-center gap-2.5 border-b border-border/70 px-5">
         <AgentOrb phase={typing ? "composing" : waiting ? "waiting" : "idle"} active={typing || waiting} />
         <span className="text-[15px]">Bottega</span>
-        <span className="eyebrow ml-auto text-muted-foreground">
+        <span className="eyebrow ml-auto truncate text-muted-foreground">
           {typing ? "Escrevendo…" : waiting ? "Esperando você" : "Trabalhando em segundo plano"}
         </span>
+        {onClose && (
+          <Button variant="ghost" size="icon-sm" aria-label="Fechar conversa" className="-mr-2 text-muted-foreground" onClick={onClose}>
+            <XIcon />
+          </Button>
+        )}
       </header>
 
       <div className="relative min-h-0 flex-1">

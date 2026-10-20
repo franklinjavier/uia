@@ -39,7 +39,7 @@ function StatusDot({
 }
 
 const statusBadgeVariants = cva(
-  "eyebrow inline-flex h-5 items-center gap-1.5 rounded-full px-2 ring-1 ring-inset",
+  "eyebrow inline-flex h-5 shrink-0 items-center gap-1.5 rounded-full px-2 whitespace-nowrap ring-1 ring-inset",
   {
     variants: {
       tone: {

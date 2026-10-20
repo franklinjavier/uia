@@ -1216,6 +1216,7 @@
         "franklinjavier/uia/action-card",
         "franklinjavier/uia/agent-chat",
         "franklinjavier/uia/agent-orb",
+        "franklinjavier/uia/button",
         "franklinjavier/uia/chat-thread",
         "franklinjavier/uia/chat-turn",
         "franklinjavier/uia/composer",

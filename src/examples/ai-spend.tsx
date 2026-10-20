@@ -100,7 +100,8 @@ const MONTHS: Record<string, Month> = {
 const usd = (v: number, digits = 0) =>
   v.toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: digits, maximumFractionDigits: digits })
 
-const COLS = "grid-cols-[1fr_64px_80px_44px]"
+// Mobile keeps cost and share; tokens join from `sm`.
+const COLS = "grid-cols-[minmax(0,1fr)_80px_44px] sm:grid-cols-[minmax(0,1fr)_64px_80px_44px]"
 
 export function AiSpend() {
   const [monthKey, setMonthKey] = React.useState("oct")
@@ -190,7 +191,7 @@ export function AiSpend() {
         <WidgetList onMouseLeave={() => setHovered(null)}>
           <WidgetListHeader className={COLS}>
             <WidgetSectionTitle>By model</WidgetSectionTitle>
-            <span className="eyebrow text-right text-muted-foreground">Tokens</span>
+            <span className="eyebrow text-right text-muted-foreground max-sm:hidden">Tokens</span>
             <span className="eyebrow text-right text-muted-foreground">Cost</span>
             <span className="eyebrow text-right text-muted-foreground">Share</span>
           </WidgetListHeader>
@@ -207,9 +208,9 @@ export function AiSpend() {
                   <span className="size-2 shrink-0 rounded-full" style={{ background: m.color }} />
                   <ModelIcon family={m.family} className="size-4 shrink-0 text-muted-foreground" />
                   <span className="truncate">{m.name}</span>
-                  <span className="eyebrow truncate text-faint-foreground">{m.provider}</span>
+                  <span className="eyebrow truncate text-faint-foreground max-sm:hidden">{m.provider}</span>
                 </span>
-                <span className="text-right text-muted-foreground tabular-nums">{u.tokens.toFixed(1)}M</span>
+                <span className="text-right text-muted-foreground tabular-nums max-sm:hidden">{u.tokens.toFixed(1)}M</span>
                 <span className="text-right tabular-nums">{usd(u.cost, 2)}</span>
                 <span className="text-right text-muted-foreground tabular-nums">
                   {Math.round((u.cost / spent) * 100)}%

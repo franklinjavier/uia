@@ -58,7 +58,7 @@ const INITIAL: Agent[] = [
 ]
 
 const REGIONS = ["fra1", "iad1", "sin1"] as const
-const COLS = "grid-cols-[1fr_auto_112px]"
+const COLS = "grid-cols-[minmax(0,1fr)_auto_84px] sm:grid-cols-[minmax(0,1fr)_auto_112px]"
 
 function median(values: number[]) {
   const s = [...values].sort((a, b) => a - b)
@@ -161,7 +161,7 @@ export function AgentRuntime() {
           onHover={setHovered}
         />
 
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
           <span className="eyebrow text-muted-foreground">
             Cold start p50 <span className="text-foreground tabular-nums">{median(samples)} ms</span>
           </span>

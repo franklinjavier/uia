@@ -1,8 +1,9 @@
 import * as React from "react"
 import { AnimatePresence } from "motion/react"
-import { FolderIcon } from "lucide-react"
+import { FolderIcon, MessageCircleIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 import {
   Select,
   SelectContent,
@@ -34,7 +35,11 @@ import { useBottega } from "@/examples/bottega/use-bottega"
 // one conversation sits on the right, and decisions are answered there.
 
 const ALL = "all"
-const PROJECT_COLS = "grid-cols-[minmax(8rem,1fr)_minmax(15rem,26rem)_minmax(6rem,11rem)]"
+// Mobile: name · now on one line, the track full width below it.
+// From md: name · track · now in three columns.
+const PROJECT_COLS =
+  "grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-y-2.5 md:grid-cols-[minmax(8rem,1fr)_minmax(15rem,26rem)_minmax(6rem,11rem)]"
+const LIVE_COLS = "grid-cols-[minmax(0,1fr)_4rem_6.5rem] sm:grid-cols-[minmax(7rem,1fr)_5rem_4rem_6.5rem]"
 
 const HEALTH: Record<Health, { tone: "success" | "warning" | "info"; label: string }> = {
   ok: { tone: "success", label: "Saudável" },
@@ -48,6 +53,8 @@ export function Bottega() {
   const [filter, setFilter] = React.useState(ALL)
   const [hovered, setHovered] = React.useState<string | null>(null)
   const [flash, setFlash] = React.useState<string | null>(null)
+  // Below lg the conversation is a full-screen sheet instead of a rail.
+  const [chatOpen, setChatOpen] = React.useState(false)
 
   const inScope = (pid: string) => filter === ALL || filter === pid
   const open = decisions.filter((d) => d.state === "open" && inScope(d.project))
@@ -55,18 +62,23 @@ export function Bottega() {
   const name = (pid: string) => projects.find((p) => p.id === pid)?.name ?? pid
 
   function openDecision(id: string) {
-    document.getElementById(`decision-${id}`)?.scrollIntoView({ behavior: "smooth", block: "center" })
-    setFlash(id)
-    window.setTimeout(() => setFlash(null), 1400)
+    const wide = window.matchMedia("(min-width: 64rem)").matches
+    if (!wide) setChatOpen(true)
+    // Let the sheet mount before scrolling to the card.
+    window.setTimeout(() => {
+      document.getElementById(`decision-${id}`)?.scrollIntoView({ behavior: "smooth", block: "center" })
+      setFlash(id)
+      window.setTimeout(() => setFlash(null), 1400)
+    }, wide ? 0 : 150)
   }
 
   return (
     <div data-slot="bottega" className="grid h-svh grid-cols-1 bg-background lg:grid-cols-[minmax(0,1fr)_26rem]">
       <main className="flex min-h-0 flex-col overflow-y-auto">
         {/* pr-16 leaves room for the playground's theme toggle */}
-        <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-3 border-b border-border/70 bg-background/90 px-6 backdrop-blur lg:pr-6">
+        <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-3 border-b border-border/70 bg-background/90 px-4 backdrop-blur sm:px-6">
           <span className="text-[15px]">Oficina</span>
-          <span className="eyebrow text-muted-foreground">
+          <span className="eyebrow text-muted-foreground max-sm:hidden">
             {projects.length} projetos · {projects.filter((p) => p.live).length} no ar
           </span>
           <Select value={filter} onValueChange={(v) => v && setFilter(v)}>
@@ -85,7 +97,7 @@ export function Bottega() {
           </Select>
         </header>
 
-        <div className="mx-auto flex w-full max-w-[60rem] flex-col gap-8 px-6 py-8">
+        <div className="mx-auto flex w-full max-w-[60rem] flex-col gap-8 px-4 py-6 sm:px-6 sm:py-8">
           {/* What needs the person: the only orange on the page. */}
           <section className="flex flex-col gap-3">
             <div className="flex items-baseline gap-2 px-1">
@@ -115,7 +127,7 @@ export function Bottega() {
               <WidgetList onMouseLeave={() => setHovered(null)}>
                 <WidgetListHeader className={PROJECT_COLS}>
                   <span className="eyebrow text-muted-foreground">Projeto</span>
-                  <span className="grid" style={stageTrackGrid(STAGES.length)}>
+                  <span className="grid max-md:hidden" style={stageTrackGrid(STAGES.length)}>
                     {STAGES.map((s) => (
                       <span key={s} className="truncate text-xs text-muted-foreground">
                         {s}
@@ -138,6 +150,7 @@ export function Bottega() {
                       <span className="truncate text-xs text-muted-foreground">{p.goal}</span>
                     </span>
                     <StageTrack
+                      className="col-span-2 order-last md:order-none md:col-span-1"
                       stages={p.stages.map((status, i) => ({ label: STAGES[i], status }))}
                       statusLabels={{ done: "concluída", active: "em andamento", waiting: "esperando você", failed: "falhou", todo: "a fazer" }}
                     />
@@ -162,14 +175,14 @@ export function Bottega() {
               </WidgetHeader>
               <WidgetPanel className="flex flex-col pt-3">
                 <WidgetList>
-                  <WidgetListHeader className="grid-cols-[minmax(7rem,1fr)_5rem_4rem_6.5rem]">
+                  <WidgetListHeader className={LIVE_COLS}>
                     <span className="eyebrow text-muted-foreground">No ar</span>
-                    <span className="eyebrow whitespace-nowrap text-muted-foreground">Erros</span>
+                    <span className="eyebrow whitespace-nowrap text-muted-foreground max-sm:hidden">Erros</span>
                     <span className="eyebrow text-right text-muted-foreground">30 dias</span>
                     <span />
                   </WidgetListHeader>
                   {live.map((p) => (
-                    <WidgetListRow key={p.id} className="grid-cols-[minmax(7rem,1fr)_5rem_4rem_6.5rem]">
+                    <WidgetListRow key={p.id} className={LIVE_COLS}>
                       <span className="flex min-w-0 flex-col gap-0.5">
                         <span className="truncate">{p.name}</span>
                         <span className="eyebrow truncate text-muted-foreground">
@@ -179,7 +192,7 @@ export function Bottega() {
                       <Sparkline
                         values={p.live!.errors}
                         color={p.live!.health === "ok" ? "var(--chart-1)" : "var(--warning)"}
-                        className="h-6 w-20"
+                        className="h-6 w-20 max-sm:hidden"
                       />
                       <span className="text-right text-muted-foreground tabular-nums">
                         {(p.live!.uptime * 100).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%
@@ -223,6 +236,27 @@ export function Bottega() {
       <div className="hidden min-h-0 border-l border-border/70 lg:flex lg:flex-col">
         <Conversation state={state} flash={flash} />
       </div>
+
+      {/* Below lg: the conversation opens as a sheet from a button. */}
+      {chatOpen ? (
+        <div className="fixed inset-0 z-40 flex flex-col bg-background lg:hidden">
+          <Conversation state={state} flash={flash} onClose={() => setChatOpen(false)} />
+        </div>
+      ) : (
+        <Button
+          variant="brand"
+          className="fixed right-4 bottom-4 z-30 h-11 gap-2 rounded-full px-4 shadow-lg lg:hidden"
+          onClick={() => setChatOpen(true)}
+        >
+          <MessageCircleIcon />
+          Conversa
+          {open.length > 0 && (
+            <span className="flex size-5 items-center justify-center rounded-full bg-attention text-[11px] text-attention-foreground tabular-nums">
+              {open.length}
+            </span>
+          )}
+        </Button>
+      )}
     </div>
   )
 }

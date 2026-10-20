@@ -3,6 +3,13 @@ import { MoonIcon, SunIcon } from "lucide-react"
 
 import { useTheme } from "@/components/theme-provider"
 import { Button } from "@/components/ui/button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Segmented, SegmentedItem } from "@/components/ds/segmented"
 import { Assistant } from "@/examples/assistant/assistant"
 import { AgentRuntime } from "@/examples/agent-runtime"
@@ -52,6 +59,11 @@ export function App() {
     (theme === "system" &&
       window.matchMedia("(prefers-color-scheme: dark)").matches)
 
+  const go = (key: WidgetKey) => {
+    setActive(key)
+    window.location.hash = key
+  }
+
   const Active = WIDGETS[active].component
   const full = WIDGETS[active].full
 
@@ -66,13 +78,12 @@ export function App() {
               : "pointer-events-none absolute inset-x-0 top-0 z-10 flex h-16 items-center justify-center gap-2 px-4 *:pointer-events-auto"
           }
         >
+          {/* Tabs from md; a select on phones, where nine tabs don't fit. */}
           <Segmented
             variant="sans"
+            className="max-md:hidden"
             value={active}
-            onValueChange={(v) => {
-              setActive(v as WidgetKey)
-              window.location.hash = v
-            }}
+            onValueChange={(v) => go(v as WidgetKey)}
           >
             {Object.entries(WIDGETS).map(([key, w]) => (
               <SegmentedItem key={key} value={key}>
@@ -80,6 +91,18 @@ export function App() {
               </SegmentedItem>
             ))}
           </Segmented>
+          <Select value={active} onValueChange={(v) => v && go(v as WidgetKey)}>
+            <SelectTrigger aria-label="Example" className="md:hidden">
+              <SelectValue>{(v: WidgetKey) => WIDGETS[v].label}</SelectValue>
+            </SelectTrigger>
+            <SelectContent alignItemWithTrigger={false}>
+              {Object.entries(WIDGETS).map(([key, w]) => (
+                <SelectItem key={key} value={key}>
+                  {w.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Button
             variant="outline"
             size="icon-sm"

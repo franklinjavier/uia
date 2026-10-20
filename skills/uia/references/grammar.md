@@ -14,6 +14,7 @@ avoid; this says what to do. Read it with the closest example open
 6. Copy
 7. Spacing and type, in numbers
 8. Pages
+9. Mobile first
 
 ---
 
@@ -172,4 +173,35 @@ a rail. The example is `example-bottega`.
   the thread, the composer at the bottom. Decisions are answered there; the
   page reflects the consequence (stage moves, version changes, log entry,
   the agent confirms in the thread).
+
+## 9. Mobile first
+
+Design at 375 px first, then add columns as space allows. Nothing may
+extend past the viewport (a page wider than the phone zooms out and every
+tap target shrinks).
+
+- **Lists keep the name and one or two numbers.** Secondary columns get
+  `max-sm:hidden` on *both* the header cell and the row cell, and the
+  columns are set per breakpoint:
+  `grid-cols-[minmax(0,1fr)_80px_44px] sm:grid-cols-[minmax(0,1fr)_64px_80px_44px]`.
+  Inline metadata that competes with the name (provider eyebrows) hides too.
+  A per-row visual that has a numeric twin (Δ next to a comparison bar)
+  can go; the number stays.
+- **Rows with a wide visual go to two lines:** name · state on top, the
+  visual full width below (`col-span-2 order-last`, back to its column at
+  `md`). See the projects list in `example-bottega`.
+- **Heroes stack:** the secondary stat, sparkline or `Segmented` moves under
+  the big number (`flex-col sm:flex-row`); a control that was absolute in a
+  corner becomes static (`self-start sm:absolute …`).
+- **Meta lines and footers wrap** (`flex-wrap`, `gap-y-*`); badges never wrap
+  inside (`StatusBadge` is `whitespace-nowrap`).
+- **Rails become sheets.** Below `lg` the conversation rail is a full-screen
+  sheet opened by a floating `brand` button ("Conversa" + attention count);
+  decision chips open the sheet and scroll to their card.
+- **Many tabs become a select.** A `Segmented` with more than ~4 options
+  turns into a `Select` on phones (`max-md:hidden` / `md:hidden` pair).
+- **Check it for real:** emulate a phone (device toolbar or the browser
+  tool's mobile preset), not a narrow desktop window — desktop Chrome
+  won't go below ~500 px, so headless screenshots at 390 px lie. Then run
+  the overflow check from `pitfalls.md`.
 

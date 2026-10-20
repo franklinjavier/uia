@@ -147,7 +147,8 @@ is decoration. Fix what differs before reporting.
 - [ ] Started from the closest example and kept its structure.
 - [ ] Every piece came from the project or the registry; no hand-made lookalikes.
 - [ ] No hard-coded colours, radii or font sizes; tokens and variants only.
-- [ ] Ran it: light **and** dark, at the real container size.
+- [ ] Ran it: light **and** dark, at the real container size, and on a phone
+      (375 px emulated; nothing sticks out, nothing is crushed — grammar §9).
 - [ ] Walked every state: empty, streaming, waiting on the person, each answer
       (approve, deny, discard, skip), resolved, error.
 - [ ] Typecheck the app for real: in the Vite template `tsc --noEmit` on the

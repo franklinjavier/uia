@@ -55,7 +55,8 @@ const SHARES: Record<Policy, Record<ModelId, number>> = {
 }
 
 const TOTAL_RPS = 334
-const COLS = "grid-cols-[1fr_76px_76px_60px_48px]"
+// Mobile keeps share and price; latency and errors join from `sm`.
+const COLS = "grid-cols-[minmax(0,1fr)_76px_60px] sm:grid-cols-[minmax(0,1fr)_76px_76px_60px_48px]"
 
 export function ModelRouter() {
   const [policy, setPolicy] = React.useState<Policy>("balanced")
@@ -104,7 +105,7 @@ export function ModelRouter() {
       </WidgetHeader>
 
       <WidgetPanel className="relative flex flex-col gap-5">
-        <div className="flex">
+        <div className="flex flex-col gap-3 sm:flex-row">
           <Stat>
             <StatLabel>
               Blended cost ·{" "}
@@ -129,7 +130,7 @@ export function ModelRouter() {
               errors
             </StatMeta>
           </Stat>
-          <Segmented className="absolute top-5 right-5" value={policy} onValueChange={(v) => setPolicy(v as Policy)}>
+          <Segmented className="self-start sm:absolute sm:top-5 sm:right-5" value={policy} onValueChange={(v) => setPolicy(v as Policy)}>
             <SegmentedItem value="cost">Cost</SegmentedItem>
             <SegmentedItem value="balanced">Balanced</SegmentedItem>
             <SegmentedItem value="quality">Quality</SegmentedItem>
@@ -144,9 +145,9 @@ export function ModelRouter() {
           <WidgetListHeader className={COLS}>
             <WidgetSectionTitle>Routes</WidgetSectionTitle>
             <span className="eyebrow text-right whitespace-nowrap text-muted-foreground">Share</span>
-            <span className="eyebrow text-right whitespace-nowrap text-muted-foreground">p50/p95 s</span>
+            <span className="eyebrow text-right whitespace-nowrap text-muted-foreground max-sm:hidden">p50/p95 s</span>
             <span className="eyebrow text-right whitespace-nowrap text-muted-foreground">$ / 1K</span>
-            <span className="eyebrow text-right whitespace-nowrap text-muted-foreground">Errors</span>
+            <span className="eyebrow text-right whitespace-nowrap text-muted-foreground max-sm:hidden">Errors</span>
           </WidgetListHeader>
 
           {MODELS.map((m) => (
@@ -160,7 +161,7 @@ export function ModelRouter() {
               <span className="flex min-w-0 items-center gap-2">
                 <span className="size-2 shrink-0 rounded-full" style={{ background: m.color }} />
                 <span className="truncate">{m.name}</span>
-                <span className="eyebrow truncate text-faint-foreground">{m.provider}</span>
+                <span className="eyebrow truncate text-faint-foreground max-sm:hidden">{m.provider}</span>
               </span>
               <span className="flex items-center justify-end gap-2">
                 <span className="h-1 w-6 overflow-hidden rounded-full bg-muted">
@@ -173,16 +174,16 @@ export function ModelRouter() {
                 </span>
                 <NumberTicker value={shares[m.id]} format={(v) => `${Math.round(v)}%`} className="w-8 text-right" />
               </span>
-              <span className="text-right text-muted-foreground tabular-nums">
+              <span className="text-right text-muted-foreground tabular-nums max-sm:hidden">
                 {m.p50.toFixed(2)} / {m.p95.toFixed(2)}
               </span>
               <span className="text-right tabular-nums">${m.price.toFixed(4)}</span>
-              <span className="text-right text-muted-foreground tabular-nums">{m.errors.toFixed(2)}%</span>
+              <span className="text-right text-muted-foreground tabular-nums max-sm:hidden">{m.errors.toFixed(2)}%</span>
             </WidgetListRow>
           ))}
         </WidgetList>
 
-        <div className="mt-1 flex items-center gap-1.5 border-t border-border/70 pt-3 text-sm">
+        <div className="mt-1 flex flex-wrap items-center gap-1.5 border-t border-border/70 pt-3 text-sm">
           <Switch
             checked={fallback}
             onCheckedChange={setFallback}
@@ -288,7 +289,7 @@ function RouteFlow({
     <div className="flex items-stretch gap-3">
       <div ref={ref} className="relative min-w-0 flex-1">
         <span
-          className="eyebrow absolute left-0 text-muted-foreground"
+          className="eyebrow absolute left-0 text-muted-foreground max-sm:hidden"
           style={{ top: (ROW_H * MODELS.length) / 2 - 26 }}
         >
           Gateway

@@ -59,5 +59,20 @@ agent works.
 changing initial data (positions, mocks) doesn't show until a full reload.
 Reload before judging a layout change.
 
+**"Fits" on a narrow desktop window, overflows on the phone.** Desktop
+Chrome (and its headless mode) has a minimum window width around 500 px, so
+a 390 px screenshot is laid out wider than a phone. Emulate a device, then
+list what sticks out past the visual viewport:
+
+```js
+const W = visualViewport.width
+;[...document.querySelectorAll("body *")]
+  .filter((e) => e.getBoundingClientRect().right > W + 1)
+  .filter((e) => ![...e.children].some((c) => c.getBoundingClientRect().right > W + 1))
+  .map((e) => (e.dataset.slot || e.tagName) + " " + (e.textContent || "").trim().slice(0, 30))
+```
+
+An empty list means nothing overflows; then look at it for crushed text.
+
 **Select items touching the edges.** Padding is on the list, not on groups —
 keep uia's `select`; don't wrap items in extra padded divs.
