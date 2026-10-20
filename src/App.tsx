@@ -10,7 +10,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Segmented, SegmentedItem } from "@/components/ds/segmented"
 import { Assistant } from "@/examples/assistant/assistant"
 import { AgentRuntime } from "@/examples/agent-runtime"
 import { AiSpend } from "@/examples/ai-spend"
@@ -72,21 +71,8 @@ export function App() {
       {!bare && (
         // The playground's own chrome floats bottom-left, out of every example's way.
         <header className="fixed bottom-4 left-4 z-50 flex items-center gap-2 rounded-full bg-background/90 p-1 shadow-lg ring-1 ring-border backdrop-blur">
-          {/* Tabs from md; a select on phones, where nine tabs don't fit. */}
-          <Segmented
-            variant="sans"
-            className="max-md:hidden"
-            value={active}
-            onValueChange={(v) => go(v as WidgetKey)}
-          >
-            {Object.entries(WIDGETS).map(([key, w]) => (
-              <SegmentedItem key={key} value={key}>
-                {w.label}
-              </SegmentedItem>
-            ))}
-          </Segmented>
           <Select value={active} onValueChange={(v) => v && go(v as WidgetKey)}>
-            <SelectTrigger aria-label="Example" className="md:hidden">
+            <SelectTrigger aria-label="Example">
               <SelectValue>{(v: WidgetKey) => WIDGETS[v].label}</SelectValue>
             </SelectTrigger>
             <SelectContent alignItemWithTrigger={false}>
