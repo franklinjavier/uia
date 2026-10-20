@@ -1,5 +1,5 @@
 import * as React from "react"
-import { LayoutGroup, motion } from "motion/react"
+import { AnimatePresence, LayoutGroup, motion } from "motion/react"
 
 import { cn } from "@/lib/utils"
 import { enter, springSoft } from "@/lib/motion"
@@ -57,6 +57,26 @@ import type {
 //   rejected (the agent must not invent numbers).
 // - `layout` sets the limits: "inline" (a chat reply: ≤ 2 actions, no tabs,
 //   grids of ≤ 2) or "page". Always: one primary action, one Note per Section.
+
+function isComplete(surface: SurfaceState) {
+  for (const node of Object.values(surface.components)) {
+    const refs: unknown[] = []
+    if (Array.isArray(node.children)) refs.push(...node.children)
+    else if (
+      node.children &&
+      typeof node.children === "object" &&
+      "componentId" in node.children
+    )
+      refs.push((node.children as { componentId: unknown }).componentId)
+    for (const k of ["child", "aside", "fallback"])
+      if (typeof node[k] === "string") refs.push(node[k])
+    if (Array.isArray(node.tabs))
+      refs.push(...(node.tabs as { child?: unknown }[]).map((t) => t?.child))
+    if (refs.some((r) => typeof r === "string" && !surface.components[r]))
+      return false
+  }
+  return Boolean(surface.components.root)
+}
 
 export function Surface({
   surface: incoming,
@@ -140,6 +160,9 @@ export function Surface({
 
   const formatOptions: FormatOptions = { locale, currency }
   let count = 0
+  // Every referenced child has arrived: the surface is built, so changes
+  // from here on are moves, not construction.
+  const complete = isComplete(surface)
 
   const placeholder = (componentId: string, text: string) =>
     showIssues ? (
@@ -166,7 +189,7 @@ export function Surface({
       return (
         <Skeleton
           key={`${id}-${scope ?? ""}`}
-          className="h-12 w-full rounded-xl"
+          className="h-20 w-full rounded-2xl bg-muted/50"
         />
       )
     if (++count > MAX_NODES || depth > MAX_DEPTH) return null
@@ -214,8 +237,11 @@ export function Surface({
           return (
             <motion.div
               key={key}
-              layout="position"
-              initial={{ opacity: 0, y: -12 }}
+              // Still streaming: appear where it lands, nothing slides.
+              // Complete: a change (an answer, an undo) shows where things
+              // went — the rest glide, a newcomer drops in from above.
+              layout={complete ? "position" : false}
+              initial={{ opacity: 0, y: complete ? -8 : 4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20, scale: 0.98 }}
               transition={{ ...enter, layout: springSoft }}
@@ -229,12 +255,45 @@ export function Surface({
                   : undefined
               }
             >
-              {renderNode(childId, depth + 1, childScope, true)}
+              {/* Its own presence: the layout's `initial={false}` must not
+                  silence this. When the content replaces the skeleton it
+                  fades in where it lands instead of popping. */}
+              <AnimatePresence mode="popLayout">
+                {surface.components[childId] ? (
+                  <motion.div
+                    key="ready"
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={enter}
+                  >
+                    {renderNode(childId, depth + 1, childScope, true)}
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="pending"
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.12 }}
+                  >
+                    {renderNode(childId, depth + 1, childScope, true)}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           )
         }
-        if (Array.isArray(ref))
-          return ref.map((c) => one(String(c), String(c), scope))
+        if (Array.isArray(ref)) {
+          // While building, only the next missing child gets a skeleton:
+          // the screen fills top-down and nothing on screen gets pushed.
+          let waiting = false
+          return ref.flatMap((c) => {
+            const id = String(c)
+            if (!surface.components[id]) {
+              if (waiting) return []
+              waiting = true
+            }
+            return [one(id, id, scope)]
+          })
+        }
         if (
           ref &&
           typeof ref === "object" &&
@@ -321,6 +380,7 @@ export function Surface({
     <div
       data-slot="surface"
       data-surface={surface.id}
+      data-complete={complete || undefined}
       className={cn("@container flex min-w-0 flex-col", className)}
     >
       {/* One layout group: a card leaving one list and arriving in another glides. */}

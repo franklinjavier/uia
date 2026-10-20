@@ -5,11 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Segmented, SegmentedItem } from "@/components/ds/segmented"
 import { ResolvedRow } from "@/components/parts/action-card"
 import { Surface } from "@/components/surface/surface"
-import {
-  createSurfaceStore,
-  surfaceFromMessages,
-  useSurface,
-} from "@/components/surface/store"
+import { surfaceFromMessages } from "@/components/surface/store"
 import { openUIToMessages } from "@/components/surface/openui"
 import type { SurfaceAction, SurfaceMessage } from "@/components/surface/types"
 import { uiaCatalog } from "@/components/catalog"
@@ -21,62 +17,104 @@ import {
 } from "@/examples/surface/specs"
 
 // Example: a screen the agent assembles for the moment. Pick an intent; the
-// agent's A2UI messages stream in (data first, then components two at a
-// time) and the surface renders as they land. Actions come back as named
+// agent's A2UI messages stream in (the host's data first, then the
+// components as the model writes them) and the surface renders as they land. Actions come back as named
 // events — here they're just logged; in an app they go to the agent.
 //
 // "OpenUI Lang" shows the same dashboard written in that compact syntax
 // (about half the size), streamed line by line through `openUIToMessages`.
 
-const STEP_MS = 260
+// Both formats arrive at the same writing speed, like a model streaming
+// characters; the data comes from the host in both cases and isn't counted.
+// So the difference you see is the size of what the model has to write.
+const CHARS_PER_SECOND = 700
 
-function useStreamedSurface(messages: readonly SurfaceMessage[], run: number) {
-  const [store] = React.useState(() => createSurfaceStore())
+type Stream = { run: number; count: number; done: boolean }
+
+/** Reveal `chunks` one by one, each after the time it takes to write it. */
+function useWritten(chunks: readonly string[], run: number, active: boolean) {
+  const [stream, setStream] = React.useState<Stream>({
+    run,
+    count: 0,
+    done: false,
+  })
   React.useEffect(() => {
-    store.process([{ deleteSurface: { surfaceId: surfaceIdOf(messages) } }])
+    if (!active) return
     let i = 0
-    const t = window.setInterval(() => {
-      if (i >= messages.length) return window.clearInterval(t)
-      store.process(messages[i++])
-    }, STEP_MS)
-    return () => window.clearInterval(t)
-  }, [store, messages, run])
-  return useSurface(store, surfaceIdOf(messages))
+    let t: number
+    const next = () => {
+      if (i >= chunks.length) return
+      t = window.setTimeout(
+        () => {
+          i++
+          setStream({ run, count: i, done: i >= chunks.length })
+          next()
+        },
+        (chunks[i].length / CHARS_PER_SECOND) * 1000
+      )
+    }
+    next()
+    return () => window.clearTimeout(t)
+  }, [chunks, run, active])
+  return stream.run === run ? stream : { run, count: 0, done: false }
 }
 
-function surfaceIdOf(messages: readonly SurfaceMessage[]) {
-  const first = messages[0]
-  return first && "createSurface" in first
-    ? first.createSurface.surfaceId
-    : "surface"
+const seconds = (chunks: readonly string[]) =>
+  chunks.reduce((n, c) => n + c.length, 0) / CHARS_PER_SECOND
+
+function useStreamedSurface(
+  messages: readonly SurfaceMessage[],
+  run: number,
+  active: boolean
+) {
+  const data = React.useMemo(
+    () =>
+      messages.filter((m) => "updateDataModel" in m || "createSurface" in m),
+    [messages]
+  )
+  const written = React.useMemo(
+    () => messages.filter((m) => "updateComponents" in m),
+    [messages]
+  )
+  const chunks = React.useMemo(
+    () => written.map((m) => JSON.stringify(m)),
+    [written]
+  )
+  const { count, done } = useWritten(chunks, run, active)
+  return {
+    surface: surfaceFromMessages([...data, ...written.slice(0, count)]),
+    done,
+    seconds: seconds(chunks),
+  }
 }
 
 type Format = "json" | "lang"
 
-/** The Lang version, revealed one line per tick, with the JSON version's data. */
+/** The Lang version, written line by line, with the same host data. */
 function useStreamedLang(run: number, active: boolean) {
-  const lines = React.useMemo(() => costAndQualityLang.split("\n"), [])
-  // Progress is tagged with its run, so a replay starts from zero without
-  // resetting state inside the effect.
-  const [progress, setProgress] = React.useState({ run, count: 0 })
-  React.useEffect(() => {
-    if (!active) return
-    let count = 0
-    const t = window.setInterval(() => {
-      count = Math.min(count + 1, lines.length)
-      setProgress({ run, count })
-      if (count >= lines.length) window.clearInterval(t)
-    }, STEP_MS / 2)
-    return () => window.clearInterval(t)
-  }, [run, active, lines])
-  const count = progress.run === run ? progress.count : 0
-  const text = lines.slice(0, count).join("\n") + "\n"
+  const lines = React.useMemo(
+    () =>
+      costAndQualityLang
+        .split("\n")
+        .filter(Boolean)
+        .map((l) => l + "\n"),
+    []
+  )
+  const { count, done } = useWritten(lines, run, active)
   const data = costAndQuality.find((m) => "updateDataModel" in m)!
-  const { messages } = openUIToMessages(text, uiaCatalog, {
-    surfaceId: "cost-quality",
-    streaming: true,
-  })
-  return surfaceFromMessages([...messages, data])
+  const { messages } = openUIToMessages(
+    lines.slice(0, count).join(""),
+    uiaCatalog,
+    {
+      surfaceId: "cost-quality",
+      streaming: true,
+    }
+  )
+  return {
+    surface: surfaceFromMessages([...messages, data]),
+    done,
+    seconds: seconds(lines),
+  }
 }
 
 const JSON_SIZE = JSON.stringify(
@@ -92,9 +130,9 @@ export function SurfaceExample() {
   const [format, setFormat] = React.useState<Format>("json")
   const messages = INTENTS[intent].messages
   const lang = intent === "cost" && format === "lang"
-  const jsonSurface = useStreamedSurface(messages, run)
-  const langSurface = useStreamedLang(run, lang)
-  const surface = lang ? langSurface : jsonSurface
+  const json = useStreamedSurface(messages, run, !lang)
+  const langStream = useStreamedLang(run, lang)
+  const { surface, done, seconds: took } = lang ? langStream : json
 
   return (
     <div className="mx-auto flex w-full max-w-[64rem] flex-col gap-6 px-4 pt-8 pb-28 sm:px-6">
@@ -144,6 +182,11 @@ export function SurfaceExample() {
           </Button>
         </span>
       </div>
+
+      <span className="-mt-3 eyebrow text-faint-foreground tabular-nums">
+        {done ? `Written in ${took.toFixed(1)} s` : "Writing…"} · same speed for
+        both formats
+      </span>
 
       <Surface
         surface={surface}

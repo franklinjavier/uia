@@ -124,3 +124,13 @@ shadcn component (StatusBadge does).
 nullable state renders nothing during its exit animation; keep the last
 value until it has closed.
 
+**Animations look frozen in a background browser pane.** A hidden or
+background tab gets no animation frames (`requestAnimationFrame` doesn't
+fire), so motion stalls mid-way and measurements lie. Check frames first
+(count `requestAnimationFrame` callbacks for 300 ms); measure motion in a
+painting browser (headless Chrome over CDP works).
+
+**Nested entrances stay silent.** `AnimatePresence initial={false}` also
+silences entrances of motion components mounted inside it later. Give a
+late-arriving piece its own `AnimatePresence` when it must animate in.
+

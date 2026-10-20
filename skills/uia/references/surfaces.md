@@ -82,12 +82,19 @@ Composition rules (the runtime checks the ones marked ✓):
 - In a chat reply (`layout: "inline"`, the default at `size="sm"`): at most
   2 loose buttons ✓, no `Tabs` ✓, grids of at most 2 columns ✓.
 
-**Motion comes with the layout.** `Column` and `Grid` keep each child's
-identity: an item that leaves sinks and fades, the rest glide into the gap,
-a new one arrives from above (one `LayoutGroup` per surface, so a card can
-move between lists). The agent doesn't ask for it. For template children,
-give the item key so identity survives updates:
-`{ "path": "/items", "componentId": "row", "key": "id" }`.
+**Motion comes with the layout.** Two phases, decided by the renderer:
+- **Building** (some referenced child hasn't arrived): the screen fills
+  top-down; only the next missing child shows a skeleton, so nothing on
+  screen gets pushed; each piece fades in where it lands (opacity + 4 px
+  lift) as it replaces its skeleton. Nothing slides.
+- **Complete** (every child arrived; `data-complete` on the surface): a
+  change is a move — an item that leaves sinks and fades, the rest glide
+  into the gap, a newcomer drops in from above (one `LayoutGroup` per
+  surface, so a card can move between lists).
+
+The agent never asks for any of it. For template children, give the item
+key so identity survives updates: `{ "path": "/items", "componentId":
+"row", "key": "id" }`.
 
 ## What the host owns
 
