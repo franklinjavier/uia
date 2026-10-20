@@ -1,6 +1,6 @@
 import type { ModelFamily } from "@/components/ds/model-icons"
 import type { StepStatus } from "@/components/ds/stepper"
-import type { Option, Project } from "@/examples/davinci/data"
+import type { Option, Project } from "@/examples/davinci/davinci-data"
 
 // davinci v2: the same factory, organised around what the owner actually
 // needs: a queue of decisions (state, not messages), conversations per

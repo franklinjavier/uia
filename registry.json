@@ -1976,9 +1976,9 @@
           "target": "~/src/examples/bottega/use-bottega.ts"
         },
         {
-          "path": "registry/examples/bottega/data.ts",
+          "path": "registry/examples/bottega/bottega-data.ts",
           "type": "registry:file",
-          "target": "~/src/examples/bottega/data.ts"
+          "target": "~/src/examples/bottega/bottega-data.ts"
         }
       ]
     },
@@ -2029,9 +2029,9 @@
           "target": "~/src/examples/davinci2/davinci2.tsx"
         },
         {
-          "path": "registry/examples/davinci2/data.ts",
+          "path": "registry/examples/davinci2/davinci2-data.ts",
           "type": "registry:file",
-          "target": "~/src/examples/davinci2/data.ts"
+          "target": "~/src/examples/davinci2/davinci2-data.ts"
         },
         {
           "path": "registry/examples/davinci/davinci.tsx",
@@ -2044,9 +2044,9 @@
           "target": "~/src/examples/davinci/cards.tsx"
         },
         {
-          "path": "registry/examples/davinci/data.ts",
+          "path": "registry/examples/davinci/davinci-data.ts",
           "type": "registry:file",
-          "target": "~/src/examples/davinci/data.ts"
+          "target": "~/src/examples/davinci/davinci-data.ts"
         }
       ]
     },

@@ -8,7 +8,7 @@ import { action, defineComponent, extendCatalog } from "@/components/surface/cat
 import type { SurfaceMessage } from "@/components/surface/types"
 import { uiaCatalog, UIA_CATALOG_ID } from "@/components/catalog"
 import { IncidentCard } from "@/examples/davinci/cards"
-import { INCIDENT } from "@/examples/davinci/data"
+import { INCIDENT } from "@/examples/davinci/davinci-data"
 
 // Experiment (playground only): can an agent reach the hand-made level?
 // A: davinci's IncidentCard, written by hand.

@@ -24,7 +24,7 @@ import {
   WidgetTitle,
 } from "@/components/ds/widget"
 import { DecisionChip } from "@/components/parts/decision-chip"
-import { KIND_LABEL, STAGES, type Health } from "@/examples/bottega/data"
+import { KIND_LABEL, STAGES, type Health } from "@/examples/bottega/bottega-data"
 import { Conversation } from "@/examples/bottega/conversation"
 import { useBottega } from "@/examples/bottega/use-bottega"
 

@@ -38,7 +38,7 @@ import {
   type Diff,
   type Incident,
   type Task,
-} from "@/examples/davinci/data"
+} from "@/examples/davinci/davinci-data"
 
 // The cards davinci puts in the conversation. Each one answers one kind of
 // "what's going on" or "what do you want", says it in one line first, and

@@ -1,6 +1,6 @@
 import type { ComponentNode, SurfaceMessage } from "@/components/surface/types"
 import { UIA_CATALOG_ID } from "@/components/catalog"
-import type { QueueItem, Urgency } from "@/examples/davinci2/data"
+import type { QueueItem, Urgency } from "@/examples/davinci2/davinci2-data"
 
 // What davinci's agent sends to show the inbox: A2UI messages against the
 // uia catalog, written only from patterns (DecisionCard, ActivityItem,

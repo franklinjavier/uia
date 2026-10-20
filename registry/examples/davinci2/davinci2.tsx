@@ -45,7 +45,7 @@ import {
 } from "@/components/chat/composer"
 import type { ToolRegistry } from "@/components/chat/tool-registry"
 import { DiffCard, EvidenceCard, QuotaCard } from "@/examples/davinci/cards"
-import { RISKY_DIFF, type Project } from "@/examples/davinci/data"
+import { RISKY_DIFF, type Project } from "@/examples/davinci/davinci-data"
 import { BlogPreview } from "@/examples/davinci/davinci"
 import {
   DECIDED,
@@ -60,7 +60,7 @@ import {
   type ProjectState,
   type Rule,
   type Urgency,
-} from "@/examples/davinci2/data"
+} from "@/examples/davinci2/davinci2-data"
 
 // davinci v2. One entry point, four surfaces:
 //   Inbox     decisions as state: self-contained, grouped by urgency, each

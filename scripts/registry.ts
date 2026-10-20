@@ -172,14 +172,14 @@ const ITEMS: Item[] = [
     "registry/examples/bottega/bottega.tsx",
     "registry/examples/bottega/conversation.tsx",
     "registry/examples/bottega/use-bottega.ts",
-    "registry/examples/bottega/data.ts",
+    "registry/examples/bottega/bottega-data.ts",
   ]),
   item("example-davinci", "registry:block", "Example app: an agent coordinator as an inbox — decisions grouped by urgency (the urgent one glows), threads per project, projects by stage that scale to dozens of tasks, a log of what was decided for you, rules with switches; each view a route. Plus the one-chat version it replaced.", [
     "registry/examples/davinci2/davinci2.tsx",
-    "registry/examples/davinci2/data.ts",
+    "registry/examples/davinci2/davinci2-data.ts",
     "registry/examples/davinci/davinci.tsx",
     "registry/examples/davinci/cards.tsx",
-    "registry/examples/davinci/data.ts",
+    "registry/examples/davinci/davinci-data.ts",
   ]),
   item("example-davinci-surface", "registry:block", "Example: the davinci inbox as an agent sends it — A2UI messages built only from patterns, every fact bound to the factory's data, the factory's action contract deciding what's reversible; Inbox, Decided for you, Rules.", [
     "registry/examples/davinci-surface/factory.ts",
@@ -233,6 +233,24 @@ function bundle(name: string, description: string, deps: string[]) {
     author: AUTHOR,
     registryDependencies: deps.map((d) => `${NS}/${d}`),
   }
+}
+
+// Two installed files with the same basename confuse the shadcn CLI: when it
+// rewrites a consumer's imports it can point one at the other (it pointed
+// the examples' data.ts at the catalog's data.tsx). Fail the build instead.
+// Blocks and their example fixtures share names on purpose and resolve fine
+// (they're imported by distinct aliases, never relatively).
+{
+  const allowed = new Set(["ai-spend", "fleet-health", "model-evals", "model-router", "agent-runtime"])
+  const seen = new Map<string, string>()
+  for (const it of ITEMS)
+    for (const f of it.files) {
+      const base = f.split("/").pop()!.replace(/\.(tsx?|css)$/, "")
+      const other = seen.get(base)
+      if (other && other !== f && !allowed.has(base))
+        throw new Error(`Two registry files are named "${base}": ${other} and ${f}. Rename one (the shadcn CLI resolves imports by name).`)
+      seen.set(base, f)
+    }
 }
 
 const fileOwner = new Map<string, string>()

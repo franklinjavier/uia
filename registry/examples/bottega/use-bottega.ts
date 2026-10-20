@@ -8,7 +8,7 @@ import {
   type Activity,
   type Decision,
   type Project,
-} from "@/examples/bottega/data"
+} from "@/examples/bottega/bottega-data"
 
 // The Bottega example's state machine. Deciding something updates the
 // decision, moves the project along the flow (with the agent's work playing

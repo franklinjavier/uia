@@ -38,7 +38,7 @@ import {
   RISKY_DIFF,
   type Project,
   type Task,
-} from "@/examples/davinci/data"
+} from "@/examples/davinci/davinci-data"
 
 // davinci: the whole Bottega factory as one conversation. The owner only
 // decides what needs judgment; everything else is routine, collapsed into a

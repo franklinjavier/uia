@@ -12,7 +12,7 @@ import { ChatThread, ChatThreadItem } from "@/components/chat/chat-thread"
 import { ChatTurn } from "@/components/chat/chat-turn"
 import { Composer, ComposerInput, ComposerSubmit, ComposerToolbar } from "@/components/chat/composer"
 import type { ToolRegistry } from "@/components/chat/tool-registry"
-import { PLAN, type Decision, type Project } from "@/examples/bottega/data"
+import { PLAN, type Decision, type Project } from "@/examples/bottega/bottega-data"
 import type { Outcome, useBottega } from "@/examples/bottega/use-bottega"
 
 // The one conversation with the agent. Decisions arrive here as cards; the

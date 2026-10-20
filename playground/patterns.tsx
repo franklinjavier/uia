@@ -15,7 +15,7 @@ import type {
 } from "@/components/surface/types"
 import { uiaCatalog, UIA_CATALOG_ID } from "@/components/catalog"
 import { DiffCard, IncidentCard } from "@/examples/davinci/cards"
-import { INCIDENT, RISKY_DIFF } from "@/examples/davinci/data"
+import { INCIDENT, RISKY_DIFF } from "@/examples/davinci/davinci-data"
 
 // Playground only: every pattern entry rendered through <Surface>, with a
 // host action registry (some reversible, one final, destructive ones) and

@@ -5,7 +5,7 @@ import {
   RULES,
   SINCE,
   type QueueItem,
-} from "@/examples/davinci2/data"
+} from "@/examples/davinci2/davinci2-data"
 
 // The host side of davinci on surfaces: what the factory offers and what
 // the agent may read. Two contracts the agent can't bend:
