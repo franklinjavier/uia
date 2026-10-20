@@ -75,6 +75,8 @@ const ITEMS: Item[] = [
   item("number-ticker", "registry:component", "Numbers that animate between values.", ["src/components/ds/number-ticker.tsx"]),
   item("model-icons", "registry:component", "Monochrome marks of the major LLM families (Claude, OpenAI, Gemini, Meta, Grok).", ["src/components/ds/model-icons.tsx"]),
   item("agent-orb", "registry:component", "The assistant's presence; one animated state per agent phase.", ["src/components/ds/agent-orb.tsx"]),
+  item("meter-bar", "registry:component", "A value against its limit: segments, threshold markers, highlight.", ["src/components/ds/meter-bar.tsx"]),
+  item("sparkline", "registry:component", "A recent series as a line over a soft area, latest point marked.", ["src/components/ds/sparkline.tsx"]),
 
   // parts
   item("action-card", "registry:component", "One shape for every human-in-the-loop moment, plus ResolvedRow and TranscriptEvent.", ["src/components/parts/action-card.tsx"]),
@@ -106,6 +108,18 @@ const ITEMS: Item[] = [
   item("composer", "registry:component", "Prompt box as parts: input, toolbar, attach, model select, submit.", ["src/components/chat/composer.tsx"]),
   item("chat-empty", "registry:component", "First screen: resting orb, greeting, suggestions.", ["src/components/chat/chat-empty.tsx"]),
   item("chat-status", "registry:component", "One-line conversation status.", ["src/components/chat/chat-status.tsx"]),
+
+  // Reference widgets: complete, working examples of how uia is composed.
+  // They install into src/examples/ to be read, run and adapted.
+  item("example-model-router", "registry:block", "Example: model router with policy, routing flow, routes list and deploy.", ["src/examples/model-router.tsx"]),
+  item("example-agent-runtime", "registry:block", "Example: scale-to-zero sandboxes with an isometric scene and invoke.", ["src/examples/agent-runtime.tsx"]),
+  item("example-ai-spend", "registry:block", "Example: monthly AI spend by model against a budget, with alert and projection.", ["src/examples/ai-spend.tsx"]),
+  item("example-fleet-health", "registry:block", "Example: tokens/s with sparkline, fleet meters and a GPU heatmap.", ["src/examples/fleet-health.tsx"]),
+  item("example-assistant", "registry:block", "Example: a scripted agent chat with questions, a draft and an approval.", [
+    "src/examples/assistant/assistant.tsx",
+    "src/examples/assistant/scripts.ts",
+    "src/examples/assistant/tools.tsx",
+  ]),
 ]
 
 // Bundles: no files, just dependencies.
@@ -115,6 +129,9 @@ const BUNDLES = [
   ]),
   bundle("hitl", "All human-in-the-loop parts.", [
     "action-card", "ask-user", "confirmation", "draft-card", "part-transition", "tool-line",
+  ]),
+  bundle("examples", "Every reference widget, to read, run and adapt.", [
+    "example-assistant", "example-model-router", "example-agent-runtime", "example-ai-spend", "example-fleet-health",
   ]),
 ]
 
@@ -151,7 +168,7 @@ function scan(it: Item) {
   const deps = new Set<string>()
   const reg = new Set<string>(it.registryDependencies ?? [])
   // Visual pieces use our tokens (bg-surface, text-attention, eyebrow…).
-  if (it.type === "registry:ui" || it.type === "registry:component") reg.add(`${NS}/theme`)
+  if (["registry:ui", "registry:component", "registry:block"].includes(it.type)) reg.add(`${NS}/theme`)
   for (const file of it.files) {
     const src = readFileSync(file, "utf8")
     for (const [, spec] of src.matchAll(/(?:from|import)\s+["']([^"']+)["']/g)) {
@@ -178,6 +195,7 @@ function scan(it: Item) {
 }
 
 function target(path: string) {
+  if (path.startsWith("src/examples/")) return `~/${path}`
   return path
     .replace(/^src\/components\/ui\//, "@ui/")
     .replace(/^src\/components\//, "@components/")
@@ -277,7 +295,7 @@ const typeset = {
 
 // The agent skill: lands in the project's .claude/skills so any agent working
 // there builds with uia the way the designer would.
-const SKILL_FILES = ["SKILL.md", "references/tokens.md", "references/components.md", "references/hitl.md", "references/chat.md", "references/pitfalls.md"]
+const SKILL_FILES = ["SKILL.md", "references/tokens.md", "references/components.md", "references/hitl.md", "references/chat.md", "references/pitfalls.md", "references/examples.md", "references/grammar.md"]
 const skill = {
   name: "skill",
   type: "registry:file",
@@ -302,7 +320,11 @@ const items = [
       author: AUTHOR,
       ...(deps.length ? { dependencies: deps } : {}),
       ...(reg.length ? { registryDependencies: reg } : {}),
-      files: it.files.map((path) => ({ path, type: it.type, target: target(path) })),
+      files: it.files.map((path) => ({
+        path,
+        type: it.type === "registry:block" ? "registry:file" : it.type,
+        target: target(path),
+      })),
       ...it.extra,
     }
   }),

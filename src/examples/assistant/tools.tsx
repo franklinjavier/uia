@@ -9,7 +9,7 @@ import { PartTransition } from "@/components/parts/part-transition"
 import { SearchResults } from "@/components/parts/search-results"
 import { ToolLine, toolPhase } from "@/components/parts/tool-line"
 import { defineTools } from "@/components/chat/tool-registry"
-import type { ChatMessage } from "@/playground/assistant/scripts"
+import type { ChatMessage } from "@/examples/assistant/scripts"
 
 // How the demo app renders its tools. This is exactly what a consuming app
 // writes: one entry per tool, built from parts.

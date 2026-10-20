@@ -29,8 +29,8 @@ import {
   transports,
   type ChatMessage,
   type ScenarioKey,
-} from "@/playground/assistant/scripts"
-import { tools } from "@/playground/assistant/tools"
+} from "@/examples/assistant/scripts"
+import { tools } from "@/examples/assistant/tools"
 
 // The playground's assistant: nothing here but composition of the chat kit
 // (components/chat) with the demo's tools and scripted conversations.
@@ -47,10 +47,17 @@ const MODELS = {
 
 export type AssistantLayout = "widget" | "full"
 
-export function Assistant({ layout = "widget" }: { layout?: AssistantLayout }) {
-  const [scenario, setScenario] = React.useState<ScenarioKey>("draft")
+export function Assistant({
+  layout = "widget",
+  initialScenario,
+}: {
+  layout?: AssistantLayout
+  /** Start straight into a scripted scenario instead of the empty state. */
+  initialScenario?: ScenarioKey
+}) {
+  const [scenario, setScenario] = React.useState<ScenarioKey>(initialScenario ?? "draft")
   const [run, setRun] = React.useState(0)
-  const [started, setStarted] = React.useState(false)
+  const [started, setStarted] = React.useState(Boolean(initialScenario))
 
   return (
     <Session

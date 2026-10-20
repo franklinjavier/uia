@@ -1,8 +1,6 @@
 import * as React from "react"
-import { motion } from "motion/react"
 import { CalendarIcon } from "lucide-react"
 
-import { springSoft } from "@/lib/motion"
 import {
   Select,
   SelectContent,
@@ -10,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { MeterBar } from "@/components/ds/meter-bar"
 import { ModelIcon, type ModelFamily } from "@/components/ds/model-icons"
 import { NumberTicker } from "@/components/ds/number-ticker"
 import { Stat, StatLabel, StatMeta, StatUnit, StatValue } from "@/components/ds/stat"
@@ -159,7 +158,15 @@ export function AiSpend() {
           </Stat>
         </div>
 
-        <SpendBar month={month} spent={spent} hovered={hovered} />
+        <MeterBar
+          max={BUDGET}
+          segments={MODELS.map((m) => ({ id: m.id, value: month.usage[m.id].cost, color: m.color }))}
+          markers={[
+            { value: BUDGET * ALERT, label: `${Math.round(ALERT * 100)}%` },
+            { value: BUDGET, label: "Budget" },
+          ]}
+          highlighted={hovered}
+        />
 
         {level !== "ok" && (
           <div className="flex items-center gap-2.5 text-sm">
@@ -219,48 +226,5 @@ export function AiSpend() {
         </WidgetMeta>
       </WidgetFooter>
     </Widget>
-  )
-}
-
-/**
- * Spend as one bar split by model, on a scale that always fits both the
- * budget and the spend. The hairline ticks mark the alert and the budget.
- */
-function SpendBar({ month, spent, hovered }: { month: Month; spent: number; hovered: string | null }) {
-  const scale = Math.max(BUDGET, spent)
-  const pct = (v: number) => `${(v / scale) * 100}%`
-
-  return (
-    <div className="relative pt-1 pb-5">
-      <div className="flex h-2 w-full overflow-hidden rounded-full bg-muted">
-        {MODELS.map((m) => (
-          <motion.span
-            key={m.id}
-            className="h-full transition-opacity duration-200 not-last:border-r-2 not-last:border-card"
-            style={{ background: m.color, opacity: hovered && hovered !== m.id ? 0.25 : 1 }}
-            initial={false}
-            animate={{ width: pct(month.usage[m.id].cost) }}
-            transition={springSoft}
-          />
-        ))}
-      </div>
-      <Tick at={pct(BUDGET * ALERT)} label={`${Math.round(ALERT * 100)}%`} />
-      <Tick at={pct(BUDGET)} label="Budget" end={spent <= BUDGET} />
-    </div>
-  )
-}
-
-function Tick({ at, label, end = false }: { at: string; label: string; end?: boolean }) {
-  return (
-    <motion.div
-      className="absolute top-0 flex flex-col items-center"
-      initial={false}
-      animate={{ left: at }}
-      transition={springSoft}
-      style={{ translateX: end ? "-100%" : "-50%" }}
-    >
-      <span className="h-4 w-px bg-foreground/40" />
-      <span className="eyebrow mt-1 text-faint-foreground">{label}</span>
-    </motion.div>
   )
 }

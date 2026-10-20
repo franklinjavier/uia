@@ -1,0 +1,141 @@
+# Grammar
+
+The moves every uia screen is built from. The rules in SKILL.md say what to
+avoid; this says what to do. Read it with the closest example open
+(`examples.md`): the examples are this grammar applied.
+
+## Contents
+
+1. Anatomy of a widget
+2. The hero: one number and what explains it
+3. Lists are legends
+4. Data visualisation
+5. Live and interactive
+6. Copy
+7. Spacing and type, in numbers
+
+---
+
+## 1. Anatomy of a widget
+
+```
+Widget
+├─ WidgetHeader     title · (one scope control on the right)
+├─ WidgetPanel      HERO: the number that answers "how is it going?"
+│                   + the visual that explains it
+├─ WidgetPanel      DETAIL: a titled list / grid that breaks the number down
+└─ WidgetFooter     live meta on the left · one action on the right
+```
+
+- **Header:** `WidgetTitle` plus, at most, one control that changes the
+  *scope* of everything below (environment, region, cluster, month). Put it
+  in `WidgetActions` as a `Select` with a leading muted icon. Nothing else:
+  no info icon, no settings, no close.
+- **Two panels is the default.** A third only when there's a genuinely
+  separate block. Never one panel per stat.
+- **Footer:** `WidgetMeta` with a `StatusDot tone="success" pulse` when the
+  data is live, then cadence and scope ("Live · every 1.6 s · Ashburn"). The
+  one action is a `brand` button, `min-w-32`, with three states: idle,
+  working (spinner + "-ing" label), done (check + past tense, ~1.8 s) — see
+  Deploy policy / Rebalance. Disable it when there's nothing to do.
+
+## 2. The hero: one number and what explains it
+
+```
+EYEBROW LABEL                                  secondary stat / sparkline / segmented
+1,887,331  unit or / limit   [▲ 4.0%]
+META · META · META
+──────────────────────────────── (dashed hairline when a row of meters follows)
+the visual: MeterBar · TickMeter row · flow graph · scene
+```
+
+- One big number per widget (`StatValue`, light, `text-4xl`). Unit or limit
+  in `StatUnit` (`/ $1,500`, `/ 52 kW`, `/ 4`). A change goes in a
+  `StatusBadge dot={false}` next to it: `success` when up is good, `neutral`
+  otherwise — a drop isn't automatically a warning.
+- The meta line (`StatMeta`) gives context the number lacks: compared to
+  what, and one or two secondary facts. Max three items joined by `·`.
+- The right side answers the next question: where it's heading
+  ("Projected $2,100"), how it moved (`Sparkline` + "Last 64 s"), or how to
+  slice it (`Segmented` with Cost / Balanced / Quality).
+- **Then the visual.** Every hero has one, and it shows the reference the
+  number is judged against: the budget, the capacity, the limit, the
+  baseline. A number against a limit is a `MeterBar` with markers; several
+  capacities are a row of three `Stat size="sm"` + `TickMeter`, separated
+  from the hero by `border-t border-dashed`.
+
+## 3. Lists are legends
+
+- The detail panel opens with `WidgetSectionTitle` (+ optional eyebrow
+  summary under it: "8 nodes · 1 running hot · 1 draining") and continues
+  with `WidgetList`: eyebrow column headers, hairline rows.
+- Each row is a thing in the visual above. Same colour dot as its segment
+  or line; hovering the row lights it up in the visual and dims the other
+  rows; clicking selects it when selection drives an action (Invoke
+  planner). Hovering the visual does the same back.
+- Row anatomy: name (`text-sm`) + its meta as eyebrow (inline and
+  `faint` for a provider; under the name and `muted` for specs), then
+  numeric columns right-aligned with `tabular-nums`, then state as a
+  `StatusBadge`, then a quiet eyebrow column (countdown, count).
+
+## 4. Data visualisation
+
+- **Categorical** (models, routes): `--chart-1…4`, then
+  `--muted-foreground` for "other / self-hosted". Don't use `--chart-5`
+  for a category; it's orange and reads as attention.
+- **Sequential** (heatmaps, intensity): one hue, `--chart-1`, as opacity
+  over the card: `color-mix(in oklch, var(--chart-1) N%, transparent)`.
+  Never mix the hue with grey (it drifts purple in dark mode). Show the
+  scale as a small swatch strip with eyebrow ends ("0% … 100%").
+- **Meters:** `TickMeter` for a single ratio (track is the same hue at
+  20%); `MeterBar` for a breakdown or when thresholds matter.
+- **Lines:** `Sparkline` — no axes, dashed mean, last point marked.
+- **Illustrations** (flow graph, isometric scene) are drawn in hairlines
+  with `currentColor`/tokens, fill `--card`/`--muted`, and highlight the
+  focused thing with `--foreground`, not a new colour. A leader line from
+  the focused element to a mono label says its one key fact.
+- **Tooltips** for dense visuals: dark (`TooltipContent`), a title row with
+  the thing and its kind, then key/value rows (`opacity-60` keys,
+  `tabular-nums` values). Open instantly (`delay={0}`).
+- States inside a visual: hatched (`repeating-linear-gradient` of
+  `--border`) for draining/disabled, near-empty for idle, a small `warning`
+  dot for "needs a look". Never a red cell.
+
+## 5. Live and interactive
+
+- Numbers that change use `NumberTicker`; bars and markers animate with
+  `springSoft`; transitions between states are opacity/height, never
+  slides.
+- Simulated data in examples is a small state machine with a clock
+  (`setInterval` in an effect, cleaned up). Real data replaces the clock,
+  not the components.
+- Everything clickable responds: rows, nodes, boxes, segments. If a thing
+  looks interactive and isn't, remove the affordance.
+- When an action changes the data (Rebalance, Deploy, Invoke), the visual
+  shows the consequence (load evens out, version bumps, a box wakes up).
+
+## 6. Copy
+
+- Eyebrows are noun phrases with units: "TOKENS SERVED / S", "COLD START
+  P50 170 MS", "ZERO AFTER 12S IDLE".
+- Titles are plain nouns: "Fleet health", "Routes", "By model".
+- An alert line is `StatusBadge` (the state) + one sentence with new
+  information: when, how much, what happens next ("At this pace the budget
+  runs out around Oct 23"). Not advice ("Review your budget").
+- Button labels are verbs about the thing: "Invoke planner", "Deploy
+  policy", "Rebalance".
+
+## 7. Spacing and type, in numbers
+
+| Thing | Value |
+| --- | --- |
+| Widget width | `max-w-[560px]` (chat widgets 620) |
+| Panel padding | default `p-5`; list panels `pt-3` |
+| Gap inside the hero | `gap-5` |
+| Row of three stats | `grid grid-cols-3 gap-6`, dashed hairline above |
+| Big number | `StatValue` (text-4xl, tracking -0.03em, light) |
+| Secondary number | `StatValue size="sm"` |
+| Section title | `WidgetSectionTitle` (15px) |
+| Labels / meta / column headers | `eyebrow` (11px mono uppercase) |
+| Body / rows | `text-sm` |
+| List columns | fixed widths in `grid-cols-[1fr_…]`, set once in a `COLS` const |

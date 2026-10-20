@@ -566,6 +566,44 @@
       ]
     },
     {
+      "name": "meter-bar",
+      "type": "registry:component",
+      "title": "Meter Bar",
+      "description": "A value against its limit: segments, threshold markers, highlight.",
+      "author": "uia",
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/motion",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/ds/meter-bar.tsx",
+          "type": "registry:component",
+          "target": "@components/ds/meter-bar.tsx"
+        }
+      ]
+    },
+    {
+      "name": "sparkline",
+      "type": "registry:component",
+      "title": "Sparkline",
+      "description": "A recent series as a line over a soft area, latest point marked.",
+      "author": "uia",
+      "registryDependencies": [
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/ds/sparkline.tsx",
+          "type": "registry:component",
+          "target": "@components/ds/sparkline.tsx"
+        }
+      ]
+    },
+    {
       "name": "action-card",
       "type": "registry:component",
       "title": "Action Card",
@@ -952,6 +990,171 @@
       ]
     },
     {
+      "name": "example-model-router",
+      "type": "registry:block",
+      "title": "Example Model Router",
+      "description": "Example: model router with policy, routing flow, routes list and deploy.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react",
+        "motion"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/button",
+        "franklinjavier/uia/motion",
+        "franklinjavier/uia/number-ticker",
+        "franklinjavier/uia/segmented",
+        "franklinjavier/uia/select",
+        "franklinjavier/uia/stat",
+        "franklinjavier/uia/status",
+        "franklinjavier/uia/theme",
+        "franklinjavier/uia/widget",
+        "switch"
+      ],
+      "files": [
+        {
+          "path": "src/examples/model-router.tsx",
+          "type": "registry:file",
+          "target": "~/src/examples/model-router.tsx"
+        }
+      ]
+    },
+    {
+      "name": "example-agent-runtime",
+      "type": "registry:block",
+      "title": "Example Agent Runtime",
+      "description": "Example: scale-to-zero sandboxes with an isometric scene and invoke.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react",
+        "motion"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/button",
+        "franklinjavier/uia/motion",
+        "franklinjavier/uia/number-ticker",
+        "franklinjavier/uia/select",
+        "franklinjavier/uia/stat",
+        "franklinjavier/uia/status",
+        "franklinjavier/uia/theme",
+        "franklinjavier/uia/widget"
+      ],
+      "files": [
+        {
+          "path": "src/examples/agent-runtime.tsx",
+          "type": "registry:file",
+          "target": "~/src/examples/agent-runtime.tsx"
+        }
+      ]
+    },
+    {
+      "name": "example-ai-spend",
+      "type": "registry:block",
+      "title": "Example Ai Spend",
+      "description": "Example: monthly AI spend by model against a budget, with alert and projection.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/meter-bar",
+        "franklinjavier/uia/model-icons",
+        "franklinjavier/uia/number-ticker",
+        "franklinjavier/uia/select",
+        "franklinjavier/uia/stat",
+        "franklinjavier/uia/status",
+        "franklinjavier/uia/theme",
+        "franklinjavier/uia/widget"
+      ],
+      "files": [
+        {
+          "path": "src/examples/ai-spend.tsx",
+          "type": "registry:file",
+          "target": "~/src/examples/ai-spend.tsx"
+        }
+      ]
+    },
+    {
+      "name": "example-fleet-health",
+      "type": "registry:block",
+      "title": "Example Fleet Health",
+      "description": "Example: tokens/s with sparkline, fleet meters and a GPU heatmap.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react",
+        "motion"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/button",
+        "franklinjavier/uia/motion",
+        "franklinjavier/uia/number-ticker",
+        "franklinjavier/uia/segmented",
+        "franklinjavier/uia/select",
+        "franklinjavier/uia/sparkline",
+        "franklinjavier/uia/stat",
+        "franklinjavier/uia/status",
+        "franklinjavier/uia/theme",
+        "franklinjavier/uia/tick-meter",
+        "franklinjavier/uia/widget",
+        "tooltip"
+      ],
+      "files": [
+        {
+          "path": "src/examples/fleet-health.tsx",
+          "type": "registry:file",
+          "target": "~/src/examples/fleet-health.tsx"
+        }
+      ]
+    },
+    {
+      "name": "example-assistant",
+      "type": "registry:block",
+      "title": "Example Assistant",
+      "description": "Example: a scripted agent chat with questions, a draft and an approval.",
+      "author": "uia",
+      "dependencies": [
+        "ai",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/action-card",
+        "franklinjavier/uia/agent-chat",
+        "franklinjavier/uia/agent-orb",
+        "franklinjavier/uia/ai",
+        "franklinjavier/uia/ask-user",
+        "franklinjavier/uia/chat-empty",
+        "franklinjavier/uia/chat-thread",
+        "franklinjavier/uia/chat-turn",
+        "franklinjavier/uia/composer",
+        "franklinjavier/uia/confirmation",
+        "franklinjavier/uia/draft-card",
+        "franklinjavier/uia/model-icons",
+        "franklinjavier/uia/part-transition",
+        "franklinjavier/uia/search-results",
+        "franklinjavier/uia/theme",
+        "franklinjavier/uia/tool-line",
+        "franklinjavier/uia/widget",
+        "trace"
+      ],
+      "files": [
+        {
+          "path": "src/examples/assistant/assistant.tsx",
+          "type": "registry:file",
+          "target": "~/src/examples/assistant/assistant.tsx"
+        },
+        {
+          "path": "src/examples/assistant/scripts.ts",
+          "type": "registry:file",
+          "target": "~/src/examples/assistant/scripts.ts"
+        },
+        {
+          "path": "src/examples/assistant/tools.tsx",
+          "type": "registry:file",
+          "target": "~/src/examples/assistant/tools.tsx"
+        }
+      ]
+    },
+    {
       "name": "chat",
       "type": "registry:block",
       "title": "Chat",
@@ -980,6 +1183,20 @@
         "franklinjavier/uia/draft-card",
         "franklinjavier/uia/part-transition",
         "franklinjavier/uia/tool-line"
+      ]
+    },
+    {
+      "name": "examples",
+      "type": "registry:block",
+      "title": "Examples",
+      "description": "Every reference widget, to read, run and adapt.",
+      "author": "uia",
+      "registryDependencies": [
+        "franklinjavier/uia/example-assistant",
+        "franklinjavier/uia/example-model-router",
+        "franklinjavier/uia/example-agent-runtime",
+        "franklinjavier/uia/example-ai-spend",
+        "franklinjavier/uia/example-fleet-health"
       ]
     },
     {
@@ -1017,6 +1234,16 @@
           "path": "skills/uia/references/pitfalls.md",
           "type": "registry:file",
           "target": "~/.claude/skills/uia/references/pitfalls.md"
+        },
+        {
+          "path": "skills/uia/references/examples.md",
+          "type": "registry:file",
+          "target": "~/.claude/skills/uia/references/examples.md"
+        },
+        {
+          "path": "skills/uia/references/grammar.md",
+          "type": "registry:file",
+          "target": "~/.claude/skills/uia/references/grammar.md"
         }
       ]
     },

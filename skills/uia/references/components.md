@@ -100,6 +100,24 @@ for ranges like 1D/1W/1M) or `"sans"` (view switches).
 `StatusDot tone` and `StatusBadge tone` with tones `neutral | success | warning |
 info | destructive | brand | attention`. Pulse only for live states.
 
+### MeterBar (`meter-bar`)
+A value against its limit, with the limit visible. One segment for a plain
+meter, several for a breakdown; `markers` label thresholds; `highlighted`
+fades the other segments (link it to the list's hover).
+
+```tsx
+<MeterBar
+  max={1500}
+  segments={models.map((m) => ({ id: m.id, value: m.cost, color: m.color }))}
+  markers={[{ value: 1200, label: "80%" }, { value: 1500, label: "Budget" }]}
+  highlighted={hovered}
+/>
+```
+
+### Sparkline (`sparkline`)
+`<Sparkline values={series} />` — line over a soft area, dashed mean, last
+point marked. Pair with a big number and an eyebrow for the window ("Last 64 s").
+
 ### TickMeter (`tick-meter`)
 Progress as hairline ticks: `<TickMeter value={0.62} className="text-brand" />`.
 Colour = `currentColor`.
@@ -225,7 +243,8 @@ Button language:
 
 Foundation: `theme`, `font-inter`, `font-geist-mono`, `typeset`.
 Primitives: `button`, `select`, `bubble`, `code-block`, `questionnaire`, `spinner`, `message-scroller`.
-System: `widget`, `stat`, `segmented`, `status`, `tick-meter`, `number-ticker`, `agent-orb`, `model-icons`.
+System: `widget`, `stat`, `segmented`, `status`, `tick-meter`, `meter-bar`, `sparkline`, `number-ticker`, `agent-orb`, `model-icons`.
+Examples: `example-assistant`, `example-model-router`, `example-agent-runtime`, `example-ai-spend`, `example-fleet-health` (bundle: `examples`).
 Generative UI: `action-card`, `ask-user`, `confirmation`, `draft-card`, `part-transition`, `tool-line`, `reasoning`, `sources`, `search-results`, `markdown`.
 Chat: `agent-chat`, `chat-thread`, `chat-turn`, `turn-actions`, `composer`, `chat-empty`, `chat-status`.
 Lib: `motion`, `ai`, `url`, `highlighter`.

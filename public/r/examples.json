@@ -1,0 +1,15 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "examples",
+  "title": "Examples",
+  "author": "uia",
+  "description": "Every reference widget, to read, run and adapt.",
+  "registryDependencies": [
+    "franklinjavier/uia/example-assistant",
+    "franklinjavier/uia/example-model-router",
+    "franklinjavier/uia/example-agent-runtime",
+    "franklinjavier/uia/example-ai-spend",
+    "franklinjavier/uia/example-fleet-health"
+  ],
+  "type": "registry:block"
+}

@@ -19,19 +19,26 @@ to compose the existing pieces so the result looks like the designer built it.
    how systems drift. Check the setup once: the main CSS imports
    `./typeset.css` after Tailwind, and the app is wrapped in
    `TooltipProvider`; add whichever is missing.
-2. **Pick the pattern before the pixels.** Is this a widget, a chat, or a
+2. **Start from the closest example.** uia ships complete widgets built by
+   the designer (`references/examples.md`; install with
+   `npx shadcn@latest add franklinjavier/uia/examples`). Open the one closest
+   to the request, render it, and copy its structure — anatomy, panel split,
+   spacing, the pieces that carry the data — then change the content. The
+   moves behind them are in `references/grammar.md`. Rules alone don't make
+   screens look related; imitating the examples does.
+3. **Pick the pattern before the pixels.** Is this a widget, a chat, or a
    moment inside a chat? For anything where the agent needs the person, read
    `references/hitl.md` first; the pattern decides the components.
-3. **Compose parts, don't restyle them.** Every component is a set of parts
+4. **Compose parts, don't restyle them.** Every component is a set of parts
    (`Widget` → `WidgetHeader`/`WidgetPanel`/`WidgetFooter`, `ActionCard` →
    `ActionCardHeader`/`…Status`/`…Panel`/`…Actions`). Arrange parts and pass
    `className` for layout only (gap, width, padding). If you are overriding
    colours, radii or font sizes, stop: use a token or a variant instead
    (`references/tokens.md`).
-4. **Use the tokens by meaning.** `brand` = the primary action (ink).
+5. **Use the tokens by meaning.** `brand` = the primary action (ink).
    `attention` = something waits on the person. Semantic tones only for state.
    Never use a colour because it looks nice.
-5. **Verify in the browser**, light and dark, by walking the real flow (see
+6. **Verify in the browser**, light and dark, by walking the real flow (see
    the checklist below). Most of what makes uia feel right — spacing, motion,
    states — is only visible when it runs.
 
@@ -117,6 +124,14 @@ claim something happened that didn't. Details and copy rules:
 
 ## Before you say it's done
 
+**Review it like the designer would.** Screenshot your screen and the
+closest example side by side, light and dark, and ask: does it look like
+the same person made both? Check the hero (one number, its limit visible,
+a meta line), the list (titled, eyebrow headers, linked to the visual),
+the footer (live meta, one action), the spacing, and that nothing on screen
+is decoration. Fix what differs before reporting.
+
+- [ ] Started from the closest example and kept its structure.
 - [ ] Every piece came from the project or the registry; no hand-made lookalikes.
 - [ ] No hard-coded colours, radii or font sizes; tokens and variants only.
 - [ ] Ran it: light **and** dark, at the real container size.
@@ -130,6 +145,8 @@ claim something happened that didn't. Details and copy rules:
 
 ## References
 
+- `references/examples.md` — the reference widgets: what each shows, how to install and copy them. Open first.
+- `references/grammar.md` — the moves the examples are made of: anatomy, hero, lists as legends, data viz, copy, spacing.
 - `references/tokens.md` — every token, what it means, when to use it.
 - `references/components.md` — catalog: what to reach for, imports, examples, registry item names.
 - `references/hitl.md` — the human-in-the-loop patterns, states and copy.

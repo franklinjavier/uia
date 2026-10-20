@@ -5,7 +5,7 @@ generative-UI parts for human-in-the-loop flows, and a composable chat kit.
 
 ```bash
 bun install
-bun run dev            # playground: Model router · Assistant · Full chat
+bun run dev            # playground: every example widget + full chat
 ```
 
 ## For coding agents
@@ -19,8 +19,10 @@ Building UI with uia in another project? Do this first:
 2. **Install the whole system** from this repo (private: needs `gh auth login`).
    It brings tokens, fonts, components and the agent skill:
    ```bash
-   npx shadcn@latest add franklinjavier/uia/uia --overwrite
+   npx shadcn@latest add franklinjavier/uia/uia franklinjavier/uia/examples --overwrite
    ```
+   `examples` adds the reference widgets to `src/examples/`: start every new
+   screen from the closest one.
 3. **Read `.claude/skills/uia/SKILL.md` before writing any UI** and follow it.
    It has the setup checks (`typeset.css`, `TooltipProvider`), the patterns
    (widgets, chat, human-in-the-loop), the tokens and the known pitfalls. The
@@ -32,15 +34,15 @@ Building UI with uia in another project? Do this first:
 src/components/
   ui/            shadcn primitives (owned; a few tuned: button, select, bubble,
                  code-block, questionnaire, spinner, message-scroller)
-  ds/            system pieces: Widget, Stat, Segmented, Status, TickMeter,
-                 NumberTicker, AgentOrb, ModelIcon
+  ds/            system pieces: Widget (+ WidgetList), Stat, Segmented, Status,
+                 TickMeter, MeterBar, Sparkline, NumberTicker, AgentOrb, ModelIcon
   parts/         generative-UI parts: ActionCard*, ResolvedRow, TranscriptEvent,
                  AskUser, Confirmation, DraftCard, PartTransition, ToolLine,
                  Reasoning, Sources, SearchResults, Markdown
   chat/          chat kit: useAgentChat, tool registry, ChatThread, ChatTurn,
                  Composer*, ChatEmpty, ChatStatus, TurnActions
 src/lib/         motion, ai, url, highlighter
-src/playground/  demos only — never imported by components/
+src/examples/    reference widgets (registry blocks) — never imported by components/
 ```
 
 Every piece is a composable part (`data-slot`, `className`, props passthrough).
@@ -103,11 +105,12 @@ npx shadcn@latest add @uia/chat
 | --- | --- |
 | Foundation | `theme`, `font-inter`, `font-geist-mono`, `typeset` |
 | Primitives (tuned) | `button`, `select`, `bubble`, `code-block`, `questionnaire`, `spinner`, `message-scroller` |
-| System | `widget`, `stat`, `segmented`, `status`, `tick-meter`, `number-ticker`, `agent-orb`, `model-icons` |
+| System | `widget`, `stat`, `segmented`, `status`, `tick-meter`, `meter-bar`, `sparkline`, `number-ticker`, `agent-orb`, `model-icons` |
 | Generative UI | `action-card`, `ask-user`, `confirmation`, `draft-card`, `part-transition`, `tool-line`, `reasoning`, `sources`, `search-results`, `markdown` |
 | Chat | `agent-chat`, `chat-thread`, `chat-turn`, `turn-actions`, `composer`, `chat-empty`, `chat-status` |
 | Bundles | `uia`, `chat`, `hitl` |
 | Lib | `motion`, `ai`, `url`, `highlighter` |
+| Examples | `examples` (bundle), `example-assistant`, `example-model-router`, `example-agent-runtime`, `example-ai-spend`, `example-fleet-health` |
 | Agent skill | `skill` |
 
 ```bash
@@ -143,4 +146,4 @@ const chat = useAgentChat<MyMessage>({ transport, tools })
 <ChatTurn message={m} tools={tools} phase={chat.phase} … />
 ```
 
-See `src/playground/assistant/tools.tsx` for a complete example.
+See `src/examples/assistant/tools.tsx` for a complete example.

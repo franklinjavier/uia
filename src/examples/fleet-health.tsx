@@ -15,6 +15,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { NumberTicker } from "@/components/ds/number-ticker"
 import { Segmented, SegmentedItem } from "@/components/ds/segmented"
+import { Sparkline } from "@/components/ds/sparkline"
 import { Stat, StatLabel, StatMeta, StatUnit, StatValue } from "@/components/ds/stat"
 import { StatusBadge, StatusDot } from "@/components/ds/status"
 import { TickMeter } from "@/components/ds/tick-meter"
@@ -207,7 +208,10 @@ export function FleetHealth() {
             </StatValue>
             <StatMeta>vs 64 s ago · TTFT p50 218 ms · 5 models</StatMeta>
           </Stat>
-          <Sparkline values={tokens} className="mt-4 h-12 w-40 shrink-0" />
+          <div className="mt-4 flex shrink-0 flex-col items-end gap-1">
+            <Sparkline values={tokens} />
+            <span className="eyebrow text-muted-foreground">Last {Math.round((tokens.length * TICK) / 1000)} s</span>
+          </div>
         </div>
 
         <div className="grid grid-cols-3 gap-6 border-t border-dashed border-border pt-5">
@@ -268,37 +272,6 @@ function Meter({ label, value, unit, ratio }: { label: string; value: string; un
       </StatValue>
       <TickMeter value={ratio} ticks={24} className="text-chart-1" />
     </Stat>
-  )
-}
-
-/** A live line with a soft area, last point marked. */
-function Sparkline({ values, className }: { values: number[]; className?: string }) {
-  const id = React.useId()
-  const w = 160
-  const h = 48
-  const lo = Math.min(...values)
-  const hi = Math.max(...values)
-  const x = (i: number) => (i / (values.length - 1)) * (w - 4)
-  const y = (v: number) => 4 + (1 - (v - lo) / (hi - lo || 1)) * (h - 10)
-  const line = values.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ")
-  const mean = y(avg(values))
-
-  return (
-    <div className={cn("flex flex-col items-end gap-1", className)}>
-      <svg viewBox={`0 0 ${w} ${h}`} className="h-full w-full overflow-visible" aria-hidden>
-        <defs>
-          <linearGradient id={id} x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" stopColor="var(--chart-1)" stopOpacity="0.18" />
-            <stop offset="1" stopColor="var(--chart-1)" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        <line x1={0} x2={w - 4} y1={mean} y2={mean} stroke="var(--border)" strokeDasharray="2 3" />
-        <path d={`${line} L${x(values.length - 1)},${h} L0,${h} Z`} fill={`url(#${id})`} />
-        <path d={line} fill="none" stroke="var(--chart-1)" strokeWidth={1.5} strokeLinejoin="round" />
-        <circle cx={x(values.length - 1)} cy={y(values.at(-1)!)} r={2.5} fill="var(--chart-1)" />
-      </svg>
-      <span className="eyebrow text-muted-foreground">Last {Math.round((values.length * TICK) / 1000)} s</span>
-    </div>
   )
 }
 
