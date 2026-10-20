@@ -40,7 +40,7 @@ A self-contained tool surface: header → panels → footer.
   </WidgetHeader>
   <WidgetPanel>…main content…</WidgetPanel>
   <WidgetPanel>…a second, separate block…</WidgetPanel>
-  <WidgetFooter className="pl-5"><WidgetMeta>Synced 2m ago</WidgetMeta></WidgetFooter>
+  <WidgetFooter><WidgetMeta>Synced 2m ago</WidgetMeta></WidgetFooter>
 </Widget>
 ```
 
