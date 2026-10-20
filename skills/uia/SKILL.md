@@ -17,8 +17,11 @@ to compose the existing pieces so the result looks like the designer built it.
    before writing anything (`npx shadcn@latest add franklinjavier/uia/<item>`,
    items listed in `references/components.md`). Writing a lookalike by hand is
    how systems drift. Check the setup once: the main CSS imports
-   `./typeset.css` after Tailwind, and the app is wrapped in
-   `TooltipProvider`; add whichever is missing.
+   `./typeset.css` after Tailwind, the app is wrapped in `TooltipProvider`,
+   and `AGENTS.md` has a "UI: uia design system" section pointing at
+   `.agents/skills/uia/SKILL.md` (with `CLAUDE.md` importing `@AGENTS.md`)
+   so the next agent finds this skill; add whichever is missing, appending,
+   never replacing.
 2. **Start from the closest example.** uia ships complete widgets built by
    the designer (`references/examples.md`; install with
    `npx shadcn@latest add franklinjavier/uia/examples`). Open the one closest

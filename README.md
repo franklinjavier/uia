@@ -23,11 +23,21 @@ Building UI with uia in another project? Do this first:
    ```
    `examples` adds the reference widgets to `src/examples/`: start every new
    screen from the closest one.
-3. **Read the skill before writing any UI** and follow it:
-   `.claude/skills/uia/SKILL.md` (or `.agents/skills/uia/SKILL.md`).
-   It has the setup checks (`typeset.css`, `TooltipProvider`), the patterns
-   (widgets, chat, human-in-the-loop), the tokens and the known pitfalls. The
-   skill is installed mid-session, so it may not load on its own: open it.
+3. **Point the project's agents at the skill** (once). The skill lands in
+   `.agents/skills/uia/`. Add this section to `AGENTS.md` (create it if
+   missing; never replace what's there):
+   ```md
+   ## UI: uia design system
+   Before building or changing any UI, read `.agents/skills/uia/SKILL.md`
+   and follow it. Start every screen from the closest example in `src/examples/`.
+   ```
+   And make `CLAUDE.md` import it (add the line if the file exists):
+   ```md
+   @AGENTS.md
+   ```
+4. **Read the skill now** (`.agents/skills/uia/SKILL.md`) before writing any
+   UI. It has the setup checks (`typeset.css`, `TooltipProvider`), the
+   patterns, the tokens and the known pitfalls.
 
 ## Layers
 
@@ -127,9 +137,12 @@ npx shadcn@latest view franklinjavier/uia/chat  # inspect before installing
 (patterns, tokens, HITL copy, pitfalls). It comes with the `uia` bundle, or:
 
 ```bash
-npx shadcn@latest add franklinjavier/uia/skill          # → .claude/skills/uia/ (Claude Code)
-npx shadcn@latest add franklinjavier/uia/skill-agents   # → .agents/skills/uia/ (Codex and others)
+npx shadcn@latest add franklinjavier/uia/skill   # → .agents/skills/uia/
 ```
+
+One copy for every agent: `AGENTS.md` points at it (Codex, Cursor and most
+agents read that file) and `CLAUDE.md` imports `AGENTS.md` for Claude Code.
+See step 3 of "For coding agents" for the two snippets.
 
 ### Rendering your own tools
 

@@ -303,24 +303,17 @@ const typeset = {
   docs: 'Import it after Tailwind in your main CSS file: @import "./typeset.css";',
 }
 
-// The agent skill: lands in the project's .claude/skills so any agent working
-// there builds with uia the way the designer would.
+// The agent skill: one copy, in .agents/skills (where Codex and most agents
+// look). Claude Code reaches it through CLAUDE.md → AGENTS.md; the registry
+// never writes those two files, since projects already have their own.
 const SKILL_FILES = ["SKILL.md", "references/tokens.md", "references/components.md", "references/hitl.md", "references/chat.md", "references/pitfalls.md", "references/examples.md", "references/grammar.md"]
 const skill = {
   name: "skill",
   type: "registry:file",
   title: "uia skill",
   description: "Agent skill that teaches coding agents to build chat, generative UI and human-in-the-loop interfaces with uia.",
-  files: SKILL_FILES.map((f) => ({ path: `skills/uia/${f}`, type: "registry:file", target: `~/.claude/skills/uia/${f}` })),
-}
-
-// The same skill where Codex and other agents look (.agents/skills).
-const skillAgents = {
-  ...skill,
-  name: "skill-agents",
-  title: "uia skill (.agents)",
-  description: "The uia agent skill for Codex and agents that read .agents/skills.",
   files: SKILL_FILES.map((f) => ({ path: `skills/uia/${f}`, type: "registry:file", target: `~/.agents/skills/uia/${f}` })),
+  docs: "Point your agents at it: add the uia section to AGENTS.md, and make CLAUDE.md import AGENTS.md (see the README).",
 }
 
 /* ------------------------------ output ----------------------------- */
@@ -349,7 +342,6 @@ const items = [
   }),
   ...BUNDLES,
   skill,
-  skillAgents,
   {
     name: "uia",
     type: "registry:base",
@@ -360,7 +352,7 @@ const items = [
       "font-inter", "font-geist-mono", "theme", "typeset",
       ...UI_OVERRIDES.map(([n]) => n),
       "widget", "stat", "segmented", "status", "tick-meter", "meter-bar", "sparkline", "stage-track", "number-ticker", "agent-orb", "model-icons",
-      "hitl", "reasoning", "sources", "search-results", "markdown", "chat", "skill", "skill-agents",
+      "hitl", "reasoning", "sources", "search-results", "markdown", "chat", "skill",
     ].map((n) => `${NS}/${n}`),
   },
 ]
