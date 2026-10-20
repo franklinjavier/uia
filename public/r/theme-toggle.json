@@ -14,7 +14,7 @@
   ],
   "files": [
     {
-      "path": "src/components/app/theme-toggle.tsx",
+      "path": "registry/app/theme-toggle.tsx",
       "content": "import { MoonIcon, SunIcon } from \"lucide-react\"\n\nimport { useTheme } from \"@/components/theme-provider\"\nimport { Button } from \"@/components/ui/button\"\n\n// ThemeToggle: every app carries its own (foot of the side nav, header on\n// phones). A ghost icon button: sun in dark, moon in light.\nfunction ThemeToggle({ className }: { className?: string }) {\n  const { theme, setTheme } = useTheme()\n  const dark =\n    theme === \"dark\" ||\n    (theme === \"system\" && window.matchMedia(\"(prefers-color-scheme: dark)\").matches)\n  return (\n    <Button\n      size=\"icon-sm\"\n      variant=\"ghost\"\n      className={className ?? \"text-muted-foreground\"}\n      aria-label={dark ? \"Light theme\" : \"Dark theme\"}\n      onClick={() => setTheme(dark ? \"light\" : \"dark\")}\n    >\n      {dark ? <SunIcon /> : <MoonIcon />}\n    </Button>\n  )\n}\n\nexport { ThemeToggle }\n",
       "type": "registry:component",
       "target": "@components/app/theme-toggle.tsx"

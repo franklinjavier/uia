@@ -6,7 +6,10 @@
   ],
   "compilerOptions": {
     "paths": {
-      "@/*": ["./src/*"]
+      "@/components/*": ["./registry/*"],
+      "@/lib/*": ["./registry/lib/*"],
+      "@/hooks/*": ["./registry/hooks/*"],
+      "@/examples/*": ["./registry/examples/*"]
     }
   }
 }

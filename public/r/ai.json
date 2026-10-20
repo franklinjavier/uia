@@ -10,7 +10,7 @@
   ],
   "files": [
     {
-      "path": "src/lib/ai.ts",
+      "path": "registry/lib/ai.ts",
       "content": "import type { UIMessage } from \"ai\"\n\nexport { createChat } from \"@shadcn/helpers/ai-sdk\"\n\n/** Plain text of a message, joining its text parts. */\nexport function getMessageText(message: UIMessage) {\n  return message.parts\n    .map((part) => (part.type === \"text\" ? part.text : \"\"))\n    .join(\"\")\n}\n",
       "type": "registry:lib",
       "target": "@lib/ai.ts"

@@ -187,7 +187,7 @@
       "description": "shadcn/typeset, tuned for streaming chat (no tabular-nums on tables).",
       "files": [
         {
-          "path": "src/typeset.css",
+          "path": "registry/theme/typeset.css",
           "type": "registry:file",
           "target": "~/src/typeset.css"
         }
@@ -210,7 +210,7 @@
       ],
       "files": [
         {
-          "path": "src/components/ui/button.tsx",
+          "path": "registry/ui/button.tsx",
           "type": "registry:ui",
           "target": "@ui/button.tsx"
         }
@@ -232,7 +232,7 @@
       ],
       "files": [
         {
-          "path": "src/components/ui/select.tsx",
+          "path": "registry/ui/select.tsx",
           "type": "registry:ui",
           "target": "@ui/select.tsx"
         }
@@ -254,7 +254,7 @@
       ],
       "files": [
         {
-          "path": "src/components/ui/bubble.tsx",
+          "path": "registry/ui/bubble.tsx",
           "type": "registry:ui",
           "target": "@ui/bubble.tsx"
         }
@@ -277,7 +277,7 @@
       ],
       "files": [
         {
-          "path": "src/components/ui/code-block.tsx",
+          "path": "registry/ui/code-block.tsx",
           "type": "registry:ui",
           "target": "@ui/code-block.tsx"
         }
@@ -300,7 +300,7 @@
       ],
       "files": [
         {
-          "path": "src/components/ui/questionnaire.tsx",
+          "path": "registry/ui/questionnaire.tsx",
           "type": "registry:ui",
           "target": "@ui/questionnaire.tsx"
         }
@@ -320,7 +320,7 @@
       ],
       "files": [
         {
-          "path": "src/components/ui/spinner.tsx",
+          "path": "registry/ui/spinner.tsx",
           "type": "registry:ui",
           "target": "@ui/spinner.tsx"
         }
@@ -343,7 +343,7 @@
       ],
       "files": [
         {
-          "path": "src/components/ui/message-scroller.tsx",
+          "path": "registry/ui/message-scroller.tsx",
           "type": "registry:ui",
           "target": "@ui/message-scroller.tsx"
         }
@@ -360,7 +360,7 @@
       ],
       "files": [
         {
-          "path": "src/lib/motion.ts",
+          "path": "registry/lib/motion.ts",
           "type": "registry:lib",
           "target": "@lib/motion.ts"
         }
@@ -374,7 +374,7 @@
       "author": "uia",
       "files": [
         {
-          "path": "src/lib/url.ts",
+          "path": "registry/lib/url.ts",
           "type": "registry:lib",
           "target": "@lib/url.ts"
         }
@@ -392,7 +392,7 @@
       ],
       "files": [
         {
-          "path": "src/lib/ai.ts",
+          "path": "registry/lib/ai.ts",
           "type": "registry:lib",
           "target": "@lib/ai.ts"
         }
@@ -409,12 +409,12 @@
       ],
       "files": [
         {
-          "path": "src/lib/highlighter.tsx",
+          "path": "registry/lib/highlighter.tsx",
           "type": "registry:lib",
           "target": "@lib/highlighter.tsx"
         },
         {
-          "path": "src/hooks/use-highlighted-code.ts",
+          "path": "registry/hooks/use-highlighted-code.ts",
           "type": "registry:lib",
           "target": "@hooks/use-highlighted-code.ts"
         }
@@ -431,7 +431,7 @@
       ],
       "files": [
         {
-          "path": "src/components/ds/widget.tsx",
+          "path": "registry/ds/widget.tsx",
           "type": "registry:component",
           "target": "@components/ds/widget.tsx"
         }
@@ -448,7 +448,7 @@
       ],
       "files": [
         {
-          "path": "src/components/ds/stat.tsx",
+          "path": "registry/ds/stat.tsx",
           "type": "registry:component",
           "target": "@components/ds/stat.tsx"
         }
@@ -470,7 +470,7 @@
       ],
       "files": [
         {
-          "path": "src/components/ds/segmented.tsx",
+          "path": "registry/ds/segmented.tsx",
           "type": "registry:component",
           "target": "@components/ds/segmented.tsx"
         }
@@ -490,7 +490,7 @@
       ],
       "files": [
         {
-          "path": "src/components/ds/status.tsx",
+          "path": "registry/ds/status.tsx",
           "type": "registry:component",
           "target": "@components/ds/status.tsx"
         }
@@ -507,7 +507,7 @@
       ],
       "files": [
         {
-          "path": "src/components/ds/tick-meter.tsx",
+          "path": "registry/ds/tick-meter.tsx",
           "type": "registry:component",
           "target": "@components/ds/tick-meter.tsx"
         }
@@ -527,7 +527,7 @@
       ],
       "files": [
         {
-          "path": "src/components/ds/number-ticker.tsx",
+          "path": "registry/ds/number-ticker.tsx",
           "type": "registry:component",
           "target": "@components/ds/number-ticker.tsx"
         }
@@ -544,7 +544,7 @@
       ],
       "files": [
         {
-          "path": "src/components/ds/model-icons.tsx",
+          "path": "registry/ds/model-icons.tsx",
           "type": "registry:component",
           "target": "@components/ds/model-icons.tsx"
         }
@@ -564,7 +564,7 @@
       ],
       "files": [
         {
-          "path": "src/components/ds/agent-orb.tsx",
+          "path": "registry/ds/agent-orb.tsx",
           "type": "registry:component",
           "target": "@components/ds/agent-orb.tsx"
         }
@@ -585,7 +585,7 @@
       ],
       "files": [
         {
-          "path": "src/components/ds/meter-bar.tsx",
+          "path": "registry/ds/meter-bar.tsx",
           "type": "registry:component",
           "target": "@components/ds/meter-bar.tsx"
         }
@@ -606,7 +606,7 @@
       ],
       "files": [
         {
-          "path": "src/components/ds/stage-track.tsx",
+          "path": "registry/ds/stage-track.tsx",
           "type": "registry:component",
           "target": "@components/ds/stage-track.tsx"
         }
@@ -623,7 +623,7 @@
       ],
       "files": [
         {
-          "path": "src/components/ds/sparkline.tsx",
+          "path": "registry/ds/sparkline.tsx",
           "type": "registry:component",
           "target": "@components/ds/sparkline.tsx"
         }
@@ -642,7 +642,7 @@
       ],
       "files": [
         {
-          "path": "src/components/ds/task-list.tsx",
+          "path": "registry/ds/task-list.tsx",
           "type": "registry:component",
           "target": "@components/ds/task-list.tsx"
         }
@@ -663,7 +663,7 @@
       ],
       "files": [
         {
-          "path": "src/components/ds/bar-series.tsx",
+          "path": "registry/ds/bar-series.tsx",
           "type": "registry:component",
           "target": "@components/ds/bar-series.tsx"
         }
@@ -687,7 +687,7 @@
       ],
       "files": [
         {
-          "path": "src/components/parts/action-card.tsx",
+          "path": "registry/parts/action-card.tsx",
           "type": "registry:component",
           "target": "@components/parts/action-card.tsx"
         }
@@ -709,7 +709,7 @@
       ],
       "files": [
         {
-          "path": "src/components/parts/decision-card.tsx",
+          "path": "registry/parts/decision-card.tsx",
           "type": "registry:component",
           "target": "@components/parts/decision-card.tsx"
         }
@@ -734,7 +734,7 @@
       ],
       "files": [
         {
-          "path": "src/components/parts/plan.tsx",
+          "path": "registry/parts/plan.tsx",
           "type": "registry:component",
           "target": "@components/parts/plan.tsx"
         }
@@ -758,7 +758,7 @@
       ],
       "files": [
         {
-          "path": "src/components/parts/connect-prompt.tsx",
+          "path": "registry/parts/connect-prompt.tsx",
           "type": "registry:component",
           "target": "@components/parts/connect-prompt.tsx"
         }
@@ -779,7 +779,7 @@
       ],
       "files": [
         {
-          "path": "src/components/parts/attachment.tsx",
+          "path": "registry/parts/attachment.tsx",
           "type": "registry:component",
           "target": "@components/parts/attachment.tsx"
         }
@@ -797,7 +797,7 @@
       ],
       "files": [
         {
-          "path": "src/components/parts/findings.tsx",
+          "path": "registry/parts/findings.tsx",
           "type": "registry:component",
           "target": "@components/parts/findings.tsx"
         }
@@ -815,7 +815,7 @@
       ],
       "files": [
         {
-          "path": "src/components/parts/chart-card.tsx",
+          "path": "registry/parts/chart-card.tsx",
           "type": "registry:component",
           "target": "@components/parts/chart-card.tsx"
         }
@@ -840,7 +840,7 @@
       ],
       "files": [
         {
-          "path": "src/components/parts/ask-user.tsx",
+          "path": "registry/parts/ask-user.tsx",
           "type": "registry:component",
           "target": "@components/parts/ask-user.tsx"
         }
@@ -859,7 +859,7 @@
       ],
       "files": [
         {
-          "path": "src/components/parts/confirmation.tsx",
+          "path": "registry/parts/confirmation.tsx",
           "type": "registry:component",
           "target": "@components/parts/confirmation.tsx"
         }
@@ -881,7 +881,7 @@
       ],
       "files": [
         {
-          "path": "src/components/parts/draft-card.tsx",
+          "path": "registry/parts/draft-card.tsx",
           "type": "registry:component",
           "target": "@components/parts/draft-card.tsx"
         }
@@ -903,7 +903,7 @@
       ],
       "files": [
         {
-          "path": "src/components/parts/decision-chip.tsx",
+          "path": "registry/parts/decision-chip.tsx",
           "type": "registry:component",
           "target": "@components/parts/decision-chip.tsx"
         }
@@ -926,7 +926,7 @@
       ],
       "files": [
         {
-          "path": "src/components/parts/preview-approval.tsx",
+          "path": "registry/parts/preview-approval.tsx",
           "type": "registry:component",
           "target": "@components/parts/preview-approval.tsx"
         }
@@ -947,7 +947,7 @@
       ],
       "files": [
         {
-          "path": "src/components/parts/part-transition.tsx",
+          "path": "registry/parts/part-transition.tsx",
           "type": "registry:component",
           "target": "@components/parts/part-transition.tsx"
         }
@@ -968,7 +968,7 @@
       ],
       "files": [
         {
-          "path": "src/components/parts/tool-line.tsx",
+          "path": "registry/parts/tool-line.tsx",
           "type": "registry:component",
           "target": "@components/parts/tool-line.tsx"
         }
@@ -986,7 +986,7 @@
       ],
       "files": [
         {
-          "path": "src/components/parts/reasoning.tsx",
+          "path": "registry/parts/reasoning.tsx",
           "type": "registry:component",
           "target": "@components/parts/reasoning.tsx"
         }
@@ -1008,7 +1008,7 @@
       ],
       "files": [
         {
-          "path": "src/components/parts/sources.tsx",
+          "path": "registry/parts/sources.tsx",
           "type": "registry:component",
           "target": "@components/parts/sources.tsx"
         }
@@ -1026,7 +1026,7 @@
       ],
       "files": [
         {
-          "path": "src/components/parts/search-results.tsx",
+          "path": "registry/parts/search-results.tsx",
           "type": "registry:component",
           "target": "@components/parts/search-results.tsx"
         }
@@ -1050,12 +1050,12 @@
       ],
       "files": [
         {
-          "path": "src/components/parts/markdown.tsx",
+          "path": "registry/parts/markdown.tsx",
           "type": "registry:component",
           "target": "@components/parts/markdown.tsx"
         },
         {
-          "path": "src/components/markdown-code.tsx",
+          "path": "registry/markdown-code.tsx",
           "type": "registry:component",
           "target": "@components/markdown-code.tsx"
         }
@@ -1072,7 +1072,7 @@
       ],
       "files": [
         {
-          "path": "src/components/theme-provider.tsx",
+          "path": "registry/theme-provider.tsx",
           "type": "registry:component",
           "target": "@components/theme-provider.tsx"
         }
@@ -1093,17 +1093,17 @@
       ],
       "files": [
         {
-          "path": "src/components/chat/use-agent-chat.ts",
+          "path": "registry/chat/use-agent-chat.ts",
           "type": "registry:hook",
           "target": "@components/chat/use-agent-chat.ts"
         },
         {
-          "path": "src/components/chat/tool-registry.ts",
+          "path": "registry/chat/tool-registry.ts",
           "type": "registry:hook",
           "target": "@components/chat/tool-registry.ts"
         },
         {
-          "path": "src/components/chat/chat-state.ts",
+          "path": "registry/chat/chat-state.ts",
           "type": "registry:hook",
           "target": "@components/chat/chat-state.ts"
         }
@@ -1124,7 +1124,7 @@
       ],
       "files": [
         {
-          "path": "src/components/chat/chat-thread.tsx",
+          "path": "registry/chat/chat-thread.tsx",
           "type": "registry:component",
           "target": "@components/chat/chat-thread.tsx"
         }
@@ -1159,7 +1159,7 @@
       ],
       "files": [
         {
-          "path": "src/components/chat/chat-turn.tsx",
+          "path": "registry/chat/chat-turn.tsx",
           "type": "registry:component",
           "target": "@components/chat/chat-turn.tsx"
         }
@@ -1182,7 +1182,7 @@
       ],
       "files": [
         {
-          "path": "src/components/chat/turn-actions.tsx",
+          "path": "registry/chat/turn-actions.tsx",
           "type": "registry:component",
           "target": "@components/chat/turn-actions.tsx"
         }
@@ -1204,7 +1204,7 @@
       ],
       "files": [
         {
-          "path": "src/components/chat/composer.tsx",
+          "path": "registry/chat/composer.tsx",
           "type": "registry:component",
           "target": "@components/chat/composer.tsx"
         }
@@ -1224,7 +1224,7 @@
       ],
       "files": [
         {
-          "path": "src/components/chat/chat-empty.tsx",
+          "path": "registry/chat/chat-empty.tsx",
           "type": "registry:component",
           "target": "@components/chat/chat-empty.tsx"
         }
@@ -1243,7 +1243,7 @@
       ],
       "files": [
         {
-          "path": "src/components/chat/chat-status.tsx",
+          "path": "registry/chat/chat-status.tsx",
           "type": "registry:component",
           "target": "@components/chat/chat-status.tsx"
         }
@@ -1266,7 +1266,7 @@
       ],
       "files": [
         {
-          "path": "src/components/chat/chat-error.tsx",
+          "path": "registry/chat/chat-error.tsx",
           "type": "registry:component",
           "target": "@components/chat/chat-error.tsx"
         }
@@ -1288,7 +1288,7 @@
       ],
       "files": [
         {
-          "path": "src/components/chat/chat-pill.tsx",
+          "path": "registry/chat/chat-pill.tsx",
           "type": "registry:component",
           "target": "@components/chat/chat-pill.tsx"
         }
@@ -1315,7 +1315,7 @@
       ],
       "files": [
         {
-          "path": "src/components/widgets/ai-spend.tsx",
+          "path": "registry/widgets/ai-spend.tsx",
           "type": "registry:component",
           "target": "@components/widgets/ai-spend.tsx"
         }
@@ -1347,7 +1347,7 @@
       ],
       "files": [
         {
-          "path": "src/components/widgets/fleet-health.tsx",
+          "path": "registry/widgets/fleet-health.tsx",
           "type": "registry:component",
           "target": "@components/widgets/fleet-health.tsx"
         }
@@ -1376,7 +1376,7 @@
       ],
       "files": [
         {
-          "path": "src/components/widgets/model-evals.tsx",
+          "path": "registry/widgets/model-evals.tsx",
           "type": "registry:component",
           "target": "@components/widgets/model-evals.tsx"
         }
@@ -1406,7 +1406,7 @@
       ],
       "files": [
         {
-          "path": "src/components/widgets/model-router.tsx",
+          "path": "registry/widgets/model-router.tsx",
           "type": "registry:component",
           "target": "@components/widgets/model-router.tsx"
         }
@@ -1434,7 +1434,7 @@
       ],
       "files": [
         {
-          "path": "src/components/widgets/agent-runtime.tsx",
+          "path": "registry/widgets/agent-runtime.tsx",
           "type": "registry:component",
           "target": "@components/widgets/agent-runtime.tsx"
         }
@@ -1456,7 +1456,7 @@
       ],
       "files": [
         {
-          "path": "src/components/app/app-nav.tsx",
+          "path": "registry/app/app-nav.tsx",
           "type": "registry:component",
           "target": "@components/app/app-nav.tsx"
         }
@@ -1478,7 +1478,7 @@
       ],
       "files": [
         {
-          "path": "src/components/app/theme-toggle.tsx",
+          "path": "registry/app/theme-toggle.tsx",
           "type": "registry:component",
           "target": "@components/app/theme-toggle.tsx"
         }
@@ -1496,7 +1496,7 @@
       ],
       "files": [
         {
-          "path": "src/examples/model-router.tsx",
+          "path": "registry/examples/model-router.tsx",
           "type": "registry:file",
           "target": "~/src/examples/model-router.tsx"
         }
@@ -1514,7 +1514,7 @@
       ],
       "files": [
         {
-          "path": "src/examples/agent-runtime.tsx",
+          "path": "registry/examples/agent-runtime.tsx",
           "type": "registry:file",
           "target": "~/src/examples/agent-runtime.tsx"
         }
@@ -1532,7 +1532,7 @@
       ],
       "files": [
         {
-          "path": "src/examples/ai-spend.tsx",
+          "path": "registry/examples/ai-spend.tsx",
           "type": "registry:file",
           "target": "~/src/examples/ai-spend.tsx"
         }
@@ -1550,7 +1550,7 @@
       ],
       "files": [
         {
-          "path": "src/examples/model-evals.tsx",
+          "path": "registry/examples/model-evals.tsx",
           "type": "registry:file",
           "target": "~/src/examples/model-evals.tsx"
         }
@@ -1568,7 +1568,7 @@
       ],
       "files": [
         {
-          "path": "src/examples/fleet-health.tsx",
+          "path": "registry/examples/fleet-health.tsx",
           "type": "registry:file",
           "target": "~/src/examples/fleet-health.tsx"
         }
@@ -1606,22 +1606,22 @@
       ],
       "files": [
         {
-          "path": "src/examples/bottega/bottega.tsx",
+          "path": "registry/examples/bottega/bottega.tsx",
           "type": "registry:file",
           "target": "~/src/examples/bottega/bottega.tsx"
         },
         {
-          "path": "src/examples/bottega/conversation.tsx",
+          "path": "registry/examples/bottega/conversation.tsx",
           "type": "registry:file",
           "target": "~/src/examples/bottega/conversation.tsx"
         },
         {
-          "path": "src/examples/bottega/use-bottega.ts",
+          "path": "registry/examples/bottega/use-bottega.ts",
           "type": "registry:file",
           "target": "~/src/examples/bottega/use-bottega.ts"
         },
         {
-          "path": "src/examples/bottega/data.ts",
+          "path": "registry/examples/bottega/data.ts",
           "type": "registry:file",
           "target": "~/src/examples/bottega/data.ts"
         }
@@ -1668,27 +1668,27 @@
       ],
       "files": [
         {
-          "path": "src/examples/davinci2/davinci2.tsx",
+          "path": "registry/examples/davinci2/davinci2.tsx",
           "type": "registry:file",
           "target": "~/src/examples/davinci2/davinci2.tsx"
         },
         {
-          "path": "src/examples/davinci2/data.ts",
+          "path": "registry/examples/davinci2/data.ts",
           "type": "registry:file",
           "target": "~/src/examples/davinci2/data.ts"
         },
         {
-          "path": "src/examples/davinci/davinci.tsx",
+          "path": "registry/examples/davinci/davinci.tsx",
           "type": "registry:file",
           "target": "~/src/examples/davinci/davinci.tsx"
         },
         {
-          "path": "src/examples/davinci/cards.tsx",
+          "path": "registry/examples/davinci/cards.tsx",
           "type": "registry:file",
           "target": "~/src/examples/davinci/cards.tsx"
         },
         {
-          "path": "src/examples/davinci/data.ts",
+          "path": "registry/examples/davinci/data.ts",
           "type": "registry:file",
           "target": "~/src/examples/davinci/data.ts"
         }
@@ -1739,17 +1739,17 @@
       ],
       "files": [
         {
-          "path": "src/examples/assistant/assistant.tsx",
+          "path": "registry/examples/assistant/assistant.tsx",
           "type": "registry:file",
           "target": "~/src/examples/assistant/assistant.tsx"
         },
         {
-          "path": "src/examples/assistant/scripts.ts",
+          "path": "registry/examples/assistant/scripts.ts",
           "type": "registry:file",
           "target": "~/src/examples/assistant/scripts.ts"
         },
         {
-          "path": "src/examples/assistant/tools.tsx",
+          "path": "registry/examples/assistant/tools.tsx",
           "type": "registry:file",
           "target": "~/src/examples/assistant/tools.tsx"
         }

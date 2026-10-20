@@ -9,7 +9,7 @@
   ],
   "files": [
     {
-      "path": "src/components/ds/tick-meter.tsx",
+      "path": "registry/ds/tick-meter.tsx",
       "content": "import * as React from \"react\"\nimport { cn } from \"@/lib/utils\"\n\n// Progress as a row of hairline ticks. Colour comes from `currentColor`,\n// so set a text-* class (text-brand, text-chart-1…) on the meter; the\n// empty ticks are the same hue at 20%, so the track reads as one scale.\nfunction TickMeter({\n  value,\n  ticks = 48,\n  className,\n  ...props\n}: React.ComponentProps<\"div\"> & { value: number; ticks?: number }) {\n  const filled = Math.round(Math.min(1, Math.max(0, value)) * ticks)\n\n  return (\n    <div\n      data-slot=\"tick-meter\"\n      role=\"meter\"\n      aria-valuenow={Math.round(value * 100)}\n      aria-valuemin={0}\n      aria-valuemax={100}\n      className={cn(\"flex h-3 items-stretch justify-between text-brand\", className)}\n      {...props}\n    >\n      {Array.from({ length: ticks }).map((_, i) => (\n        <span\n          key={i}\n          className={cn(\n            \"w-px rounded-full transition-colors duration-300\",\n            i < filled ? \"bg-current\" : \"bg-current/20\"\n          )}\n        />\n      ))}\n    </div>\n  )\n}\n\nexport { TickMeter }\n",
       "type": "registry:component",
       "target": "@components/ds/tick-meter.tsx"

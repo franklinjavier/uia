@@ -11,7 +11,7 @@
   ],
   "files": [
     {
-      "path": "src/components/chat/chat-status.tsx",
+      "path": "registry/chat/chat-status.tsx",
       "content": "import * as React from \"react\"\n\nimport { cn } from \"@/lib/utils\"\nimport { StatusDot, type Tone } from \"@/components/ds/status\"\nimport type { ChatState } from \"@/components/chat/chat-state\"\n\n// One-line status of a conversation: a dot (attention when it waits on the\n// person, ink while it streams) and a mono label.\n\nconst TONE: Record<ChatState, Tone> = {\n  waiting: \"attention\",\n  streaming: \"brand\",\n  ready: \"success\",\n  done: \"success\",\n  error: \"destructive\",\n}\n\nconst LABEL: Record<ChatState, string> = {\n  waiting: \"Waiting for you\",\n  streaming: \"Streaming\",\n  ready: \"Ready\",\n  done: \"Done\",\n  error: \"Something went wrong\",\n}\n\nfunction ChatStatus({\n  state,\n  className,\n  children,\n  ...props\n}: React.ComponentProps<\"span\"> & { state: ChatState }) {\n  return (\n    <span\n      data-slot=\"chat-status\"\n      data-state={state}\n      className={cn(\"flex min-w-0 items-center gap-2.5\", className)}\n      {...props}\n    >\n      <StatusDot tone={TONE[state]} pulse={state === \"waiting\"} />\n      <span className=\"eyebrow truncate text-muted-foreground\">{children ?? LABEL[state]}</span>\n    </span>\n  )\n}\n\nexport { ChatStatus }\n",
       "type": "registry:component",
       "target": "@components/chat/chat-status.tsx"

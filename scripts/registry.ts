@@ -11,7 +11,7 @@
  * - Each item lists its files; dependencies are read from their imports:
  *   npm packages → `dependencies`, our files → `<NS>/<item>`, official
  *   shadcn primitives we did not change → bare names (e.g. "tooltip").
- * - Theme tokens are read from src/index.css (:root, .dark, @theme inline).
+ * - Theme tokens are read from registry/theme/index.css (:root, .dark, @theme inline).
  *
  * To add a component: create the file, add one line to ITEMS, run
  * `bun run registry`.
@@ -54,112 +54,112 @@ const ITEMS: Item[] = [
     type: "registry:ui",
     title: title(name),
     description,
-    files: [`src/components/ui/${name}.tsx`],
+    files: [`registry/ui/${name}.tsx`],
   })),
 
   // lib & hooks
-  item("motion", "registry:lib", "Shared motion vocabulary (springs, easings).", ["src/lib/motion.ts"]),
-  item("url", "registry:lib", "URL helpers.", ["src/lib/url.ts"]),
-  item("ai", "registry:lib", "AI SDK helpers: createChat re-export, getMessageText.", ["src/lib/ai.ts"]),
+  item("motion", "registry:lib", "Shared motion vocabulary (springs, easings).", ["registry/lib/motion.ts"]),
+  item("url", "registry:lib", "URL helpers.", ["registry/lib/url.ts"]),
+  item("ai", "registry:lib", "AI SDK helpers: createChat re-export, getMessageText.", ["registry/lib/ai.ts"]),
   item("highlighter", "registry:lib", "Lazy shiki highlighter that streams line by line.", [
-    "src/lib/highlighter.tsx",
-    "src/hooks/use-highlighted-code.ts",
+    "registry/lib/highlighter.tsx",
+    "registry/hooks/use-highlighted-code.ts",
   ]),
 
   // ds
-  item("widget", "registry:component", "Card-in-card shell: Widget, header, panels, footer.", ["src/components/ds/widget.tsx"]),
-  item("stat", "registry:component", "Eyebrow label, large value, unit and meta line.", ["src/components/ds/stat.tsx"]),
-  item("segmented", "registry:component", "Single-choice pill group with a sliding indicator.", ["src/components/ds/segmented.tsx"]),
-  item("status", "registry:component", "StatusDot and StatusBadge with semantic tones.", ["src/components/ds/status.tsx"]),
-  item("tick-meter", "registry:component", "Progress as a row of hairline ticks.", ["src/components/ds/tick-meter.tsx"]),
-  item("number-ticker", "registry:component", "Numbers that animate between values.", ["src/components/ds/number-ticker.tsx"]),
-  item("model-icons", "registry:component", "Monochrome marks of the major LLM families (Claude, OpenAI, Gemini, Meta, Grok).", ["src/components/ds/model-icons.tsx"]),
-  item("agent-orb", "registry:component", "The assistant's presence; one animated state per agent phase.", ["src/components/ds/agent-orb.tsx"]),
-  item("meter-bar", "registry:component", "A value against its limit: segments, threshold markers, highlight.", ["src/components/ds/meter-bar.tsx"]),
-  item("stage-track", "registry:component", "Where something is in a fixed sequence of stages, on one line.", ["src/components/ds/stage-track.tsx"]),
-  item("sparkline", "registry:component", "A recent series as a line over a soft area, latest point marked.", ["src/components/ds/sparkline.tsx"]),
-  item("task-list", "registry:component", "TaskRow + TaskListHeader: tasks through a fixed flow with StageTrack, container-query columns, counts per stage, taskRank to sort.", ["src/components/ds/task-list.tsx"]),
-  item("bar-series", "registry:component", "A short series as bars in one hue, the latest at full strength, hover to read.", ["src/components/ds/bar-series.tsx"]),
+  item("widget", "registry:component", "Card-in-card shell: Widget, header, panels, footer.", ["registry/ds/widget.tsx"]),
+  item("stat", "registry:component", "Eyebrow label, large value, unit and meta line.", ["registry/ds/stat.tsx"]),
+  item("segmented", "registry:component", "Single-choice pill group with a sliding indicator.", ["registry/ds/segmented.tsx"]),
+  item("status", "registry:component", "StatusDot and StatusBadge with semantic tones.", ["registry/ds/status.tsx"]),
+  item("tick-meter", "registry:component", "Progress as a row of hairline ticks.", ["registry/ds/tick-meter.tsx"]),
+  item("number-ticker", "registry:component", "Numbers that animate between values.", ["registry/ds/number-ticker.tsx"]),
+  item("model-icons", "registry:component", "Monochrome marks of the major LLM families (Claude, OpenAI, Gemini, Meta, Grok).", ["registry/ds/model-icons.tsx"]),
+  item("agent-orb", "registry:component", "The assistant's presence; one animated state per agent phase.", ["registry/ds/agent-orb.tsx"]),
+  item("meter-bar", "registry:component", "A value against its limit: segments, threshold markers, highlight.", ["registry/ds/meter-bar.tsx"]),
+  item("stage-track", "registry:component", "Where something is in a fixed sequence of stages, on one line.", ["registry/ds/stage-track.tsx"]),
+  item("sparkline", "registry:component", "A recent series as a line over a soft area, latest point marked.", ["registry/ds/sparkline.tsx"]),
+  item("task-list", "registry:component", "TaskRow + TaskListHeader: tasks through a fixed flow with StageTrack, container-query columns, counts per stage, taskRank to sort.", ["registry/ds/task-list.tsx"]),
+  item("bar-series", "registry:component", "A short series as bars in one hue, the latest at full strength, hover to read.", ["registry/ds/bar-series.tsx"]),
 
   // parts
-  item("action-card", "registry:component", "One shape for every human-in-the-loop moment, plus ResolvedRow and TranscriptEvent.", ["src/components/parts/action-card.tsx"]),
-  item("decision-card", "registry:component", "One decision the agent needs: what, why, options with the agent's pick, consequence, actions as data, urgent glow that drains, agreement → make it a rule.", ["src/components/parts/decision-card.tsx"]),
-  item("plan", "registry:component", "A multi-step job the agent runs in front of you: steps check off, the running one spins, a tick meter fills.", ["src/components/parts/plan.tsx"]),
-  item("connect-prompt", "registry:component", "Docked above the composer when the agent needs access: ask → connecting → connected.", ["src/components/parts/connect-prompt.tsx"]),
-  item("attachment", "registry:component", "File chips (type badge + name, removable in the composer) and a hover preview with the file's gist.", ["src/components/parts/attachment.tsx"]),
-  item("findings", "registry:component", "What the agent pulled from a source, ranked by a severity signal, each with its reference (page, line).", ["src/components/parts/findings.tsx"]),
-  item("chart-card", "registry:component", "A chart inside a reply: title, the few numbers that answer, then the chart.", ["src/components/parts/chart-card.tsx"]),
-  item("ask-user", "registry:component", "Clarifying questions (A/B/C keys) and their answered states.", ["src/components/parts/ask-user.tsx"]),
-  item("confirmation", "registry:component", "Approval gate before a tool with side effects runs.", ["src/components/parts/confirmation.tsx"]),
-  item("draft-card", "registry:component", "Editable draft that is its own approval; resolves to an expandable row.", ["src/components/parts/draft-card.tsx"]),
-  item("decision-chip", "registry:component", "A pending decision, compact, for a 'needs you' strip outside the chat.", ["src/components/parts/decision-chip.tsx"]),
-  item("preview-approval", "registry:component", "A visual change waiting for the person's eye: before/after, accept or ask for changes.", ["src/components/parts/preview-approval.tsx"]),
-  item("part-transition", "registry:component", "Height + crossfade transition when a part resolves.", ["src/components/parts/part-transition.tsx"]),
-  item("tool-line", "registry:component", "A tool call as a trace line, expandable with details.", ["src/components/parts/tool-line.tsx"]),
-  item("reasoning", "registry:component", "Thinking / Thought trace line with measured duration.", ["src/components/parts/reasoning.tsx"]),
-  item("sources", "registry:component", "Cited sources as a 2-up grid of cards.", ["src/components/parts/sources.tsx"]),
-  item("search-results", "registry:component", "Everything a search returned, as a compact list.", ["src/components/parts/search-results.tsx"]),
+  item("action-card", "registry:component", "One shape for every human-in-the-loop moment, plus ResolvedRow and TranscriptEvent.", ["registry/parts/action-card.tsx"]),
+  item("decision-card", "registry:component", "One decision the agent needs: what, why, options with the agent's pick, consequence, actions as data, urgent glow that drains, agreement → make it a rule.", ["registry/parts/decision-card.tsx"]),
+  item("plan", "registry:component", "A multi-step job the agent runs in front of you: steps check off, the running one spins, a tick meter fills.", ["registry/parts/plan.tsx"]),
+  item("connect-prompt", "registry:component", "Docked above the composer when the agent needs access: ask → connecting → connected.", ["registry/parts/connect-prompt.tsx"]),
+  item("attachment", "registry:component", "File chips (type badge + name, removable in the composer) and a hover preview with the file's gist.", ["registry/parts/attachment.tsx"]),
+  item("findings", "registry:component", "What the agent pulled from a source, ranked by a severity signal, each with its reference (page, line).", ["registry/parts/findings.tsx"]),
+  item("chart-card", "registry:component", "A chart inside a reply: title, the few numbers that answer, then the chart.", ["registry/parts/chart-card.tsx"]),
+  item("ask-user", "registry:component", "Clarifying questions (A/B/C keys) and their answered states.", ["registry/parts/ask-user.tsx"]),
+  item("confirmation", "registry:component", "Approval gate before a tool with side effects runs.", ["registry/parts/confirmation.tsx"]),
+  item("draft-card", "registry:component", "Editable draft that is its own approval; resolves to an expandable row.", ["registry/parts/draft-card.tsx"]),
+  item("decision-chip", "registry:component", "A pending decision, compact, for a 'needs you' strip outside the chat.", ["registry/parts/decision-chip.tsx"]),
+  item("preview-approval", "registry:component", "A visual change waiting for the person's eye: before/after, accept or ask for changes.", ["registry/parts/preview-approval.tsx"]),
+  item("part-transition", "registry:component", "Height + crossfade transition when a part resolves.", ["registry/parts/part-transition.tsx"]),
+  item("tool-line", "registry:component", "A tool call as a trace line, expandable with details.", ["registry/parts/tool-line.tsx"]),
+  item("reasoning", "registry:component", "Thinking / Thought trace line with measured duration.", ["registry/parts/reasoning.tsx"]),
+  item("sources", "registry:component", "Cited sources as a 2-up grid of cards.", ["registry/parts/sources.tsx"]),
+  item("search-results", "registry:component", "Everything a search returned, as a compact list.", ["registry/parts/search-results.tsx"]),
   {
     ...item("markdown", "registry:component", "Assistant prose with typeset and highlighted code blocks.", [
-      "src/components/parts/markdown.tsx",
-      "src/components/markdown-code.tsx",
+      "registry/parts/markdown.tsx",
+      "registry/markdown-code.tsx",
     ]),
     registryDependencies: [`${NS}/typeset`],
   },
 
-  item("theme-provider", "registry:component", "Light/dark/system theme with a `useTheme` hook (class on <html>, saved in localStorage).", ["src/components/theme-provider.tsx"]),
+  item("theme-provider", "registry:component", "Light/dark/system theme with a `useTheme` hook (class on <html>, saved in localStorage).", ["registry/theme-provider.tsx"]),
 
   // chat kit
   item("agent-chat", "registry:hook", "useAgentChat, the tool registry types and pure transcript reads.", [
-    "src/components/chat/use-agent-chat.ts",
-    "src/components/chat/tool-registry.ts",
-    "src/components/chat/chat-state.ts",
+    "registry/chat/use-agent-chat.ts",
+    "registry/chat/tool-registry.ts",
+    "registry/chat/chat-state.ts",
   ]),
-  item("chat-thread", "registry:component", "Scrolling transcript that follows the stream.", ["src/components/chat/chat-thread.tsx"]),
-  item("chat-turn", "registry:component", "UserTurn, AssistantTurn, ChatParts; tools render via the registry.", ["src/components/chat/chat-turn.tsx"]),
-  item("turn-actions", "registry:component", "Copy / good / bad row under a finished turn.", ["src/components/chat/turn-actions.tsx"]),
-  item("composer", "registry:component", "Prompt box as parts: input, toolbar, attach, model select, submit.", ["src/components/chat/composer.tsx"]),
-  item("chat-empty", "registry:component", "First screen: resting orb, greeting, suggestions.", ["src/components/chat/chat-empty.tsx"]),
-  item("chat-status", "registry:component", "One-line conversation status.", ["src/components/chat/chat-status.tsx"]),
-  item("chat-error", "registry:component", "A turn that didn't happen: one quiet line with what it cost and Retry.", ["src/components/chat/chat-error.tsx"]),
-  item("chat-pill", "registry:component", "The assistant minimised: orb, live phase, Open (attention when it needs you).", ["src/components/chat/chat-pill.tsx"]),
+  item("chat-thread", "registry:component", "Scrolling transcript that follows the stream.", ["registry/chat/chat-thread.tsx"]),
+  item("chat-turn", "registry:component", "UserTurn, AssistantTurn, ChatParts; tools render via the registry.", ["registry/chat/chat-turn.tsx"]),
+  item("turn-actions", "registry:component", "Copy / good / bad row under a finished turn.", ["registry/chat/turn-actions.tsx"]),
+  item("composer", "registry:component", "Prompt box as parts: input, toolbar, attach, model select, submit.", ["registry/chat/composer.tsx"]),
+  item("chat-empty", "registry:component", "First screen: resting orb, greeting, suggestions.", ["registry/chat/chat-empty.tsx"]),
+  item("chat-status", "registry:component", "One-line conversation status.", ["registry/chat/chat-status.tsx"]),
+  item("chat-error", "registry:component", "A turn that didn't happen: one quiet line with what it cost and Retry.", ["registry/chat/chat-error.tsx"]),
+  item("chat-pill", "registry:component", "The assistant minimised: orb, live phase, Open (attention when it needs you).", ["registry/chat/chat-pill.tsx"]),
 
   // Widgets: whole, data-driven views with typed props. The same component
   // renders on a dashboard and, at size="sm", inside a chat reply.
-  item("widget-ai-spend", "registry:component", "AiSpend: a period's AI cost by model against a budget, projection, alert, models as the meter's legend.", ["src/components/widgets/ai-spend.tsx"]),
-  item("widget-fleet-health", "registry:component", "FleetHealth: tokens/s with sparkline, fleet meters, GPU heatmap with modes, rebalance.", ["src/components/widgets/fleet-health.tsx"]),
-  item("widget-model-evals", "registry:component", "ModelEvals: pass rate vs a baseline and a target, per-suite comparison, failures filtered by suite, re-run.", ["src/components/widgets/model-evals.tsx"]),
-  item("widget-model-router", "registry:component", "ModelRouter: routing policy with a flow graph and routes list, fallback, deploy.", ["src/components/widgets/model-router.tsx"]),
-  item("widget-agent-runtime", "registry:component", "AgentRuntime: sandboxes with lifecycle (cold → warm → idle → zero), invoke.", ["src/components/widgets/agent-runtime.tsx"]),
+  item("widget-ai-spend", "registry:component", "AiSpend: a period's AI cost by model against a budget, projection, alert, models as the meter's legend.", ["registry/widgets/ai-spend.tsx"]),
+  item("widget-fleet-health", "registry:component", "FleetHealth: tokens/s with sparkline, fleet meters, GPU heatmap with modes, rebalance.", ["registry/widgets/fleet-health.tsx"]),
+  item("widget-model-evals", "registry:component", "ModelEvals: pass rate vs a baseline and a target, per-suite comparison, failures filtered by suite, re-run.", ["registry/widgets/model-evals.tsx"]),
+  item("widget-model-router", "registry:component", "ModelRouter: routing policy with a flow graph and routes list, fallback, deploy.", ["registry/widgets/model-router.tsx"]),
+  item("widget-agent-runtime", "registry:component", "AgentRuntime: sandboxes with lifecycle (cold → warm → idle → zero), invoke.", ["registry/widgets/agent-runtime.tsx"]),
 
   // App shell for agent products.
-  item("app-nav", "registry:component", "Side nav of an agent app: brand orb (home), sections, counts (attention where needed), hover nudges, orb for conversations; AppNavSelect for phones.", ["src/components/app/app-nav.tsx"]),
-  item("theme-toggle", "registry:component", "Sun/moon ghost button for an app's own chrome.", ["src/components/app/theme-toggle.tsx"]),
+  item("app-nav", "registry:component", "Side nav of an agent app: brand orb (home), sections, counts (attention where needed), hover nudges, orb for conversations; AppNavSelect for phones.", ["registry/app/app-nav.tsx"]),
+  item("theme-toggle", "registry:component", "Sun/moon ghost button for an app's own chrome.", ["registry/app/theme-toggle.tsx"]),
 
   // Reference widgets: complete, working examples of how uia is composed.
   // They install into src/examples/ to be read, run and adapted.
-  item("example-model-router", "registry:block", "Example: model router with policy, routing flow, routes list and deploy.", ["src/examples/model-router.tsx"]),
-  item("example-agent-runtime", "registry:block", "Example: scale-to-zero sandboxes with an isometric scene and invoke.", ["src/examples/agent-runtime.tsx"]),
-  item("example-ai-spend", "registry:block", "Example: monthly AI spend by model against a budget, with alert and projection.", ["src/examples/ai-spend.tsx"]),
-  item("example-model-evals", "registry:block", "Example (pt-BR): pass rate vs a baseline and a target, per-suite comparison, failures filtered by suite, re-run.", ["src/examples/model-evals.tsx"]),
-  item("example-fleet-health", "registry:block", "Example: tokens/s with sparkline, fleet meters and a GPU heatmap.", ["src/examples/fleet-health.tsx"]),
+  item("example-model-router", "registry:block", "Example: model router with policy, routing flow, routes list and deploy.", ["registry/examples/model-router.tsx"]),
+  item("example-agent-runtime", "registry:block", "Example: scale-to-zero sandboxes with an isometric scene and invoke.", ["registry/examples/agent-runtime.tsx"]),
+  item("example-ai-spend", "registry:block", "Example: monthly AI spend by model against a budget, with alert and projection.", ["registry/examples/ai-spend.tsx"]),
+  item("example-model-evals", "registry:block", "Example (pt-BR): pass rate vs a baseline and a target, per-suite comparison, failures filtered by suite, re-run.", ["registry/examples/model-evals.tsx"]),
+  item("example-fleet-health", "registry:block", "Example: tokens/s with sparkline, fleet meters and a GPU heatmap.", ["registry/examples/fleet-health.tsx"]),
   item("example-bottega", "registry:block", "Example page (pt-BR): an agent workshop — decisions strip, projects by stage, production, activity and the one conversation with decision cards.", [
-    "src/examples/bottega/bottega.tsx",
-    "src/examples/bottega/conversation.tsx",
-    "src/examples/bottega/use-bottega.ts",
-    "src/examples/bottega/data.ts",
+    "registry/examples/bottega/bottega.tsx",
+    "registry/examples/bottega/conversation.tsx",
+    "registry/examples/bottega/use-bottega.ts",
+    "registry/examples/bottega/data.ts",
   ]),
   item("example-davinci", "registry:block", "Example app: an agent coordinator as an inbox — decisions grouped by urgency (the urgent one glows), threads per project, projects by stage that scale to dozens of tasks, a log of what was decided for you, rules with switches; each view a route. Plus the one-chat version it replaced.", [
-    "src/examples/davinci2/davinci2.tsx",
-    "src/examples/davinci2/data.ts",
-    "src/examples/davinci/davinci.tsx",
-    "src/examples/davinci/cards.tsx",
-    "src/examples/davinci/data.ts",
+    "registry/examples/davinci2/davinci2.tsx",
+    "registry/examples/davinci2/data.ts",
+    "registry/examples/davinci/davinci.tsx",
+    "registry/examples/davinci/cards.tsx",
+    "registry/examples/davinci/data.ts",
   ]),
   item("example-assistant", "registry:block", "Example: a scripted agent chat with questions, a draft and an approval.", [
-    "src/examples/assistant/assistant.tsx",
-    "src/examples/assistant/scripts.ts",
-    "src/examples/assistant/tools.tsx",
+    "registry/examples/assistant/assistant.tsx",
+    "registry/examples/assistant/scripts.ts",
+    "registry/examples/assistant/tools.tsx",
   ]),
 ]
 
@@ -203,7 +203,11 @@ for (const it of ITEMS) for (const f of it.files) fileOwner.set(f, it.name)
 const overrides = new Set<string>(UI_OVERRIDES.map(([n]) => n))
 
 function resolveAlias(spec: string): string | null {
-  const base = spec.replace(/^@\//, "src/")
+  const base = spec
+    .replace(/^@\/components\//, "registry/")
+    .replace(/^@\/lib\//, "registry/lib/")
+    .replace(/^@\/hooks\//, "registry/hooks/")
+    .replace(/^@\/examples\//, "registry/examples/")
   for (const ext of [".tsx", ".ts"]) if (fileOwner.has(base + ext)) return base + ext
   return null
 }
@@ -239,17 +243,19 @@ function scan(it: Item) {
 }
 
 function target(path: string) {
-  if (path.startsWith("src/examples/")) return `~/${path}`
+  // Examples land in the consumer's src/examples; everything else follows
+  // the consumer's aliases (components.json).
+  if (path.startsWith("registry/examples/")) return `~/src/examples/${path.slice("registry/examples/".length)}`
   return path
-    .replace(/^src\/components\/ui\//, "@ui/")
-    .replace(/^src\/components\//, "@components/")
-    .replace(/^src\/lib\//, "@lib/")
-    .replace(/^src\/hooks\//, "@hooks/")
+    .replace(/^registry\/ui\//, "@ui/")
+    .replace(/^registry\/lib\//, "@lib/")
+    .replace(/^registry\/hooks\//, "@hooks/")
+    .replace(/^registry\//, "@components/")
 }
 
 /* ------------------------------ theme ------------------------------ */
 
-const css = readFileSync("src/index.css", "utf8")
+const css = readFileSync("registry/theme/index.css", "utf8")
 function block(selector: string) {
   const start = css.indexOf(`${selector} {`)
   if (start < 0) throw new Error(`index.css: ${selector} not found`)
@@ -335,7 +341,7 @@ const typeset = {
   type: "registry:file",
   title: "Typeset",
   description: "shadcn/typeset, tuned for streaming chat (no tabular-nums on tables).",
-  files: [{ path: "src/typeset.css", type: "registry:file", target: "~/src/typeset.css" }],
+  files: [{ path: "registry/theme/typeset.css", type: "registry:file", target: "~/src/typeset.css" }],
   docs: 'Import it after Tailwind in your main CSS file: @import "./typeset.css";',
 }
 

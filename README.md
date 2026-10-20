@@ -42,20 +42,25 @@ Building UI with uia in another project? Do this first:
 ## Layers
 
 ```
-src/components/
-  ui/            shadcn primitives (owned; a few tuned: button, select, bubble,
-                 code-block, questionnaire, spinner, message-scroller)
-  ds/            system pieces: Widget (+ WidgetList), Stat, Segmented, Status,
-                 TickMeter, MeterBar, Sparkline, StageTrack, NumberTicker, AgentOrb,
-                 ModelIcon
-  parts/         generative-UI parts: ActionCard*, ResolvedRow, TranscriptEvent,
-                 AskUser, Confirmation, PreviewApproval, DecisionChip, DraftCard,
-                 PartTransition, ToolLine,
-                 Reasoning, Sources, SearchResults, Markdown
-  chat/          chat kit: useAgentChat, tool registry, ChatThread, ChatTurn,
-                 Composer*, ChatEmpty, ChatStatus, TurnActions
-src/lib/         motion, ai, url, highlighter
-src/examples/    reference widgets (registry blocks) — never imported by components/
+registry/              everything that ships, one registry item per piece
+  ui/                  shadcn primitives (owned; tuned ones ship as overrides)
+  ds/                  system: Widget (+ WidgetList), Stat, Segmented, Status,
+                       TickMeter, MeterBar, Sparkline, BarSeries, StageTrack,
+                       TaskList, NumberTicker, AgentOrb, ModelIcon
+  parts/               generative UI / human-in-the-loop: ActionCard, DecisionCard,
+                       AskUser, Confirmation, PreviewApproval, DecisionChip,
+                       DraftCard, Plan, ConnectPrompt, Findings, ChartCard,
+                       Attachment, PartTransition, ToolLine, Reasoning, Sources…
+  chat/                chat kit: useAgentChat, tool + data registries, ChatThread,
+                       ChatTurn, Composer*, ChatEmpty, ChatError, ChatPill…
+  widgets/             data-driven widgets with typed props (AiSpend, FleetHealth,
+                       ModelEvals, ModelRouter, AgentRuntime)
+  app/                 agent-app shell: AppNav, ThemeToggle
+  lib/ hooks/ theme/   motion, ai, url, highlighter; tokens (index.css), typeset
+  examples/            fixtures: demo data + simulation over the widgets and parts
+playground/            the demo app (router, dock, pages) — not shipped
+skills/uia/            the agent skill (ships as the `skill` item)
+scripts/registry.ts    generates registry.json from the source
 ```
 
 Every piece is a composable part (`data-slot`, `className`, props passthrough).
@@ -65,7 +70,7 @@ smaller parts you can also use directly.
 ## Registry: install pieces in other projects
 
 `registry.json` is generated from the source (imports → dependencies, tokens
-from `src/index.css`). Rebuild it after changing or adding components:
+from `registry/theme/index.css`). Rebuild it after changing or adding components:
 
 ```bash
 bun run registry:build   # registry.json + public/r/*.json
@@ -163,7 +168,7 @@ const chat = useAgentChat<MyMessage>({ transport, tools })
 <ChatTurn message={m} tools={tools} phase={chat.phase} … />
 ```
 
-See `src/examples/assistant/tools.tsx` for a complete example.
+See `registry/examples/assistant/tools.tsx` for a complete example.
 
 ## Deploy (Cloudflare)
 

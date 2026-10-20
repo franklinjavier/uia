@@ -9,7 +9,7 @@
   ],
   "files": [
     {
-      "path": "src/lib/motion.ts",
+      "path": "registry/lib/motion.ts",
       "content": "import type { Transition } from \"motion/react\"\n\n// Shared motion vocabulary. Every animated element picks one of these;\n// nothing defines its own timing inline.\n\n/** Indicators, pills and anything that slides between positions. */\nexport const springSnappy: Transition = {\n  type: \"spring\",\n  duration: 0.4,\n  bounce: 0.15,\n}\n\n/** Bars, meters and values that settle into a new size. */\nexport const springSoft: Transition = {\n  type: \"spring\",\n  duration: 0.7,\n  bounce: 0,\n}\n\n/** Fades and colour changes. */\nexport const easeOut: Transition = {\n  duration: 0.2,\n  ease: [0.22, 1, 0.36, 1],\n}\n\n/** Things appearing in place (cards, events): short fade + tiny lift. */\nexport const enter: Transition = {\n  duration: 0.28,\n  ease: [0.22, 1, 0.36, 1],\n}\n",
       "type": "registry:lib",
       "target": "@lib/motion.ts"

@@ -2,8 +2,8 @@ import * as React from "react"
 import { ChevronsUpDownIcon, MoonIcon, SunIcon } from "lucide-react"
 
 import { useTheme } from "@/components/theme-provider"
-import { PlaygroundDock } from "@/playground-dock"
-import { navigate, usePath } from "@/router"
+import { PlaygroundDock } from "./playground-dock"
+import { navigate, usePath } from "./router"
 import { Button } from "@/components/ui/button"
 import {
   Select,
