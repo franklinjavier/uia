@@ -16,7 +16,7 @@ Building UI with uia in another project? Do this first:
    ```bash
    bunx --bun shadcn@latest create --preset beqC8BzE --template vite --name app --no-monorepo
    ```
-2. **Install the whole system** from this repo (private: needs `gh auth login`).
+2. **Install the whole system** from this repo.
    It brings tokens, fonts, components and the agent skill:
    ```bash
    npx shadcn@latest add franklinjavier/uia/uia franklinjavier/uia/examples --overwrite
@@ -73,7 +73,7 @@ npx shadcn@latest add franklinjavier/uia/hitl          # human-in-the-loop parts
 npx shadcn@latest add franklinjavier/uia/confirmation  # one piece
 ```
 
-- **Private repo:** run `gh auth login` once; the CLI reads the repo through
+- **Private fork?** Run `gh auth login` once; the CLI reads the repo through
   your `gh` credentials. In CI, set `GH_TOKEN` (fine-grained, Contents: read).
 - **Pin a version:** append a tag or commit, e.g. `franklinjavier/uia/chat#v0.1.0`.
 - Use `--overwrite` when the project already has `button`, `select`, … so our
@@ -147,3 +147,7 @@ const chat = useAgentChat<MyMessage>({ transport, tools })
 ```
 
 See `src/examples/assistant/tools.tsx` for a complete example.
+
+## License
+
+MIT. Model marks in `model-icons` come from [LobeHub Icons](https://github.com/lobehub/lobe-icons) (MIT).

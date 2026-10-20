@@ -40,21 +40,21 @@ const research = createChat<ChatMessage>()
       .sleep(1400)
       .output({
         results: [
-          { title: "Halden 4.2 changelog", url: "https://halden.dev/changelog/4-2" },
-          { title: "Per-seat policies, explained", url: "https://blog.halden.dev/per-seat-policies" },
-          { title: "Audit log API reference", url: "https://docs.halden.dev/api/audit-log" },
-          { title: "API key rotation notice", url: "https://status.halden.dev/notices/key-rotation" },
-          { title: "Halden 4.1 changelog", url: "https://halden.dev/changelog/4-1" },
-          { title: "Roadmap: what's next after 4.2", url: "https://blog.halden.dev/roadmap" },
+          { title: "Halden 4.2 changelog", url: "https://halden.example/changelog/4-2" },
+          { title: "Per-seat policies, explained", url: "https://blog.halden.example/per-seat-policies" },
+          { title: "Audit log API reference", url: "https://docs.halden.example/api/audit-log" },
+          { title: "API key rotation notice", url: "https://status.halden.example/notices/key-rotation" },
+          { title: "Halden 4.1 changelog", url: "https://halden.example/changelog/4-1" },
+          { title: "Roadmap: what's next after 4.2", url: "https://blog.halden.example/roadmap" },
         ],
       })
     writer.text(
       "Halden **4.2** is mostly about speed and control:\n\n- **Streaming exports.** Large CSV exports now stream instead of timing out, up to 2M rows.\n- **Per-seat policies.** Admins can set model and spend limits for each seat, not just per workspace.\n- **Audit log API.** Every policy change is now queryable, with a 400-day retention window.\n\nNothing is breaking. The only migration step is re-issuing API keys created before March, which now expire on rotation."
     )
-    writer.sourceUrl({ sourceId: "s1", title: "Halden 4.2 changelog", url: "https://halden.dev/changelog/4-2" })
-    writer.sourceUrl({ sourceId: "s2", title: "Per-seat policies, explained", url: "https://blog.halden.dev/per-seat-policies" })
-    writer.sourceUrl({ sourceId: "s3", title: "Audit log API reference", url: "https://docs.halden.dev/api/audit-log" })
-    writer.sourceUrl({ sourceId: "s4", title: "API key rotation notice", url: "https://status.halden.dev/notices/key-rotation" })
+    writer.sourceUrl({ sourceId: "s1", title: "Halden 4.2 changelog", url: "https://halden.example/changelog/4-2" })
+    writer.sourceUrl({ sourceId: "s2", title: "Per-seat policies, explained", url: "https://blog.halden.example/per-seat-policies" })
+    writer.sourceUrl({ sourceId: "s3", title: "Audit log API reference", url: "https://docs.halden.example/api/audit-log" })
+    writer.sourceUrl({ sourceId: "s4", title: "API key rotation notice", url: "https://status.halden.example/notices/key-rotation" })
   })
   .user("Turn that into a checklist for the team")
   .sleep(400)
@@ -122,16 +122,16 @@ function draftFor(channel: Channel, tone: string): Draft & { intro: string; done
       icon: "thread",
       title: "Launch thread",
       fields: [
-        { label: "Account", value: "@halden" },
+        { label: "Account", value: "@halden-demo" },
         { label: "Network", value: "X" },
         { label: "Posts", value: "3" },
       ],
-      summary: "@halden · 3 posts",
+      summary: "@halden-demo · 3 posts",
       body: `1/ ${open} the new Halden dashboard is live.\n\n2/ Monitors, usage and spend on one screen. Loads twice as fast. Finally works on mobile.\n\n3/ Nothing changes about your data or alerts. Open it from the sidebar today.`,
       sendLabel: "Post thread",
       sentVerb: "Posted thread",
-      intro: `Here is a ${tone.toLowerCase()} three-post thread for @halden. Edit anything in place, then post it when it reads right.`,
-      done: "Posted the thread from @halden.",
+      intro: `Here is a ${tone.toLowerCase()} three-post thread for @halden-demo. Edit anything in place, then post it when it reads right.`,
+      done: "Posted the thread from @halden-demo.",
     }
   }
   if (channel === "Blog post") {
@@ -141,16 +141,16 @@ function draftFor(channel: Channel, tone: string): Draft & { intro: string; done
       icon: "blog",
       title: "Meet the new dashboard",
       fields: [
-        { label: "Blog", value: "blog.halden.dev" },
+        { label: "Blog", value: "blog.halden.example" },
         { label: "Title", value: "Meet the new dashboard" },
         { label: "Visibility", value: "Public" },
       ],
-      summary: "blog.halden.dev/new-dashboard",
+      summary: "blog.halden.example/new-dashboard",
       body: `${open} the new dashboard is live for every workspace.\n\nMonitors, usage and spend now share one screen, it loads twice as fast, and it finally works on mobile. Nothing changes about your data or alerts.\n\nOpen it from the sidebar and tell us what you think.`,
       sendLabel: "Publish post",
       sentVerb: "Published post",
       intro: `Here is a ${tone.toLowerCase()} blog post. Edit anything in place, then publish it when it reads right.`,
-      done: "Published at blog.halden.dev/new-dashboard.",
+      done: "Published at blog.halden.example/new-dashboard.",
     }
   }
   return {
@@ -159,7 +159,7 @@ function draftFor(channel: Channel, tone: string): Draft & { intro: string; done
     icon: "mail",
     title: "Your new dashboard is live",
     fields: [
-      { label: "From", value: "product@halden.dev" },
+      { label: "From", value: "product@halden.example" },
       { label: "To", value: "Beta list · 1,284 people" },
       { label: "Subject", value: "Your new dashboard is live" },
     ],

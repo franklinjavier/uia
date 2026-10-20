@@ -93,7 +93,7 @@ closes into its record (height eases, content crossfades) instead of jumping.
 const draft: Draft = {
   kind: "New email", app: "Mail", icon: "mail",
   title: "The new dashboard is live",
-  fields: [{ label: "To", value: "Beta list" }, { label: "From", value: "product@acme.com" }],
+  fields: [{ label: "To", value: "Beta list" }, { label: "From", value: "product@example.com" }],
   summary: "Beta list · 1,284 people",
   body: "Hi there,\n\n…",
   sendLabel: "Send email", sentVerb: "Sent email",
