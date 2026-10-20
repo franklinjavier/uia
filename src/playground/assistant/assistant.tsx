@@ -3,19 +3,14 @@ import {
   CodeIcon,
   GlobeIcon,
   PenLineIcon,
-  RotateCcwIcon,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { getMessageText } from "@/lib/ai"
-import { Button } from "@/components/ui/button"
-import { Kbd } from "@/components/ui/kbd"
-import { Separator } from "@/components/ui/separator"
 import { AgentOrb } from "@/components/ds/agent-orb"
 import { ModelIcon } from "@/components/ds/model-icons"
-import { Widget, WidgetFooter, WidgetHeader, WidgetPanel, WidgetTitle } from "@/components/ds/widget"
+import { Widget, WidgetHeader, WidgetPanel, WidgetTitle } from "@/components/ds/widget"
 import { ChatEmpty, ChatSuggestion } from "@/components/chat/chat-empty"
-import { ChatStatus } from "@/components/chat/chat-status"
 import { ChatThread, ChatThreadItem } from "@/components/chat/chat-thread"
 import { ChatTurn } from "@/components/chat/chat-turn"
 import {
@@ -68,10 +63,6 @@ export function Assistant({ layout = "widget" }: { layout?: AssistantLayout }) {
         setStarted(true)
         setRun((r) => r + 1)
       }}
-      onReset={() => {
-        setStarted(false)
-        setRun((r) => r + 1)
-      }}
     />
   )
 }
@@ -81,13 +72,11 @@ function Session({
   scenario,
   autoStart,
   onPick,
-  onReset,
 }: {
   layout: AssistantLayout
   scenario: ScenarioKey
   autoStart: boolean
   onPick: (key: ScenarioKey) => void
-  onReset: () => void
 }) {
   const script = SCENARIOS[scenario].chat
   const chat = useAgentChat<ChatMessage>({
@@ -105,8 +94,6 @@ function Session({
   useScriptedSession({ autoStart, next, messages, busy, sendMessage, setMessages })
 
   const full = layout === "full"
-  const turn = messages.filter((m) => m.role === "user").length
-  const state = chat.state === "ready" && !next ? "done" : chat.state
 
   const header = (
     <>
@@ -167,24 +154,6 @@ function Session({
     </Composer>
   )
 
-  const status = (
-    <>
-      <ChatStatus state={state}>
-        {scenario} · {turn}/{SCENARIOS[scenario].turns} · {state === "waiting" ? "waiting for you" : state}
-      </ChatStatus>
-      <div className="ml-auto flex items-center gap-3">
-        <Button variant="ghost" size="icon-xs" aria-label="Reset" className="text-muted-foreground" onClick={onReset}>
-          <RotateCcwIcon />
-        </Button>
-        <Separator orientation="vertical" className="h-4" />
-        <span className="flex items-center gap-1.5 eyebrow text-muted-foreground">
-          <Kbd className="h-5 bg-transparent eyebrow ring-1 ring-border">↵</Kbd>
-          Send
-        </span>
-      </div>
-    </>
-  )
-
   if (full) {
     return (
       <div data-slot="assistant-page" className="flex h-svh w-full flex-col bg-background">
@@ -208,7 +177,6 @@ function Session({
         <div className="h-[480px]">{conversation}</div>
         <div className="border-t border-border/70">{composer}</div>
       </WidgetPanel>
-      <WidgetFooter>{status}</WidgetFooter>
     </Widget>
   )
 }

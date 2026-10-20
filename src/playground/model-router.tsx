@@ -1,14 +1,6 @@
 import * as React from "react"
 import { motion } from "motion/react"
-import {
-  CheckIcon,
-  InfoIcon,
-  Loader2Icon,
-  MoreVerticalIcon,
-  ServerIcon,
-  SlidersHorizontalIcon,
-  XIcon,
-} from "lucide-react"
+import { CheckIcon, Loader2Icon, ServerIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { easeOut, springSoft } from "@/lib/motion"
@@ -20,13 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 import { NumberTicker } from "@/components/ds/number-ticker"
 import { Segmented, SegmentedItem } from "@/components/ds/segmented"
 import {
@@ -96,19 +82,9 @@ export function ModelRouter() {
     <Widget className="max-w-[560px]">
       <WidgetHeader>
         <WidgetTitle>Model router</WidgetTitle>
-        <Tooltip>
-          <TooltipTrigger
-            render={
-              <button className="text-muted-foreground transition-colors hover:text-foreground">
-                <InfoIcon className="size-4" />
-              </button>
-            }
-          />
-          <TooltipContent>Routes each request to a model by policy</TooltipContent>
-        </Tooltip>
         <WidgetActions>
           <Select value={env} onValueChange={(v) => v && setEnv(v)}>
-            <SelectTrigger className="mr-1">
+            <SelectTrigger>
               <ServerIcon className="text-muted-foreground" />
               <SelectValue />
             </SelectTrigger>
@@ -118,12 +94,6 @@ export function ModelRouter() {
               <SelectItem value="batch-eu">batch-eu</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="ghost" size="icon-sm" className="text-muted-foreground">
-            <SlidersHorizontalIcon />
-          </Button>
-          <Button variant="ghost" size="icon-sm" className="text-muted-foreground">
-            <XIcon />
-          </Button>
         </WidgetActions>
       </WidgetHeader>
 
@@ -221,10 +191,6 @@ export function ModelRouter() {
       </WidgetPanel>
 
       <WidgetFooter>
-        <Button variant="ghost" size="icon-sm" className="text-muted-foreground">
-          <MoreVerticalIcon />
-        </Button>
-        <Separator orientation="vertical" className="h-4" />
         <WidgetMeta>
           Policy v{version} · live on {env}
         </WidgetMeta>
