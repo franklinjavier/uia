@@ -48,7 +48,7 @@ for (const file of readdirSync(DIR).filter((f) => f.endsWith(".json")).sort()) {
   if (!surface) problems.push("no surface")
   else {
     const nodes = Object.values(surface.components) as ComponentNode[]
-    for (const i of validateSurface(surface, uiaCatalog, { actions: factoryActions, layout: c.layout ?? "page" }))
+    for (const i of validateSurface(surface, uiaCatalog, { actions: factoryActions, layout: c.layout ?? "page" }).filter((x) => x.code !== "AUTOFIXED"))
       problems.push(`${i.code} ${i.componentId}: ${i.message}`)
     for (const n of nodes)
       for (const k of PROSE)

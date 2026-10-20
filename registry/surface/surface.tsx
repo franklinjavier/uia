@@ -10,6 +10,7 @@ import type {
   RenderContext,
 } from "@/components/surface/catalog"
 import {
+  autofix,
   collectIssues,
   isPathRef,
   issueText,
@@ -41,6 +42,8 @@ import type {
 //
 // - Streams well: a child that hasn't arrived yet is a skeleton; nothing
 //   renders until "root" exists.
+// - Repairs what's unambiguous first (name or enum case, numbers sent as
+//   text) and reports it as AUTOFIXED.
 // - Validates each node with its catalog schema. A node that fails, or whose
 //   component isn't in the catalog, is dropped (or, with `showIssues`, shown
 //   as a quiet placeholder) and reported through `onIssue` so the agent can
@@ -56,7 +59,7 @@ import type {
 //   grids of ≤ 2) or "page". Always: one primary action, one Note per Section.
 
 export function Surface({
-  surface,
+  surface: incoming,
   catalog,
   size = "default",
   locale,
@@ -85,6 +88,12 @@ export function Surface({
   onDataChange?: (path: string, value: unknown, data: unknown) => void
   className?: string
 }) {
+  // Unambiguous mistakes are repaired first and reported as AUTOFIXED.
+  const repaired = React.useMemo(
+    () => (incoming ? autofix(incoming, catalog) : undefined),
+    [incoming, catalog]
+  )
+  const surface = repaired?.surface
   const [overrides, setOverrides] = React.useState<Record<string, unknown>>({})
   const data = React.useMemo(() => {
     let d = surface?.data
@@ -97,15 +106,18 @@ export function Surface({
   const issues = React.useMemo(
     () =>
       surface
-        ? collectIssues(
-            surface,
-            catalog,
-            data,
-            actions,
-            layout ?? (size === "sm" ? "inline" : "page")
-          )
+        ? [
+            ...(repaired?.fixes ?? []),
+            ...collectIssues(
+              surface,
+              catalog,
+              data,
+              actions,
+              layout ?? (size === "sm" ? "inline" : "page")
+            ),
+          ]
         : [],
-    [surface, catalog, data, actions, layout, size]
+    [surface, repaired, catalog, data, actions, layout, size]
   )
   const reported = React.useRef(new Set<string>())
   React.useEffect(() => {

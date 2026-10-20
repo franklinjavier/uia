@@ -77,11 +77,20 @@ function actionSpecs(value: unknown, out: { name: string }[] = []) {
 }
 
 /** Entries that are confirmations: destructive events may live here. */
-const CONFIRMING = new Set(["Confirm", "Confirmation", "DecisionCard", "StatusCard", "Diff", "BeforeAfter"])
+const CONFIRMING = new Set([
+  "Confirm",
+  "Confirmation",
+  "DecisionCard",
+  "StatusCard",
+  "Diff",
+  "BeforeAfter",
+])
 
 /** A loose primary button (cards carry their own answer, not counted). */
 function isPrimary(node: ComponentNode) {
-  return node.component === "Button" && (!node.variant || node.variant === "primary")
+  return (
+    node.component === "Button" && (!node.variant || node.variant === "primary")
+  )
 }
 
 export function issueText(error: {
@@ -226,5 +235,102 @@ export function validateSurface(
     layout = "page",
   }: { actions?: HostActions; layout?: "inline" | "page" } = {}
 ) {
-  return collectIssues(surface, catalog, surface.data, actions, layout)
+  const { surface: fixed, fixes } = autofix(surface, catalog)
+  return [
+    ...fixes,
+    ...collectIssues(fixed, catalog, fixed.data, actions, layout),
+  ]
+}
+
+/* -------------------------------- autofix ------------------------------- */
+
+type ZodDef = {
+  type: string
+  innerType?: unknown
+  entries?: Record<string, string>
+}
+const defOf = (schema: unknown) => (schema as { def?: ZodDef })?.def
+
+function unwrap(schema: unknown): ZodDef | undefined {
+  let d = defOf(schema)
+  while (
+    d &&
+    (d.type === "optional" || d.type === "default" || d.type === "nullable")
+  )
+    d = defOf(d.innerType)
+  return d
+}
+
+/**
+ * Repair what is unambiguous before validating, and say so: a component name
+ * or an enum value in the wrong case, a number sent as a string. Anything
+ * ambiguous is left for validation to report. Returns the repaired surface
+ * and one AUTOFIXED issue per repair (send them back so the agent learns).
+ */
+export function autofix(
+  surface: SurfaceState,
+  catalog: Catalog
+): { surface: SurfaceState; fixes: SurfaceIssue[] } {
+  const fixes: SurfaceIssue[] = []
+  const names = new Map(
+    Object.keys(catalog.components).map((n) => [n.toLowerCase(), n])
+  )
+  const components: Record<string, ComponentNode> = {}
+  for (const [id, original] of Object.entries(surface.components)) {
+    let node = original
+    if (!catalog.components[node.component]) {
+      const name = names.get(node.component.toLowerCase())
+      if (name) {
+        fixes.push({
+          surfaceId: surface.id,
+          componentId: id,
+          code: "AUTOFIXED",
+          message: `component "${node.component}" → "${name}"`,
+        })
+        node = { ...node, component: name }
+      }
+    }
+    const entry = catalog.components[node.component]
+    const shape = (
+      entry?.props as { shape?: Record<string, unknown> } | undefined
+    )?.shape
+    if (shape) {
+      for (const [k, schema] of Object.entries(shape)) {
+        const v = node[k]
+        const d = unwrap(schema)
+        if (!d || v === undefined || isPathRef(v)) continue
+        if (d.type === "enum" && typeof v === "string") {
+          const options = Object.values(d.entries ?? {})
+          const hit = options.find((o) => o.toLowerCase() === v.toLowerCase())
+          if (hit && hit !== v) {
+            fixes.push({
+              surfaceId: surface.id,
+              componentId: id,
+              code: "AUTOFIXED",
+              message: `${k}: "${v}" → "${hit}"`,
+            })
+            node = { ...node, [k]: hit }
+          }
+        }
+        if (
+          d.type === "number" &&
+          typeof v === "string" &&
+          v.trim() !== "" &&
+          Number.isFinite(Number(v))
+        ) {
+          fixes.push({
+            surfaceId: surface.id,
+            componentId: id,
+            code: "AUTOFIXED",
+            message: `${k}: "${v}" → ${Number(v)}`,
+          })
+          node = { ...node, [k]: Number(v) }
+        }
+      }
+    }
+    components[id] = node
+  }
+  return fixes.length
+    ? { surface: { ...surface, components }, fixes }
+    : { surface, fixes }
 }

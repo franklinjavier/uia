@@ -171,6 +171,40 @@ renderUI: {
 - **Size**: `size="sm"` in a chat; layout follows the surface's width
   (container queries), so a `Grid` of 3 is one column in a reply.
 
+## Autofix
+
+Before validating, the runtime repairs what is unambiguous — a component
+name or enum value in the wrong case (`column` → `Column`, `Warning` →
+`warning`), a number sent as text (`"2"` → `2`) — and reports each repair
+as `AUTOFIXED`. Send those back too: the agent stops making the mistake.
+Anything ambiguous is left to validation.
+
+## OpenUI Lang as input
+
+Models can write the same surface in OpenUI Lang
+(https://www.openui.com/docs/openui-lang), a line syntax at about half
+the size of the JSON (fewer tokens, faster first paint):
+
+```
+root = Grid([spend, decision], 2)
+spend = Section("Spend", "October", [spent])
+spent = Stat("Spent", @Path("/spend/total"), "currency", "/ $1,500")
+decision = DecisionCard("davinci", null, "Move reviews to Sonnet?", null, null, null, null, null,
+  [{label: "Move", action: @RouteReviews({to: "sonnet"})}], null, null, {span: 2})
+```
+
+`openUIToMessages(text, catalog, { surfaceId, streaming })` turns it into
+the same A2UI messages, so the catalog, the host's actions and facts, and
+validation all apply; `catalogToOpenUIPrompt(catalog)` writes the
+signatures for the prompt. Positional arguments follow each entry's prop
+order. uia conventions: `@Path("/x")` binds a fact, `@Each("/items", row,
+"id")` is a template list, `@SomeAction({…})` is the event `some_action`, an
+extra trailing `{span, fallback}`. Left out on purpose (they put logic in
+the model's hands): `$variables`, ternaries and operators, Query, Mutation,
+functions — a line that uses them is dropped and reported. Prefer JSON
+(A2UI) by default; reach for OpenUI Lang when big screens make tokens or
+latency matter. See `example-surface` → "OpenUI Lang".
+
 ## Extending
 
 ```tsx

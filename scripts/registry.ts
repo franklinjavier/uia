@@ -140,12 +140,13 @@ const ITEMS: Item[] = [
   // Surfaces: the agent composes UI (A2UI v0.9) from a catalog. The runtime
   // has no styling; the catalog entries wrap uia pieces. Install the groups
   // you need and extend the catalog with your own entries.
-  item("surface", "registry:lib", "A2UI v0.9 runtime: messages → surfaces (store, JSON Pointer bindings), <Surface> renderer with validation, streaming placeholders and actions; defineComponent/defineCatalog, catalogToJSONSchema/catalogToPrompt.", [
+  item("surface", "registry:lib", "A2UI v0.9 runtime: messages → surfaces (store, JSON Pointer bindings), <Surface> renderer with autofix, validation, streaming placeholders, actions and motion; OpenUI Lang as an input format; defineComponent/defineCatalog, catalogToJSONSchema/catalogToPrompt.", [
     "registry/surface/types.ts",
     "registry/surface/store.ts",
     "registry/surface/format.ts",
     "registry/surface/catalog.ts",
     "registry/surface/validate.ts",
+    "registry/surface/openui.ts",
     "registry/surface/surface.tsx",
   ]),
   item("catalog-layout", "registry:component", "Catalog entries: Column, Row, Grid (container-query columns, span), Section, Card, Tabs, Divider.", ["registry/catalog/layout.tsx"]),

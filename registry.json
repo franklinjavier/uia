@@ -1560,7 +1560,7 @@
       "name": "surface",
       "type": "registry:lib",
       "title": "Surface",
-      "description": "A2UI v0.9 runtime: messages → surfaces (store, JSON Pointer bindings), <Surface> renderer with validation, streaming placeholders and actions; defineComponent/defineCatalog, catalogToJSONSchema/catalogToPrompt.",
+      "description": "A2UI v0.9 runtime: messages → surfaces (store, JSON Pointer bindings), <Surface> renderer with autofix, validation, streaming placeholders, actions and motion; OpenUI Lang as an input format; defineComponent/defineCatalog, catalogToJSONSchema/catalogToPrompt.",
       "author": "uia",
       "dependencies": [
         "motion",
@@ -1595,6 +1595,11 @@
           "path": "registry/surface/validate.ts",
           "type": "registry:lib",
           "target": "@components/surface/validate.ts"
+        },
+        {
+          "path": "registry/surface/openui.ts",
+          "type": "registry:lib",
+          "target": "@components/surface/openui.ts"
         },
         {
           "path": "registry/surface/surface.tsx",

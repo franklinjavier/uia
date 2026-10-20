@@ -70,6 +70,8 @@ export type IssueCode =
   | "UNCONFIRMED_DESTRUCTIVE"
   /** A composition rule: one primary, one Note per Section, layout limits. */
   | "COMPOSITION"
+  /** Repaired automatically (name or enum case, a number sent as text); told so the agent learns. */
+  | "AUTOFIXED"
 
 /** A node the renderer couldn't draw, reported so the agent can fix it. */
 export type SurfaceIssue = {

@@ -159,8 +159,8 @@ export const costAndQuality = surface(
       eyebrow: "Spend · Routing",
       title: "Move code reviews from Opus to Sonnet?",
       context:
-        "Reviews are 41% of Opus spend. Sonnet passes the Code suite at 84.7% vs 85.1% on Opus.",
-      consequence: "About $230 less this month; the budget holds.",
+        "Reviews are most of Opus spend, and Sonnet passes the Code suite almost as well.",
+      consequence: "The month stays under budget.",
       actions: [
         {
           label: "Move reviews",
@@ -303,3 +303,24 @@ export const INTENTS = {
 } as const
 
 export type IntentKey = keyof typeof INTENTS
+
+/* -------- the same dashboard in OpenUI Lang (an input format) -------- */
+
+// What a model writes in OpenUI Lang for "AI cost and quality this week";
+// `openUIToMessages` turns it into the same surface as `costAndQuality`
+// (with that surface's data). Positional args follow each entry's props.
+export const costAndQualityLang = `root = Grid([spend, quality, daily, decision], 2)
+spend = Section("Spend", "October, by model", [spent, meter, spendNote])
+spent = Stat("Spent", @Path("/spend/total"), "currency", "/ $1,500", null, null, @Path("/spend/left"))
+meter = Meter(null, null, @Path("/spend/byModel"), @Path("/spend/budget"), null, "currency", [{value: 1200, label: "80%"}, {value: 1500, label: "Budget"}])
+spendNote = Note("warning", "86% used", "At this pace the budget runs out around Oct 23.")
+quality = Section("Quality", "Pass rate across eval suites", [pass, trend, suites])
+pass = Stat("Pass rate", @Path("/quality/pass"), "percent", null, @Path("/quality/delta"), null, "vs last week · target 90%")
+trend = Sparkline(@Path("/quality/trend"), "Last 10 runs")
+suites = List(@Each("/quality/suites", suite))
+suite = KeyValue(@Path("name"), @Path("pass"), "percent", @Path("meta"))
+daily = Section("Daily cost", null, [dailyBars], null, {span: 2})
+dailyBars = BarSeries(@Path("/spend/daily"), "currency")
+decision = DecisionCard("the agent", "Spend · Routing", "Move code reviews from Opus to Sonnet?", "Reviews are most of Opus spend, and Sonnet passes the Code suite almost as well.", null, null, null, "The month stays under budget.", [{label: "Move reviews", action: @RouteReviews({to: "sonnet"})}, {label: "Keep Opus", kind: "secondary", action: @RouteReviews({to: "opus"})}], null, null, {span: 2})
+`
+
