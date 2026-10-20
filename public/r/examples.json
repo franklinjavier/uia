@@ -9,7 +9,8 @@
     "franklinjavier/uia/example-model-router",
     "franklinjavier/uia/example-agent-runtime",
     "franklinjavier/uia/example-ai-spend",
-    "franklinjavier/uia/example-fleet-health"
+    "franklinjavier/uia/example-fleet-health",
+    "franklinjavier/uia/example-model-evals"
   ],
   "type": "registry:block"
 }

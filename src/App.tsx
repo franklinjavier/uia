@@ -8,6 +8,7 @@ import { Assistant } from "@/examples/assistant/assistant"
 import { AgentRuntime } from "@/examples/agent-runtime"
 import { AiSpend } from "@/examples/ai-spend"
 import { FleetHealth } from "@/examples/fleet-health"
+import { ModelEvals } from "@/examples/model-evals"
 import { ModelRouter } from "@/examples/model-router"
 
 const scenario =
@@ -28,6 +29,7 @@ const WIDGETS = {
   runtime: { label: "Agent runtime", component: AgentRuntime, full: false },
   spend: { label: "AI spend", component: AiSpend, full: false },
   fleet: { label: "Fleet health", component: FleetHealth, full: false },
+  evals: { label: "Evals", component: ModelEvals, full: false },
 } as const
 
 type WidgetKey = keyof typeof WIDGETS

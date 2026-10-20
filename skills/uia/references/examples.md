@@ -1,6 +1,6 @@
 # Examples
 
-Complete, working widgets built by the designer. **Before building anything,
+Complete, working widgets built by the designer (six of them). **Before building anything,
 open the closest one and copy its structure**: anatomy, panel split,
 spacing, which `ds/` pieces carry the data, how the list links to the
 visual. Then change the content. Matching an example is how a new screen
@@ -24,6 +24,7 @@ your visual reference. Screenshots are also in the uia repo under
 | Fleet health | `example-fleet-health` | big live number + delta + `Sparkline`, row of three `TickMeter` stats, heatmap with tooltip, view modes (`Segmented`), focus, an action that changes the data | monitoring, infrastructure, live metrics, grids of things |
 | Model router | `example-model-router` | number + `Segmented` policy, flow graph linked to a list, inline controls in a sentence (Fallback if … retry on …), deploy with states | configuration with a preview, routing, A/B, policies |
 | Agent runtime | `example-agent-runtime` | small number of things with state, illustration that highlights the focused thing, list rows with badge + countdown, select → act | resources with lifecycle (jobs, agents, sandboxes, workers) |
+| Model evals (pt-BR) | `example-model-evals` | number vs a baseline *and* a target (`MeterBar` with `min` to zoom), per-row comparison bars with a baseline tick, click a row to filter a second list, re-run with states, Brazilian formatting | quality, scores, A/B results, anything compared to a previous version |
 | Assistant | `example-assistant` | agent chat in a widget: thread + composer in one panel, scripted tools, questions → draft → approval | any chat, assistant or generative-UI surface |
 
 `?scenario=draft` style autostart and `?bare` are playground conveniences;

@@ -110,7 +110,7 @@ npx shadcn@latest add @uia/chat
 | Chat | `agent-chat`, `chat-thread`, `chat-turn`, `turn-actions`, `composer`, `chat-empty`, `chat-status` |
 | Bundles | `uia`, `chat`, `hitl` |
 | Lib | `motion`, `ai`, `url`, `highlighter` |
-| Examples | `examples` (bundle), `example-assistant`, `example-model-router`, `example-agent-runtime`, `example-ai-spend`, `example-fleet-health` |
+| Examples | `examples` (bundle), `example-assistant`, `example-model-router`, `example-agent-runtime`, `example-ai-spend`, `example-fleet-health`, `example-model-evals` |
 | Agent skill | `skill` |
 
 ```bash

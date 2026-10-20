@@ -114,6 +114,7 @@ const ITEMS: Item[] = [
   item("example-model-router", "registry:block", "Example: model router with policy, routing flow, routes list and deploy.", ["src/examples/model-router.tsx"]),
   item("example-agent-runtime", "registry:block", "Example: scale-to-zero sandboxes with an isometric scene and invoke.", ["src/examples/agent-runtime.tsx"]),
   item("example-ai-spend", "registry:block", "Example: monthly AI spend by model against a budget, with alert and projection.", ["src/examples/ai-spend.tsx"]),
+  item("example-model-evals", "registry:block", "Example (pt-BR): pass rate vs a baseline and a target, per-suite comparison, failures filtered by suite, re-run.", ["src/examples/model-evals.tsx"]),
   item("example-fleet-health", "registry:block", "Example: tokens/s with sparkline, fleet meters and a GPU heatmap.", ["src/examples/fleet-health.tsx"]),
   item("example-assistant", "registry:block", "Example: a scripted agent chat with questions, a draft and an approval.", [
     "src/examples/assistant/assistant.tsx",
@@ -131,7 +132,7 @@ const BUNDLES = [
     "action-card", "ask-user", "confirmation", "draft-card", "part-transition", "tool-line",
   ]),
   bundle("examples", "Every reference widget, to read, run and adapt.", [
-    "example-assistant", "example-model-router", "example-agent-runtime", "example-ai-spend", "example-fleet-health",
+    "example-assistant", "example-model-router", "example-agent-runtime", "example-ai-spend", "example-fleet-health", "example-model-evals",
   ]),
 ]
 

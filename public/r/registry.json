@@ -1075,6 +1075,35 @@
       ]
     },
     {
+      "name": "example-model-evals",
+      "type": "registry:block",
+      "title": "Example Model Evals",
+      "description": "Example (pt-BR): pass rate vs a baseline and a target, per-suite comparison, failures filtered by suite, re-run.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react",
+        "motion"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/button",
+        "franklinjavier/uia/meter-bar",
+        "franklinjavier/uia/motion",
+        "franklinjavier/uia/number-ticker",
+        "franklinjavier/uia/select",
+        "franklinjavier/uia/stat",
+        "franklinjavier/uia/status",
+        "franklinjavier/uia/theme",
+        "franklinjavier/uia/widget"
+      ],
+      "files": [
+        {
+          "path": "src/examples/model-evals.tsx",
+          "type": "registry:file",
+          "target": "~/src/examples/model-evals.tsx"
+        }
+      ]
+    },
+    {
       "name": "example-fleet-health",
       "type": "registry:block",
       "title": "Example Fleet Health",
@@ -1196,7 +1225,8 @@
         "franklinjavier/uia/example-model-router",
         "franklinjavier/uia/example-agent-runtime",
         "franklinjavier/uia/example-ai-spend",
-        "franklinjavier/uia/example-fleet-health"
+        "franklinjavier/uia/example-fleet-health",
+        "franklinjavier/uia/example-model-evals"
       ]
     },
     {

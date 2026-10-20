@@ -21,6 +21,7 @@ type Segment = { id: string; value: number; color?: string }
 type Marker = { value: number; label: string }
 
 function MeterBar({
+  min = 0,
   max,
   segments,
   markers = [],
@@ -28,6 +29,8 @@ function MeterBar({
   className,
   ...props
 }: Omit<React.ComponentProps<"div">, "children"> & {
+  /** Where the bar starts; raise it to zoom into a narrow range (pass rates 60–100%). */
+  min?: number
   /** The limit the value is measured against. */
   max: number
   segments: Segment[]
@@ -36,16 +39,15 @@ function MeterBar({
   highlighted?: string | null
 }) {
   const total = segments.reduce((s, x) => s + x.value, 0)
-  const scale = Math.max(max, total) || 1
-  const pct = (v: number) => `${(v / scale) * 100}%`
-  const lastMarker = Math.max(...markers.map((m) => m.value), 0)
+  const scale = Math.max(max, total)
+  const pct = (v: number) => `${(Math.max(0, v - min) / (scale - min || 1)) * 100}%`
 
   return (
     <div
       data-slot="meter-bar"
       role="meter"
       aria-valuenow={total}
-      aria-valuemin={0}
+      aria-valuemin={min}
       aria-valuemax={max}
       className={cn("relative pt-1", markers.length > 0 && "pb-5", className)}
       {...props}
@@ -60,7 +62,7 @@ function MeterBar({
               opacity: highlighted && highlighted !== s.id ? 0.25 : 1,
             }}
             initial={false}
-            animate={{ width: pct(s.value) }}
+            animate={{ width: pct(s.value + (s === segments[0] ? 0 : min)) }}
             transition={springSoft}
           />
         ))}
@@ -73,8 +75,8 @@ function MeterBar({
           initial={false}
           animate={{ left: pct(m.value) }}
           transition={springSoft}
-          // The last marker sits at the right edge until the total passes it.
-          style={{ translateX: m.value === lastMarker && total <= m.value ? "-100%" : "-50%" }}
+          // A marker at the right edge keeps its label inside the bar.
+          style={{ translateX: m.value >= scale ? "-100%" : "-50%" }}
         >
           <span className="h-4 w-px bg-foreground/40" />
           <span className="eyebrow mt-1 text-faint-foreground">{m.label}</span>

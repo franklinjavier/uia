@@ -103,7 +103,8 @@ info | destructive | brand | attention`. Pulse only for live states.
 ### MeterBar (`meter-bar`)
 A value against its limit, with the limit visible. One segment for a plain
 meter, several for a breakdown; `markers` label thresholds; `highlighted`
-fades the other segments (link it to the list's hover).
+fades the other segments (link it to the list's hover). `min` zooms into a
+narrow range (pass rates 60–100%) so close markers don't collide.
 
 ```tsx
 <MeterBar
@@ -244,7 +245,7 @@ Button language:
 Foundation: `theme`, `font-inter`, `font-geist-mono`, `typeset`.
 Primitives: `button`, `select`, `bubble`, `code-block`, `questionnaire`, `spinner`, `message-scroller`.
 System: `widget`, `stat`, `segmented`, `status`, `tick-meter`, `meter-bar`, `sparkline`, `number-ticker`, `agent-orb`, `model-icons`.
-Examples: `example-assistant`, `example-model-router`, `example-agent-runtime`, `example-ai-spend`, `example-fleet-health` (bundle: `examples`).
+Examples: `example-assistant`, `example-model-router`, `example-agent-runtime`, `example-ai-spend`, `example-fleet-health`, `example-model-evals` (bundle: `examples`).
 Generative UI: `action-card`, `ask-user`, `confirmation`, `draft-card`, `part-transition`, `tool-line`, `reasoning`, `sources`, `search-results`, `markdown`.
 Chat: `agent-chat`, `chat-thread`, `chat-turn`, `turn-actions`, `composer`, `chat-empty`, `chat-status`.
 Lib: `motion`, `ai`, `url`, `highlighter`.
