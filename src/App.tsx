@@ -1,5 +1,5 @@
 import * as React from "react"
-import { ChevronUpIcon, MoonIcon, SunIcon } from "lucide-react"
+import { ChevronsUpDownIcon, MoonIcon, SunIcon } from "lucide-react"
 
 import { useTheme } from "@/components/theme-provider"
 import { PlaygroundDock } from "@/playground-dock"
@@ -59,6 +59,7 @@ export function App() {
     (theme === "system" &&
       window.matchMedia("(prefers-color-scheme: dark)").matches)
 
+  const [pickerOpen, setPickerOpen] = React.useState(false)
   const go = (key: WidgetKey) => {
     setActive(key)
     window.location.hash = key
@@ -71,9 +72,21 @@ export function App() {
     <div className="relative min-h-svh bg-background">
       {!bare && (
         // The playground's own chrome: a draggable pill, out of every example's way.
-        <PlaygroundDock>
-          <Select value={active} onValueChange={(v) => v && go(v as WidgetKey)}>
-            <SelectTrigger aria-label="Example" icon={<ChevronUpIcon />}>
+        <PlaygroundDock onDragStart={() => setPickerOpen(false)}>
+          <Select
+            open={pickerOpen}
+            onOpenChange={setPickerOpen}
+            value={active}
+            onValueChange={(v) => v && go(v as WidgetKey)}
+          >
+            <SelectTrigger
+              aria-label="Example"
+              icon={<ChevronsUpDownIcon />}
+              // The dock drags from anywhere: open on a real click, not on press.
+              onPointerDown={(e) => e.preventBaseUIHandler()}
+              onMouseDown={(e) => e.preventBaseUIHandler()}
+              onClick={() => setPickerOpen((o) => !o)}
+            >
               <SelectValue>{(v: WidgetKey) => WIDGETS[v].label}</SelectValue>
             </SelectTrigger>
             <SelectContent side="top" alignItemWithTrigger={false}>
