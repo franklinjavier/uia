@@ -2,7 +2,8 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 // Progress as a row of hairline ticks. Colour comes from `currentColor`,
-// so set a text-* class (text-brand, text-chart-1…) on the meter.
+// so set a text-* class (text-brand, text-chart-1…) on the meter; the
+// empty ticks are the same hue at 20%, so the track reads as one scale.
 function TickMeter({
   value,
   ticks = 48,
@@ -26,7 +27,7 @@ function TickMeter({
           key={i}
           className={cn(
             "w-px rounded-full transition-colors duration-300",
-            i < filled ? "bg-current" : "bg-border"
+            i < filled ? "bg-current" : "bg-current/20"
           )}
         />
       ))}

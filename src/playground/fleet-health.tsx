@@ -266,7 +266,7 @@ function Meter({ label, value, unit, ratio }: { label: string; value: string; un
         <span className="tabular-nums">{value}</span>
         <StatUnit className="text-sm">{unit}</StatUnit>
       </StatValue>
-      <TickMeter value={ratio} ticks={24} />
+      <TickMeter value={ratio} ticks={24} className="text-chart-1" />
     </Stat>
   )
 }
@@ -369,10 +369,13 @@ function Heatmap({
   )
 }
 
-/** Sequential scale on a single chart hue, from the muted surface up. */
+/**
+ * Sequential scale on a single chart hue, as opacity over the card: the
+ * hue never drifts (mixing with grey turned the blue purple in dark).
+ */
 function cellColor(v: number) {
-  const pct = Math.round(12 + Math.min(1, Math.max(0, v)) * 88)
-  return `color-mix(in oklch, var(--chart-1) ${pct}%, var(--muted))`
+  const pct = Math.round(14 + Math.min(1, Math.max(0, v)) * 86)
+  return `color-mix(in oklch, var(--chart-1) ${pct}%, transparent)`
 }
 
 function GpuCell({ gpu, node, index, value }: { gpu: Gpu; node: Node; index: number; value: number }) {
