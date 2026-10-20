@@ -6,6 +6,8 @@ import { defineConfig } from "vite"
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  // Reachable from the tailnet (your-machine.ts.net) for testing on the phone.
+  server: { allowedHosts: [".ts.net"] },
   resolve: {
     alias: {
       "@": resolve(import.meta.dirname, "./src"),
