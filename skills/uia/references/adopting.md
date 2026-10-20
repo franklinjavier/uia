@@ -1,11 +1,57 @@
 # Adopting uia in an existing app
 
-The README's quick start is for a new project. An app that already has
-shadcn, its own theme and its own pieces adopts uia **piece by piece**,
-without `--overwrite` and without a big bang. Nothing here changes the app's
-contracts, transport or permissions: uia renders, the app stays the host.
+Two paths. Pick one before touching anything:
 
-## 1. Check compatibility (read only)
+- **Replace the UI** (the app's look isn't worth keeping): keep the app's
+  logic, throw its UI layer away, rebuild it on uia. Section A.
+- **Adopt piece by piece** (the app's look is fine, uia adds what's
+  missing): install selectively, never `--overwrite`. Section B.
+
+Either way nothing changes the app's contracts, transport or permissions:
+uia renders, the app stays the host.
+
+## A. Replace the UI
+
+**Keep** (the app's logic — read it, don't rewrite it):
+- contracts with the backend (typed messages, blocks, events, actions);
+- transport and streaming, the server proxy and its secrets, auth;
+- persistence, receipts, idempotency, reconciliation of uncertain sends;
+- the behavioural tests of that logic.
+
+**Replace** (the UI layer):
+- `components/ui` → uia's (`npx shadcn@latest add franklinjavier/uia/uia
+  --overwrite`, on a branch); the app's own primitive tweaks are dropped on
+  purpose;
+- the app's chat components → uia's chat kit (`ChatThread`, `ChatTurn`,
+  `Composer`, `useAgentChat` or the app's own hook feeding them);
+- the app's renderers for agent output → uia parts, through **one adapter**
+  that maps each contract block to a part (table below). The adapter is the
+  only file that knows both sides;
+- pages → rebuilt from the closest examples: `example-assistant` (the
+  conversation), `example-davinci` (an agent app: nav, inbox of
+  decisions, activity, rules), `example-davinci-surface` (screens the agent
+  composes).
+
+**Order:**
+1. Branch. Install uia with `--overwrite` (theme, fonts, primitives, chat,
+   hitl, skill). Point `AGENTS.md` at the skill.
+2. Write the adapter: contract block → uia part, callbacks → the app's
+   action layer. Delete the old renderers once every block type maps.
+3. Rebuild the conversation page on the chat kit with the adapter in the
+   tool/data registries. Keep the app's hook if it already handles the
+   stream, receipts and reconciliation; feed its state to the kit.
+4. Rebuild the product screens by hand with uia pieces.
+5. Add surfaces last, as one more block type, with the app's actions in
+   `defineActions`.
+6. The logic tests still pass unchanged; UI tests are rewritten against
+   the new pieces. Check light, dark and 375 px.
+
+What not to carry over: the old CSS, custom density tokens, per-component
+overrides of shadcn, and any UI state that duplicated the contract.
+
+## B. Adopt piece by piece
+
+### 1. Check compatibility (read only)
 
 - `components.json`: shadcn with **Base UI** (`style: "base-*"`). Radix-based
   styles need a different path; stop and ask.
@@ -18,7 +64,7 @@ contracts, transport or permissions: uia renders, the app stays the host.
   uia ships its own versions of `button`, `select`, `bubble`, `code-block`,
   `questionnaire`, `spinner`, `message-scroller` — those collide.
 
-## 2. Install without overwriting
+### 2. Install without overwriting
 
 ```bash
 # tokens and fonts first; read the diff before accepting
@@ -35,9 +81,9 @@ npx shadcn@latest add franklinjavier/uia/decision-card franklinjavier/uia/diff f
 - The repo is private until it opens: installs from GitHub need the
   person's `gh` credentials.
 
-## 3. Map what the app already renders
+### 3. Map what the app already renders
 
-If the app has its own renderers for agent output (typed blocks from a
+The same table is the adapter's map in path A. If the app has its own renderers for agent output (typed blocks from a
 backend contract), keep the **contract** and swap the **rendering** for uia
 pieces, one block type at a time:
 
@@ -58,7 +104,7 @@ pieces, one block type at a time:
 For each swap: same props in, same callbacks out, the app's tests still
 pass, before/after screenshots light and dark and at 375 px.
 
-## 4. Keep the host contracts in the app
+### 4. Keep the host contracts in the app
 
 - **Actions**: the app's action layer (receipts, idempotency, authorization)
   stays. uia components receive callbacks; for agent-composed surfaces,
@@ -69,7 +115,7 @@ pass, before/after screenshots light and dark and at 375 px.
 - **Generated UI never grants authority**: rendering a button doesn't make
   the action allowed; the app validates on execution.
 
-## 5. Order that works
+### 5. Order that works
 
 1. Theme and fonts (no visual change yet, just tokens available).
 2. Chat parts the app already has a counterpart for (decision, diff, plan…).
