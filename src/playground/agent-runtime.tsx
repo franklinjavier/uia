@@ -20,8 +20,12 @@ import {
   WidgetActions,
   WidgetFooter,
   WidgetHeader,
+  WidgetList,
+  WidgetListHeader,
+  WidgetListRow,
   WidgetMeta,
   WidgetPanel,
+  WidgetSectionTitle,
   WidgetTitle,
 } from "@/components/ds/widget"
 
@@ -54,6 +58,7 @@ const INITIAL: Agent[] = [
 ]
 
 const REGIONS = ["fra1", "iad1", "sin1"] as const
+const COLS = "grid-cols-[1fr_auto_112px]"
 
 function median(values: number[]) {
   const s = [...values].sort((a, b) => a - b)
@@ -63,6 +68,7 @@ function median(values: number[]) {
 export function AgentRuntime() {
   const [agents, setAgents] = React.useState(INITIAL)
   const [selected, setSelected] = React.useState("planner")
+  const [hovered, setHovered] = React.useState<string | null>(null)
   const [region, setRegion] = React.useState<string>("fra1")
   const [requests, setRequests] = React.useState(413)
   const [cold, setCold] = React.useState(13)
@@ -139,7 +145,7 @@ export function AgentRuntime() {
         </WidgetActions>
       </WidgetHeader>
 
-      <WidgetPanel className="relative flex flex-col gap-4">
+      <WidgetPanel className="relative flex flex-col gap-5">
         <Stat className="absolute top-5 left-5 z-10">
           <StatLabel>Sandboxes warm</StatLabel>
           <StatValue>
@@ -148,7 +154,12 @@ export function AgentRuntime() {
           </StatValue>
         </Stat>
 
-        <Sandboxes agents={agents} selected={selected} onSelect={setSelected} />
+        <Sandboxes
+          agents={agents}
+          focused={hovered ?? selected}
+          onSelect={setSelected}
+          onHover={setHovered}
+        />
 
         <div className="flex items-center justify-between gap-3">
           <span className="eyebrow text-muted-foreground">
@@ -158,38 +169,45 @@ export function AgentRuntime() {
         </div>
       </WidgetPanel>
 
-      <WidgetPanel className="flex flex-col p-1.5">
-        {agents.map((a) => (
-          <button
-            key={a.id}
-            type="button"
-            onClick={() => setSelected(a.id)}
-            aria-pressed={a.id === selected}
-            className={cn(
-              "grid grid-cols-[1fr_auto_112px] items-center gap-x-4 rounded-xl px-3.5 py-2.5 text-left outline-none transition-colors duration-200 hover:bg-muted/60 focus-visible:ring-3 focus-visible:ring-ring/30",
-              a.id === selected && "bg-muted hover:bg-muted"
-            )}
-          >
-            <span className="flex min-w-0 flex-col gap-0.5">
-              <span className="text-sm">{a.name}</span>
-              <span className="eyebrow truncate text-muted-foreground">{a.meta}</span>
-            </span>
-            <AgentBadge status={a.status} />
-            <span className="eyebrow text-right whitespace-nowrap text-muted-foreground">
-              {a.status === "running" ? (
-                <>
-                  Zero in <span className="tabular-nums">{a.idle}s</span>
-                </>
-              ) : a.status === "starting" ? (
-                "Cold start"
-              ) : (
-                <>
-                  <span className="tabular-nums">{a.coldStarts}</span> cold starts
-                </>
-              )}
-            </span>
-          </button>
-        ))}
+      <WidgetPanel className="flex flex-col pt-3">
+        <WidgetList onMouseLeave={() => setHovered(null)}>
+          <WidgetListHeader className={COLS}>
+            <WidgetSectionTitle>Agents</WidgetSectionTitle>
+            <span className="eyebrow text-right text-muted-foreground">Status</span>
+            <span className="eyebrow text-right text-muted-foreground">Scale</span>
+          </WidgetListHeader>
+          {agents.map((a) => (
+            <WidgetListRow
+              key={a.id}
+              className={COLS}
+              selected={a.id === selected}
+              dimmed={hovered !== null && hovered !== a.id}
+              onMouseEnter={() => setHovered(a.id)}
+              onClick={() => setSelected(a.id)}
+            >
+              <span className="flex min-w-0 flex-col gap-0.5">
+                <span>{a.name}</span>
+                <span className="eyebrow truncate text-muted-foreground">{a.meta}</span>
+              </span>
+              <span className="flex justify-end">
+                <AgentBadge status={a.status} />
+              </span>
+              <span className="eyebrow text-right whitespace-nowrap text-muted-foreground">
+                {a.status === "running" ? (
+                  <>
+                    Zero in <span className="tabular-nums">{a.idle}s</span>
+                  </>
+                ) : a.status === "starting" ? (
+                  "Cold start"
+                ) : (
+                  <>
+                    <span className="tabular-nums">{a.coldStarts}</span> cold starts
+                  </>
+                )}
+              </span>
+            </WidgetListRow>
+          ))}
+        </WidgetList>
       </WidgetPanel>
 
       <WidgetFooter>
@@ -199,7 +217,7 @@ export function AgentRuntime() {
         </WidgetMeta>
         <Button
           variant="brand"
-          className="ml-auto min-w-36"
+          className="ml-auto min-w-32"
           disabled={current.status === "starting"}
           onClick={invoke}
         >
@@ -279,12 +297,15 @@ const BOX_H = 12
 
 function Sandboxes({
   agents,
-  selected,
+  focused: selected,
   onSelect,
+  onHover,
 }: {
   agents: Agent[]
-  selected: string
+  /** The hovered agent, or the selected one. */
+  focused: string
   onSelect: (id: string) => void
+  onHover: (id: string | null) => void
 }) {
   const current = agents.find((a) => a.id === selected)!
   // Draw back to front so nearer boxes overlap farther ones.
@@ -341,7 +362,12 @@ function Sandboxes({
         {ordered.map((a, i) => (
           <React.Fragment key={a.id}>
             {i === 1 && <Gateway />}
-            <Sandbox agent={a} selected={a.id === selected} onSelect={() => onSelect(a.id)} />
+            <Sandbox
+              agent={a}
+              selected={a.id === selected}
+              onSelect={() => onSelect(a.id)}
+              onHover={(on) => onHover(on ? a.id : null)}
+            />
           </React.Fragment>
         ))}
 
@@ -429,17 +455,24 @@ function Sandbox({
   agent,
   selected,
   onSelect,
+  onHover,
 }: {
   agent: Agent
   selected: boolean
   onSelect: () => void
+  onHover: (on: boolean) => void
 }) {
   const [cx, cy] = agent.slot
   const x = cx - BOX / 2
   const y = cy - BOX / 2
 
   return (
-    <g onClick={onSelect} className="cursor-pointer">
+    <g
+      onClick={onSelect}
+      onMouseEnter={() => onHover(true)}
+      onMouseLeave={() => onHover(false)}
+      className="cursor-pointer"
+    >
       <AnimatePresence initial={false}>
         {agent.status === "zero" ? (
           <motion.polygon

@@ -93,6 +93,74 @@ function WidgetPanel({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/** A small heading inside a panel ("Routes", "Agents"). */
+function WidgetSectionTitle({ className, ...props }: React.ComponentProps<"h3">) {
+  return (
+    <h3
+      data-slot="widget-section-title"
+      className={cn("text-[15px] leading-6 tracking-[-0.01em]", className)}
+      {...props}
+    />
+  )
+}
+
+// WidgetList: rows inside a panel, separated by hairlines. Set the grid
+// columns once on the header and each row (className="grid-cols-[…]").
+//
+//   <WidgetList>
+//     <WidgetListHeader className="grid-cols-[1fr_80px]">…</WidgetListHeader>
+//     <WidgetListRow className="grid-cols-[1fr_80px]" selected dimmed onClick>…</WidgetListRow>
+//   </WidgetList>
+//
+// One interaction model for every list linked to a visual: hovering a row
+// previews it (the others dim, the visual follows), clicking selects it.
+function WidgetList({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="widget-list"
+      role="list"
+      className={cn("-mx-2 flex flex-col", className)}
+      {...props}
+    />
+  )
+}
+
+function WidgetListHeader({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="widget-list-header"
+      className={cn("grid items-center gap-x-3 px-2 pb-2", className)}
+      {...props}
+    />
+  )
+}
+
+/** A row. Renders a button when it has `onClick`, a plain row otherwise. */
+function WidgetListRow({
+  selected = false,
+  dimmed = false,
+  className,
+  ...props
+}: React.ComponentProps<"button"> & { selected?: boolean; dimmed?: boolean }) {
+  const interactive = Boolean(props.onClick)
+  const Comp = (interactive ? "button" : "div") as "button"
+  return (
+    <Comp
+      data-slot="widget-list-row"
+      role={interactive ? undefined : "listitem"}
+      type={interactive ? "button" : undefined}
+      aria-pressed={interactive ? selected : undefined}
+      data-selected={selected || undefined}
+      data-dimmed={dimmed || undefined}
+      className={cn(
+        "grid items-center gap-x-3 rounded-lg border-t border-border/70 px-2 py-2.5 text-left text-sm outline-none transition-[opacity,background-color] duration-200 first:border-t-0 hover:bg-muted/70 focus-visible:ring-3 focus-visible:ring-ring/30 data-dimmed:opacity-45 data-selected:bg-muted",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
 function WidgetFooter({ className, ...props }: React.ComponentProps<"footer">) {
   return (
     <footer
@@ -123,7 +191,11 @@ export {
   WidgetDescription,
   WidgetFooter,
   WidgetHeader,
+  WidgetList,
+  WidgetListHeader,
+  WidgetListRow,
   WidgetMeta,
   WidgetPanel,
+  WidgetSectionTitle,
   WidgetTitle,
 }

@@ -15,6 +15,7 @@ import {
 import { Switch } from "@/components/ui/switch"
 import { NumberTicker } from "@/components/ds/number-ticker"
 import { Segmented, SegmentedItem } from "@/components/ds/segmented"
+import { StatusDot } from "@/components/ds/status"
 import {
   Stat,
   StatLabel,
@@ -27,8 +28,12 @@ import {
   WidgetActions,
   WidgetFooter,
   WidgetHeader,
+  WidgetList,
+  WidgetListHeader,
+  WidgetListRow,
   WidgetMeta,
   WidgetPanel,
+  WidgetSectionTitle,
   WidgetTitle,
 } from "@/components/ds/widget"
 
@@ -50,6 +55,7 @@ const SHARES: Record<Policy, Record<ModelId, number>> = {
 }
 
 const TOTAL_RPS = 334
+const COLS = "grid-cols-[1fr_76px_76px_60px_48px]"
 
 export function ModelRouter() {
   const [policy, setPolicy] = React.useState<Policy>("balanced")
@@ -134,47 +140,47 @@ export function ModelRouter() {
       </WidgetPanel>
 
       <WidgetPanel className="flex flex-col pt-3">
-        <div className="grid grid-cols-[1fr_76px_76px_60px_48px] items-center gap-x-2 pb-2">
-          <span className="text-[15px] tracking-[-0.01em]">Routes</span>
-          <span className="eyebrow text-right whitespace-nowrap text-muted-foreground">Share</span>
-          <span className="eyebrow text-right whitespace-nowrap text-muted-foreground">p50/p95 s</span>
-          <span className="eyebrow text-right whitespace-nowrap text-muted-foreground">$ / 1K</span>
-          <span className="eyebrow text-right whitespace-nowrap text-muted-foreground">Errors</span>
-        </div>
+        <WidgetList>
+          <WidgetListHeader className={COLS}>
+            <WidgetSectionTitle>Routes</WidgetSectionTitle>
+            <span className="eyebrow text-right whitespace-nowrap text-muted-foreground">Share</span>
+            <span className="eyebrow text-right whitespace-nowrap text-muted-foreground">p50/p95 s</span>
+            <span className="eyebrow text-right whitespace-nowrap text-muted-foreground">$ / 1K</span>
+            <span className="eyebrow text-right whitespace-nowrap text-muted-foreground">Errors</span>
+          </WidgetListHeader>
 
-        {MODELS.map((m) => (
-          <div
-            key={m.id}
-            onMouseEnter={() => setHovered(m.id)}
-            onMouseLeave={() => setHovered(null)}
-            className={cn(
-              "-mx-2 grid grid-cols-[1fr_76px_76px_60px_48px] items-center gap-x-2 rounded-lg border-t border-border/70 px-2 py-2.5 text-sm transition-[opacity,background-color] duration-200 first-of-type:border-t-0 hover:bg-muted/70",
-              hovered && hovered !== m.id && "opacity-45"
-            )}
-          >
-            <span className="flex min-w-0 items-center gap-2">
-              <span className="size-2 shrink-0 rounded-full" style={{ background: m.color }} />
-              <span className="truncate">{m.name}</span>
-              <span className="eyebrow truncate text-[10px] text-faint-foreground">{m.provider}</span>
-            </span>
-            <span className="flex items-center justify-end gap-2">
-              <span className="h-1 w-6 overflow-hidden rounded-full bg-muted">
-                <motion.span
-                  className="block h-full rounded-full"
-                  style={{ background: m.color }}
-                  animate={{ width: `${shares[m.id]}%` }}
-                  transition={springSoft}
-                />
+          {MODELS.map((m) => (
+            <WidgetListRow
+              key={m.id}
+              className={COLS}
+              dimmed={hovered !== null && hovered !== m.id}
+              onMouseEnter={() => setHovered(m.id)}
+              onMouseLeave={() => setHovered(null)}
+            >
+              <span className="flex min-w-0 items-center gap-2">
+                <span className="size-2 shrink-0 rounded-full" style={{ background: m.color }} />
+                <span className="truncate">{m.name}</span>
+                <span className="eyebrow truncate text-faint-foreground">{m.provider}</span>
               </span>
-              <NumberTicker value={shares[m.id]} format={(v) => `${Math.round(v)}%`} className="w-8 text-right" />
-            </span>
-            <span className="text-right text-muted-foreground tabular-nums">
-              {m.p50.toFixed(2)} / {m.p95.toFixed(2)}
-            </span>
-            <span className="text-right tabular-nums">${m.price.toFixed(4)}</span>
-            <span className="text-right text-muted-foreground tabular-nums">{m.errors.toFixed(2)}%</span>
-          </div>
-        ))}
+              <span className="flex items-center justify-end gap-2">
+                <span className="h-1 w-6 overflow-hidden rounded-full bg-muted">
+                  <motion.span
+                    className="block h-full rounded-full"
+                    style={{ background: m.color }}
+                    animate={{ width: `${shares[m.id]}%` }}
+                    transition={springSoft}
+                  />
+                </span>
+                <NumberTicker value={shares[m.id]} format={(v) => `${Math.round(v)}%`} className="w-8 text-right" />
+              </span>
+              <span className="text-right text-muted-foreground tabular-nums">
+                {m.p50.toFixed(2)} / {m.p95.toFixed(2)}
+              </span>
+              <span className="text-right tabular-nums">${m.price.toFixed(4)}</span>
+              <span className="text-right text-muted-foreground tabular-nums">{m.errors.toFixed(2)}%</span>
+            </WidgetListRow>
+          ))}
+        </WidgetList>
 
         <div className="mt-1 flex items-center gap-1.5 border-t border-border/70 pt-3 text-sm">
           <Switch
@@ -191,12 +197,13 @@ export function ModelRouter() {
       </WidgetPanel>
 
       <WidgetFooter>
-        <WidgetMeta>
+        <WidgetMeta className="flex items-center gap-2">
+          <StatusDot tone="success" pulse />
           Policy v{version} · live on {env}
         </WidgetMeta>
         <Button
           variant="brand"
-          className="ml-auto min-w-28"
+          className="ml-auto min-w-32"
           disabled={!dirty || deploying}
           onClick={deploy}
         >

@@ -54,6 +54,32 @@ A self-contained tool surface: header → panels → footer.
   variant (don't override it).
 - `WidgetDescription` for one muted line under the title; `WidgetMeta` is
   eyebrow-styled.
+- `WidgetSectionTitle`: a small heading inside a panel ("Routes", "Agents").
+- `WidgetList` > `WidgetListHeader` + `WidgetListRow`: rows inside a panel,
+  hairline between rows. Put the same `grid-cols-[…]` on the header and every
+  row; header cells are `eyebrow text-muted-foreground`. A row with `onClick`
+  becomes a button (`selected` → `bg-muted`); `dimmed` fades it.
+- **One interaction for a list linked to a visual** (chart, graph,
+  illustration): hovering a row previews it (other rows `dimmed`, the visual
+  follows), clicking selects it. Don't invent another model per widget.
+
+```tsx
+<WidgetPanel className="flex flex-col pt-3">
+  <WidgetList onMouseLeave={() => setHovered(null)}>
+    <WidgetListHeader className={COLS}>
+      <WidgetSectionTitle>Agents</WidgetSectionTitle>
+      <span className="eyebrow text-right text-muted-foreground">Status</span>
+    </WidgetListHeader>
+    {agents.map((a) => (
+      <WidgetListRow key={a.id} className={COLS}
+        selected={a.id === selected}
+        dimmed={hovered !== null && hovered !== a.id}
+        onMouseEnter={() => setHovered(a.id)}
+        onClick={() => setSelected(a.id)}>…</WidgetListRow>
+    ))}
+  </WidgetList>
+</WidgetPanel>
+```
 
 ### Stat (`stat`)
 `Stat` > `StatLabel` (eyebrow) · `StatValue size="lg|sm"` (light, tabular) ·
