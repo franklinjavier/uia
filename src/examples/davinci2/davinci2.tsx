@@ -1,6 +1,6 @@
 import * as React from "react"
 import type { UIMessage } from "ai"
-import { AnimatePresence, motion, type TargetAndTransition } from "motion/react"
+import { AnimatePresence, LayoutGroup, motion, type TargetAndTransition } from "motion/react"
 import {
   CheckIcon,
   HistoryIcon,
@@ -15,7 +15,7 @@ import {
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { enter } from "@/lib/motion"
+import { enter, springSoft } from "@/lib/motion"
 import { Button } from "@/components/ui/button"
 import { useTheme } from "@/components/theme-provider"
 import { Switch } from "@/components/ui/switch"
@@ -48,7 +48,6 @@ import {
   ActionCardTitle,
   ResolvedRow,
 } from "@/components/parts/action-card"
-import { PartTransition } from "@/components/parts/part-transition"
 import { ChatThread, ChatThreadItem } from "@/components/chat/chat-thread"
 import { ChatTurn } from "@/components/chat/chat-turn"
 import {
@@ -625,7 +624,10 @@ function Inbox({
   onDecided: () => void
   onProjects: () => void
 }) {
-  const answered = QUEUE.filter((q) => answers[q.id])
+  // Newest first: it lands right under the cards it left.
+  const answered = Object.keys(answers)
+    .reverse()
+    .map((id) => QUEUE.find((q) => q.id === id)!)
   const urgent = open.find((q) => q.urgency === "now")
 
   // "Now" stays in reach: once its card scrolls away, a compact bar pins it.
@@ -710,76 +712,111 @@ function Inbox({
           </p>
         </div>
 
-        {(["now", "today", "later"] as Urgency[]).map((u) => {
-          const items = open.filter((q) => q.urgency === u)
-          if (!items.length) return null
-          return (
-            <section
-              key={u}
-              ref={u === "now" ? nowCard : undefined}
-              className="flex scroll-my-24 flex-col gap-3"
-            >
-              <h2
-                className={cn(
-                  "px-1 eyebrow",
-                  u === "now" ? "text-attention" : "text-muted-foreground"
-                )}
-              >
-                {URGENCY[u]}
-              </h2>
-              <AnimatePresence initial={false} mode="popLayout">
-                {items.map((q) => (
-                  <motion.div
-                    key={q.id}
-                    exit={{ opacity: 0, scale: 0.98 }}
-                    transition={enter}
-                  >
-                    <QueueCard
-                      item={q}
-                      onAnswer={onAnswer}
-                      onRule={onRule}
-                      onPanel={onPanel}
-                    />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </section>
-          )
-        })}
-
-        {answered.length > 0 && (
-          <section className="flex flex-col gap-2">
-            <h2 className="px-1 eyebrow text-muted-foreground">
-              Answered today
-            </h2>
-            {answered.map((q) => {
-              const a = answers[q.id]
+        {/* Every move shows where things went: an answered card sinks toward
+            "Answered today" and its row drops in from above; the cards below
+            glide up into the gap; Undo plays it backwards. */}
+        <LayoutGroup>
+          <AnimatePresence initial={false} mode="popLayout">
+            {(["now", "today", "later"] as Urgency[]).map((u) => {
+              const items = open.filter((q) => q.urgency === u)
+              if (!items.length) return null
               return (
-                <PartTransition key={q.id} state="done">
-                  <div className="flex items-center gap-2">
-                    <ResolvedRow
-                      className="min-w-0 flex-1"
-                      icon={a.by === "rule" ? <ScaleIcon /> : <CheckIcon />}
-                      label={a.label}
-                      summary={`${q.title} · ${a.at}${a.by === "rule" ? " · by your new rule" : a.pick ? " · davinci's pick" : ""}`}
-                    />
-                    {(q.reversible || a.by === "rule") && (
-                      <Button
-                        size="xs"
-                        variant="ghost"
-                        className="shrink-0 text-muted-foreground"
-                        onClick={() => onUndo(q.id)}
-                      >
-                        <Undo2Icon />
-                        Undo
-                      </Button>
+                <motion.section
+                  key={u}
+                  layout="position"
+                  ref={u === "now" ? nowCard : undefined}
+                  exit={{ opacity: 0 }}
+                  transition={{ ...enter, layout: springSoft }}
+                  className="flex scroll-my-24 flex-col gap-3"
+                >
+                  <h2
+                    className={cn(
+                      "px-1 eyebrow",
+                      u === "now" ? "text-attention" : "text-muted-foreground"
                     )}
-                  </div>
-                </PartTransition>
+                  >
+                    {URGENCY[u]}
+                  </h2>
+                  <AnimatePresence initial={false} mode="popLayout">
+                    {items.map((q) => (
+                      <motion.div
+                        key={q.id}
+                        layout="position"
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 20, scale: 0.98 }}
+                        transition={{ ...enter, layout: springSoft }}
+                      >
+                        <QueueCard
+                          item={q}
+                          onAnswer={onAnswer}
+                          onRule={onRule}
+                          onPanel={onPanel}
+                        />
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </motion.section>
               )
             })}
-          </section>
-        )}
+
+            {answered.length > 0 && (
+              <motion.section
+                key="answered"
+                layout="position"
+                exit={{ opacity: 0 }}
+                transition={{ ...enter, layout: springSoft }}
+                className="flex flex-col gap-2"
+              >
+                <h2 className="px-1 eyebrow text-muted-foreground">
+                  Answered today
+                </h2>
+                <AnimatePresence initial={false} mode="popLayout">
+                  {answered.map((q) => {
+                    const a = answers[q.id]
+                    return (
+                      <motion.div
+                        key={q.id}
+                        layout="position"
+                        initial={{ opacity: 0, y: -12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -12 }}
+                        transition={{ ...enter, delay: 0.12, layout: springSoft }}
+                        className="relative flex items-center gap-2"
+                      >
+                        {/* The row that just arrived glows once, so the eye finds it. */}
+                        <motion.span
+                          aria-hidden
+                          initial={{ opacity: 1 }}
+                          animate={{ opacity: 0 }}
+                          transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" }}
+                          className="pointer-events-none absolute -inset-x-2 -inset-y-1 rounded-xl bg-muted"
+                        />
+                        <ResolvedRow
+                          className="relative min-w-0 flex-1"
+                          icon={a.by === "rule" ? <ScaleIcon /> : <CheckIcon />}
+                          label={a.label}
+                          summary={`${q.title} · ${a.at}${a.by === "rule" ? " · by your new rule" : a.pick ? " · davinci's pick" : ""}`}
+                        />
+                        {(q.reversible || a.by === "rule") && (
+                          <Button
+                            size="xs"
+                            variant="ghost"
+                            className="relative shrink-0 text-muted-foreground"
+                            onClick={() => onUndo(q.id)}
+                          >
+                            <Undo2Icon />
+                            Undo
+                          </Button>
+                        )}
+                      </motion.div>
+                    )
+                  })}
+                </AnimatePresence>
+              </motion.section>
+            )}
+          </AnimatePresence>
+        </LayoutGroup>
       </div>
     </div>
   )

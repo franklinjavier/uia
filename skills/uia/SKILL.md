@@ -73,6 +73,15 @@ to compose the existing pieces so the result looks like the designer built it.
   layout animations inside a streaming transcript: content moves under them
   and they fly in from the top. When a part changes state, wrap it in
   `PartTransition`.
+- **Moves show where things went.** In a list that isn't a streaming
+  transcript (an inbox, a queue, a board), acting on an item never makes it
+  blink away: it leaves toward where it goes (an answered card sinks toward
+  "Answered today": `exit={{ opacity: 0, y: 20, scale: 0.98 }}`), the items
+  around it glide into the gap (`layout="position"` with `springSoft`,
+  inside `AnimatePresence mode="popLayout"` + `LayoutGroup`, sections
+  too), and it arrives from the direction it came (`y: -12` from above),
+  glowing once (`bg-muted` fading over ~1 s) so the eye finds it. Newest
+  first, so the trip is short. Undo plays it backwards.
 - **Chat turns animate themselves.** `ChatTurn` plays the entrance: what
   the person sends lands with a fade, a 8px lift and a blur clearing; the
   answer follows 120 ms later; a thread's history (opened, reloaded) just

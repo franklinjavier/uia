@@ -240,8 +240,9 @@ a scroll, and loses what was decided. Build the app the example
   the consequence ("If you go with davinci: …"). Mark the exception only
   ("Irreversible"); most things can be undone, so don't badge them.
 - **Only the urgent card glows** (`ActionCard tone="attention"`); answering
-  drains the glow, then the card leaves and becomes an "Answered today" row
-  with Undo. When the urgent card scrolls away, a compact "Now" bar pins it.
+  drains the glow, then the card sinks out, the cards below glide up, and
+  it lands as the newest "Answered today" row (dropping in from above,
+  glowing once) with Undo, which sends it back up into its section. When the urgent card scrolls away, a compact "Now" bar pins it.
 - **The summary line links**: every count in it ("7 shipped", "1 stuck",
   "7 decided for you") opens the place that explains it.
 - **Threads are for talking**, one per project, under the agent's still
