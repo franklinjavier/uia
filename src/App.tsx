@@ -13,14 +13,14 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Assistant } from "@/examples/assistant/assistant"
-import { AgentRuntime } from "@/examples/agent-runtime"
-import { AiSpend } from "@/examples/ai-spend"
-import { FleetHealth } from "@/examples/fleet-health"
-import { ModelEvals } from "@/examples/model-evals"
+import { AgentRuntimeExample as AgentRuntime } from "@/examples/agent-runtime"
+import { AiSpendExample as AiSpend } from "@/examples/ai-spend"
+import { FleetHealthExample as FleetHealth } from "@/examples/fleet-health"
+import { ModelEvalsExample as ModelEvals } from "@/examples/model-evals"
 import { Bottega } from "@/examples/bottega/bottega"
 import { Davinci } from "@/examples/davinci/davinci"
 import { DavinciInbox, type View as DavinciView } from "@/examples/davinci2/davinci2"
-import { ModelRouter } from "@/examples/model-router"
+import { ModelRouterExample as ModelRouter } from "@/examples/model-router"
 
 const scenario =
   new URLSearchParams(window.location.search).get("scenario") ?? undefined

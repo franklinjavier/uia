@@ -23,6 +23,7 @@ forking the component.
 3. Chat kit (`chat/`)
 4. Primitives (`ui/`)
 5. Bundles and item names
+6. Widgets (`widgets/`) and the app shell (`app/`)
 
 ---
 
@@ -48,6 +49,10 @@ A self-contained tool surface: header → panels → footer.
   footer align with the panels' edge. Right inside chats and white pages.
 - `Widget variant="framed"`: the floating shell (`rounded-3xl bg-surface p-1
   shadow-widget`, gap 1). For dashboards with neighbours, floating panels.
+- `Widget size="sm"`: message density (header/footer `min-h-8`, title 14px
+  medium, panels `p-3.5`, the `lg` stat steps down to 24px). The same widget
+  inside a chat reply, a side panel or a dense grid. `ChartCard` and
+  `Findings` are compositions of it; never build a second shell.
 - `WidgetPanel`: `rounded-2xl bg-card p-5` hairline ring. Use several panels
   rather than dividers inside one.
 - `WidgetHeader`/`WidgetFooter`: no card of their own; padding follows the
@@ -275,10 +280,57 @@ Button language:
 
 Foundation: `theme`, `font-inter`, `font-geist-mono`, `typeset`.
 Primitives: `button`, `select`, `bubble`, `code-block`, `questionnaire`, `spinner`, `message-scroller`.
-System: `widget`, `stat`, `segmented`, `status`, `tick-meter`, `meter-bar`, `sparkline`, `stage-track`, `number-ticker`, `agent-orb`, `model-icons`.
-Examples: `example-assistant`, `example-model-router`, `example-agent-runtime`, `example-ai-spend`, `example-fleet-health`, `example-model-evals`, `example-bottega` (bundle: `examples`).
-Generative UI: `action-card`, `ask-user`, `confirmation`, `preview-approval`, `decision-chip`, `draft-card`, `part-transition`, `tool-line`, `reasoning`, `sources`, `search-results`, `markdown`.
-Chat: `agent-chat`, `chat-thread`, `chat-turn`, `turn-actions`, `composer`, `chat-empty`, `chat-status`.
+System: `widget`, `stat`, `segmented`, `status`, `tick-meter`, `meter-bar`, `sparkline`, `bar-series`, `stage-track`, `task-list`, `number-ticker`, `agent-orb`, `model-icons`.
+Widgets: `widget-ai-spend`, `widget-fleet-health`, `widget-model-evals`, `widget-model-router`, `widget-agent-runtime` (bundle: `widgets`).
+App shell: `app-nav`, `theme-toggle`, `theme-provider`.
+Examples (fixtures over the widgets): `example-assistant`, `example-model-router`, `example-agent-runtime`, `example-ai-spend`, `example-fleet-health`, `example-model-evals`, `example-bottega`, `example-davinci` (bundle: `examples`).
+Generative UI: `action-card`, `decision-card`, `ask-user`, `confirmation`, `preview-approval`, `decision-chip`, `draft-card`, `plan`, `connect-prompt`, `findings`, `chart-card`, `attachment`, `part-transition`, `tool-line`, `reasoning`, `sources`, `search-results`, `markdown`.
+Chat: `agent-chat`, `chat-thread`, `chat-turn`, `turn-actions`, `composer`, `chat-empty`, `chat-status`, `chat-error`, `chat-pill`.
 Lib: `motion`, `ai`, `url`, `highlighter`.
-Bundles: `uia` (everything), `chat`, `hitl`.
+Bundles: `uia` (everything), `chat`, `hitl`, `widgets`, `examples`.
 Skill: `skill` (this file set).
+
+---
+
+## 6. Widgets — `@/components/widgets/*` — and the app shell — `@/components/app/*`
+
+**A widget is a component with typed props; its demo data lives outside.**
+Each widget is a pure view: data in through props, only UI state inside
+(period picked, row hovered, view mode), actions out through callbacks
+(`onDeploy(config)`, `onRerun()`, `onRebalance()`), pending states as props
+(`deployState`, `running`, `rebalancing`). Configuration the host owns is
+controlled-or-uncontrolled (`period` + `onPeriodChange`, defaulting
+internally). Copy and formatting come in as `locale`, `currency`, `labels`.
+The `example-*` files are only fixtures: data, simulation timers, and a
+`<Name>Example` that renders the widget.
+
+| Widget | Item | Key props |
+| --- | --- | --- |
+| `AiSpend` | `widget-ai-spend` | `models`, `periods`, `budget`, `alertAt`, `period`/`onPeriodChange`, `currency`, `locale`, `size` |
+| `FleetHealth` | `widget-fleet-health` | `nodes`, `tokens`, `queue`, `powerCap`, `interval`, `clusters`/`cluster`, `mode`, `onRebalance`, `rebalancing`, `live` |
+| `ModelEvals` | `widget-model-evals` | `model`, `suites`, `baselines`, `failures`, `target`, `min`, `baseline`, `onRerun`, `running`, `labels`, `locale` |
+| `ModelRouter` | `widget-model-router` | `models`, `policies`, `livePolicy`, `requestsPerSecond`, `environments`, `policy`, `fallback`, `onDeploy`, `deployState` |
+| `AgentRuntime` | `widget-agent-runtime` | `agents` (status, idle, coldStarts, startMs), `idleTimeout`, `requests`, `coldStartP50`, `onInvoke`, `selected`, `regions`/`region`, `live` |
+
+The same widget answers in a chat: a tool whose output is the widget's data
+renders `<AiSpend size="sm" {...part.output} />` after its trace line
+(`example-assistant`, scenario *spend*). Don't build a chat-only version.
+
+**Agent-app pieces**
+- `AppNav` / `AppNavSelect` (`app-nav`): the side nav of an agent app — the
+  agent's orb + name (home), `items` with `section`, `count`, `attention`
+  (only where the person is needed), `nudge` (`drop | lift | rewind |
+  weigh`) and `agent: true` for conversations (the still orb, waking on
+  hover); a `footer` slot. Phones: `AppNavSelect` in the header (orb, a
+  select with the same items, `trailing` slot for the theme toggle).
+- `ThemeToggle` (`theme-toggle`): every app carries its own.
+- `DecisionCard` (`decision-card`): one decision, self-contained — eyebrow,
+  title, context, `options` with the agent's `pick`, `consequence`
+  ("If you go with {agent}:"), `actions` as data (`kind: primary |
+  secondary | aside`), `irreversible` (the exception only), `urgent` (glow
+  that drains on answer), `agreement` + `onMakeRule`; `labels` for other
+  languages.
+- `TaskRow` / `TaskListHeader` / `taskRank` (`task-list`): tasks through a
+  fixed flow inside a `WidgetList` in an `@container`; stage names once (with
+  `count` when many), what needs the person sorted first.
+

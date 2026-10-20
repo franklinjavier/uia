@@ -6,6 +6,8 @@ import type { Draft } from "@/components/parts/draft-card"
 import type { Finding } from "@/components/parts/findings"
 import type { PlanStep } from "@/components/parts/plan"
 import type { BarDatum } from "@/components/ds/bar-series"
+import type { AiSpendModel, AiSpendPeriod } from "@/components/widgets/ai-spend"
+import { BUDGET, MODELS as SPEND_MODELS, PERIODS } from "@/examples/ai-spend"
 
 // Typed parts shared by the scripts and the renderer.
 type Tools = {
@@ -32,6 +34,10 @@ type Tools = {
   connectApp: {
     input: { app: "Slack"; reason: string; done: string }
     output: { connected: boolean }
+  }
+  reportSpend: {
+    input: { period: string }
+    output: { models: AiSpendModel[]; periods: AiSpendPeriod[]; budget: number }
   }
   readFile: {
     input: { name: string; pages: number }
@@ -357,12 +363,30 @@ const deck = createChat<ChatMessage>()
     writer.text("The deck flags five risks. Two are rated high and both relate to Q4 renewals, so I'd start there.")
   })
 
+/* ---- Spend: the agent answers with the dashboard's own widget ---- */
+
+const spend = createChat<ChatMessage>()
+  .user("How's our AI spend this month?")
+  .sleep(400)
+  .assistant(({ writer }) => {
+    writer.reasoning("Pull October's usage by model against the $1,500 budget; the spend widget shows it the way the dashboard does.")
+    writer.sleep(200)
+    writer
+      .tool("reportSpend", { input: { period: "October 2026" } })
+      .sleep(1000)
+      .output({ models: SPEND_MODELS, periods: PERIODS.slice(0, 1), budget: BUDGET })
+    writer.text(
+      "You're at **86%** of the budget with 12 days left. Claude Opus is almost half of it; moving routine reviews to Sonnet would keep the month under $1,500."
+    )
+  })
+
 export const SCENARIOS = {
   research: { label: "What shipped in the last release?", icon: "globe", turns: 3, chat: research },
   draft: { label: "Draft a launch announcement", icon: "pen", turns: 1, chat: draft },
   code: { label: "Write a debounce hook", icon: "code", turns: 1, chat: code },
   metrics: { label: "How did weekly signups trend?", icon: "chart", turns: 3, chat: metrics },
   deck: { label: "Summarize the risks in a deck", icon: "file", turns: 1, chat: deck },
+  spend: { label: "How's our AI spend this month?", icon: "chart", turns: 1, chat: spend },
 } as const
 
 export type ScenarioKey = keyof typeof SCENARIOS

@@ -1,15 +1,13 @@
 import * as React from "react"
 import type { UIMessage } from "ai"
-import { AnimatePresence, LayoutGroup, motion, type TargetAndTransition } from "motion/react"
+import { AnimatePresence, LayoutGroup, motion } from "motion/react"
 import {
   CheckIcon,
   HistoryIcon,
   InboxIcon,
   LayersIcon,
-  MoonIcon,
   RotateCcwIcon,
   ScaleIcon,
-  SunIcon,
   Undo2Icon,
   XIcon,
 } from "lucide-react"
@@ -17,18 +15,14 @@ import {
 import { cn } from "@/lib/utils"
 import { enter, springSoft } from "@/lib/motion"
 import { Button } from "@/components/ui/button"
-import { useTheme } from "@/components/theme-provider"
 import { Switch } from "@/components/ui/switch"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { AgentOrb } from "@/components/ds/agent-orb"
+import type { AgentPhase } from "@/components/ds/agent-orb"
 import { ModelIcon } from "@/components/ds/model-icons"
-import { StageTrack, StageTrackLabels } from "@/components/ds/stage-track"
+import { StageTrack } from "@/components/ds/stage-track"
+import { TaskListHeader, TaskRow, taskRank, taskStage } from "@/components/ds/task-list"
+import { AppNav, AppNavSelect, type AppNavItem } from "@/components/app/app-nav"
+import { ThemeToggle } from "@/components/app/theme-toggle"
+import { DecisionCard, type DecisionAction } from "@/components/parts/decision-card"
 import { StatusBadge, StatusDot } from "@/components/ds/status"
 import {
   Widget,
@@ -39,15 +33,7 @@ import {
   WidgetPanel,
   WidgetTitle,
 } from "@/components/ds/widget"
-import {
-  ActionCard,
-  ActionCardActions,
-  ActionCardDescription,
-  ActionCardHeader,
-  ActionCardStatus,
-  ActionCardTitle,
-  ResolvedRow,
-} from "@/components/parts/action-card"
+import { ResolvedRow } from "@/components/parts/action-card"
 import { ChatThread, ChatThreadItem } from "@/components/chat/chat-thread"
 import { ChatTurn } from "@/components/chat/chat-turn"
 import {
@@ -160,47 +146,6 @@ const THREADS: Record<Project, UIMessage[]> = {
  * Pass `view` and `onViewChange` to drive the view from your router (each
  * view its own route); leave them out and it keeps the view itself.
  */
-// A thread is a conversation with davinci: its still orb, the same one a
-// past message carries, stands for it.
-// A thread is a conversation with davinci: its still orb, the same one a
-// past message carries, stands for it. Hovering the entry wakes it.
-function ThreadIcon({ live = false }: { live?: boolean }) {
-  return (
-    <span className="flex size-4 items-center justify-center">
-      <AgentOrb active={live} className="scale-90 opacity-100" />
-    </span>
-  )
-}
-
-// Hover nudges for the side nav, one small gesture per icon that says what
-// the place is: the inbox takes something in, projects stack up, the log
-// rewinds, rules weigh. Played once per hover, never looping.
-const NUDGE = {
-  drop: { y: [0, 2, 0] },
-  lift: { y: [0, -2, 0], scale: [1, 1.06, 1] },
-  rewind: { rotate: [0, -40, 0] },
-  weigh: { rotate: [0, -10, 7, 0] },
-} satisfies Record<string, TargetAndTransition>
-
-function ThemeToggle() {
-  const { theme, setTheme } = useTheme()
-  const dark =
-    theme === "dark" ||
-    (theme === "system" &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches)
-  return (
-    <Button
-      size="icon-sm"
-      variant="ghost"
-      className="text-muted-foreground"
-      aria-label={dark ? "Light theme" : "Dark theme"}
-      onClick={() => setTheme(dark ? "light" : "dark")}
-    >
-      {dark ? <SunIcon /> : <MoonIcon />}
-    </Button>
-  )
-}
-
 export function DavinciInbox({
   view: viewProp,
   onViewChange,
@@ -223,7 +168,6 @@ export function DavinciInbox({
     setBusyState(on)
   }
   const factory = busy ? BUSY_STATE : STATE
-  const [hovered, setHovered] = React.useState<View | null>(null)
   const view = viewProp ?? ownView
   const setView = (v: View) => (onViewChange ? onViewChange(v) : setOwnView(v))
   const [panel, setPanel] = React.useState<Panel>(null)
@@ -311,31 +255,18 @@ export function DavinciInbox({
     }, 800)
   }
 
-  const nav: {
-    id: View
-    label: string
-    icon: React.ReactNode
-    nudge?: keyof typeof NUDGE
-    count?: number
-    attention?: boolean
-  }[] = [
-    {
-      id: "inbox",
-      label: "Inbox",
-      icon: <InboxIcon />,
-      nudge: "drop",
-      count: open.length,
-      attention: open.length > 0,
-    },
-    { id: "thread:blog", label: "blog", icon: <ThreadIcon live={hovered === "thread:blog"} /> },
-    { id: "thread:bottega", label: "bottega", icon: <ThreadIcon live={hovered === "thread:bottega"} /> },
-    { id: "projects", label: "Projects", icon: <LayersIcon />, nudge: "lift" },
+  const nav: AppNavItem<View>[] = [
+    { id: "inbox", label: "Inbox", icon: <InboxIcon />, nudge: "drop", count: open.length, attention: open.length > 0 },
+    { id: "thread:blog", label: "blog", agent: true, section: "Threads" },
+    { id: "thread:bottega", label: "bottega", agent: true, section: "Threads" },
+    { id: "projects", label: "Projects", icon: <LayersIcon />, nudge: "lift", section: "Look" },
     {
       id: "decided",
       label: "Decided for you",
       icon: <HistoryIcon />,
       nudge: "rewind",
       count: decided.filter((d) => !d.undone).length,
+      section: "Look",
     },
     {
       id: "rules",
@@ -343,9 +274,19 @@ export function DavinciInbox({
       icon: <ScaleIcon />,
       nudge: "weigh",
       count: rules.filter((r) => !r.off).length,
+      section: "Look",
     },
   ]
-  const label = (v: View) => nav.find((n) => n.id === v)!.label
+  const go = (v: View) => {
+    setView(v)
+    setPanel(null)
+  }
+  const brand = {
+    name: "davinci",
+    phase: (typing ? "composing" : open.length ? "waiting" : "idle") as AgentPhase,
+    active: typing || open.length > 0,
+    onHome: () => go("inbox"),
+  }
 
   return (
     <div
@@ -356,121 +297,33 @@ export function DavinciInbox({
       )}
     >
       {/* Navigation: one entry, everything one click away. */}
-      <nav className="hidden min-h-0 flex-col gap-1 border-r border-border/70 p-3 md:flex">
-        <button
-          type="button"
-          onClick={() => {
-            setView("inbox")
-            setPanel(null)
-          }}
-          className="flex h-11 items-center gap-2.5 rounded-xl px-2 outline-none focus-visible:ring-3 focus-visible:ring-ring/30"
-        >
-          <AgentOrb
-            phase={typing ? "composing" : open.length ? "waiting" : "idle"}
-            active={typing || open.length > 0}
-          />
-          <span className="text-[15px]">davinci</span>
-        </button>
-        {nav.map((n, i) => (
-          <React.Fragment key={n.id}>
-            {(i === 1 || i === 3) && (
-              <div className="mt-3 px-2 pb-1 eyebrow text-faint-foreground">
-                {i === 1 ? "Threads" : "Look"}
-              </div>
-            )}
-            <motion.button
-              type="button"
-              onClick={() => {
-                setView(n.id)
-                setPanel(null)
-              }}
-              initial="rest"
-              animate="rest"
-              whileHover="hover"
-              onHoverStart={() => setHovered(n.id)}
-              onHoverEnd={() => setHovered(null)}
-              aria-current={view === n.id}
-              className={cn(
-                "flex h-9 items-center gap-2.5 rounded-xl px-2 text-sm text-muted-foreground transition-colors outline-none hover:bg-muted/60 hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/30",
-                view === n.id && "bg-muted text-foreground"
-              )}
-            >
-              <motion.span
-                variants={{ rest: { y: 0, scale: 1, rotate: 0 }, hover: n.nudge ? NUDGE[n.nudge] : {} }}
-                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                className="flex size-4 items-center justify-center [&>svg]:size-4"
-              >
-                {n.icon}
-              </motion.span>
-              {n.label}
-              {n.count !== undefined && (
-                <span
-                  className={cn(
-                    "ml-auto eyebrow tabular-nums",
-                    n.attention ? "text-attention" : "text-faint-foreground"
-                  )}
-                >
-                  {n.count}
-                </span>
-              )}
-            </motion.button>
-          </React.Fragment>
-        ))}
-        {/* Not part of the product: a switch to see the screens under load. */}
-        <label className="mt-auto flex cursor-pointer items-center justify-between gap-2 rounded-xl border border-dashed border-border px-2 py-2">
-          <span className="flex flex-col">
-            <span className="text-xs">Busy factory</span>
-            <span className="eyebrow text-faint-foreground">Simulation</span>
-          </span>
-          <Switch size="sm" checked={busy} onCheckedChange={setBusy} />
-        </label>
-        <div className="mt-2 flex items-center justify-between gap-2 pl-2">
-          <span className="eyebrow text-faint-foreground">
-            Next digest 21:00
-          </span>
-          <ThemeToggle />
-        </div>
-      </nav>
+      <AppNav
+        className="hidden border-r border-border/70 md:flex"
+        brand={brand}
+        items={nav}
+        value={view}
+        onValueChange={go}
+        footer={
+          <>
+            {/* Not part of the product: a switch to see the screens under load. */}
+            <label className="flex cursor-pointer items-center justify-between gap-2 rounded-xl border border-dashed border-border px-2 py-2">
+              <span className="flex flex-col">
+                <span className="text-xs">Busy factory</span>
+                <span className="eyebrow text-faint-foreground">Simulation</span>
+              </span>
+              <Switch size="sm" checked={busy} onCheckedChange={setBusy} />
+            </label>
+            <div className="flex items-center justify-between gap-2 pl-2">
+              <span className="eyebrow text-faint-foreground">Next digest 21:00</span>
+              <ThemeToggle />
+            </div>
+          </>
+        }
+      />
 
       <main className="flex min-h-0 flex-col">
         {/* Phones: the same entry as a select. */}
-        <header className="flex h-14 shrink-0 items-center gap-2.5 border-b border-border/70 px-4 md:hidden">
-          <button
-            type="button"
-            aria-label="Inbox"
-            onClick={() => {
-              setView("inbox")
-              setPanel(null)
-            }}
-            className="rounded-full outline-none focus-visible:ring-3 focus-visible:ring-ring/30"
-          >
-            <AgentOrb
-              phase={open.length ? "waiting" : "idle"}
-              active={open.length > 0}
-            />
-          </button>
-          <Select
-            value={view}
-            onValueChange={(v) => {
-              if (!v) return
-              setView(v as View)
-              setPanel(null)
-            }}
-          >
-            <SelectTrigger aria-label="View" className="ml-auto">
-              <SelectValue>{(v: View) => label(v)}</SelectValue>
-            </SelectTrigger>
-            <SelectContent align="end" alignItemWithTrigger={false}>
-              {nav.map((n) => (
-                <SelectItem key={n.id} value={n.id}>
-                  {n.label}
-                  {n.count !== undefined ? ` · ${n.count}` : ""}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <ThemeToggle />
-        </header>
+        <AppNavSelect className="md:hidden" brand={brand} items={nav} value={view} onValueChange={go} trailing={<ThemeToggle />} />
 
         {view === "inbox" && (
           <Inbox
@@ -822,6 +675,7 @@ function Inbox({
   )
 }
 
+// The inbox's card is the DS DecisionCard: kinds map to their actions.
 function QueueCard({
   item: q,
   onAnswer,
@@ -833,164 +687,42 @@ function QueueCard({
   onRule: (q: QueueItem) => void
   onPanel: (p: Panel) => void
 }) {
-  const ratio = q.agreement ? q.agreement.accepted / q.agreement.total : 0
-  // Answering drains the urgent glow first; the card leaves once it's out.
-  const [settling, setSettling] = React.useState(false)
-  const settle = (then: () => void) => {
-    setSettling(true)
-    window.setTimeout(then, q.urgency === "now" ? 320 : 0)
-  }
-  const answer = (label: string, pick: boolean) =>
-    settle(() => onAnswer(q, label, pick))
+  const answer = (label: string, pick: boolean) => () => onAnswer(q, label, pick)
+  const actions: DecisionAction[] =
+    q.kind === "incident"
+      ? [
+          { label: "Revert 3f2a1c", icon: <RotateCcwIcon />, onClick: answer("Reverted 3f2a1c", true) },
+          { label: "Keep and investigate", kind: "secondary", onClick: answer("Kept v12", false) },
+        ]
+      : q.kind === "diff"
+        ? [
+            { label: "Approve", onClick: answer("Approve", true) },
+            { label: "Return with note", kind: "secondary", onClick: answer("Return", false) },
+            { label: "See the diff", kind: "aside", onClick: () => onPanel({ kind: "diff" }) },
+          ]
+        : q.kind === "preview"
+          ? [
+              { label: "Promote", onClick: answer("Promoted BLOG-5", true) },
+              { label: "Adjust", kind: "secondary", onClick: answer("Adjust BLOG-5", false) },
+              { label: "Before / after", kind: "aside", onClick: () => onPanel({ kind: "preview" }) },
+            ]
+          : []
   return (
-    <ActionCard
-      tone={q.urgency === "now" && !settling ? "attention" : "default"}
-    >
-      <ActionCardHeader>
-        <div className="flex min-w-0 flex-col gap-0.5">
-          <span className="eyebrow text-muted-foreground">
-            {q.project} · {q.category}
-          </span>
-          <ActionCardTitle>{q.title}</ActionCardTitle>
-        </div>
-        {/* Mark the exception only: most decisions can be undone. */}
-        {!q.reversible && (
-          <ActionCardStatus tone="neutral">Irreversible</ActionCardStatus>
-        )}
-      </ActionCardHeader>
-      <ActionCardDescription className="mt-0">
-        {q.context}
-      </ActionCardDescription>
-
-      {q.kind === "choice" && q.options && (
-        <div className="flex flex-col gap-1.5">
-          {q.options.map((o, i) => {
-            const pick = o.id === q.pick
-            return (
-              <button
-                key={o.id}
-                type="button"
-                onClick={() => answer(o.label, pick)}
-                className={cn(
-                  "flex items-start gap-3 rounded-xl border bg-card px-3 py-2.5 text-left transition-colors outline-none hover:bg-muted/60 focus-visible:ring-3 focus-visible:ring-ring/30",
-                  pick ? "border-foreground/40" : "border-border/80"
-                )}
-              >
-                <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-md bg-muted eyebrow text-muted-foreground">
-                  {i + 1}
-                </span>
-                <span className="flex min-w-0 flex-1 flex-col">
-                  <span className="flex flex-wrap items-center gap-x-2">
-                    {o.label}
-                    {pick && (
-                      <span className="rounded-full bg-foreground/5 px-1.5 eyebrow text-muted-foreground">
-                        davinci's pick
-                      </span>
-                    )}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {o.hint}
-                  </span>
-                </span>
-              </button>
-            )
-          })}
-        </div>
-      )}
-
-      <p className="text-xs text-muted-foreground">
-        <span className="text-foreground">If you go with davinci:</span>{" "}
-        {q.consequence}
-      </p>
-
-      {q.kind !== "choice" && (
-        <ActionCardActions className="flex-wrap">
-          {q.kind === "incident" && (
-            <>
-              <Button size="sm" onClick={() => answer("Reverted 3f2a1c", true)}>
-                <RotateCcwIcon />
-                Revert 3f2a1c
-              </Button>
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => answer("Kept v12", false)}
-              >
-                Keep and investigate
-              </Button>
-            </>
-          )}
-          {q.kind === "diff" && (
-            <>
-              <Button size="sm" onClick={() => answer("Approve", true)}>
-                Approve
-              </Button>
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => answer("Return", false)}
-              >
-                Return with note
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="ml-auto"
-                onClick={() => onPanel({ kind: "diff" })}
-              >
-                See the diff
-              </Button>
-            </>
-          )}
-          {q.kind === "preview" && (
-            <>
-              <Button size="sm" onClick={() => answer("Promoted BLOG-5", true)}>
-                Promote
-              </Button>
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => answer("Adjust BLOG-5", false)}
-              >
-                Adjust
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="ml-auto"
-                onClick={() => onPanel({ kind: "preview" })}
-              >
-                Before / after
-              </Button>
-            </>
-          )}
-        </ActionCardActions>
-      )}
-
-      {/* Repeated agreement is a sign the decision shouldn't be yours. */}
-      {q.agreement && (
-        <div className="-mx-3.5 -mb-3.5 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-b-2xl border-t border-border/70 bg-card/60 px-3.5 py-2.5 text-xs">
-          <span className="text-muted-foreground">
-            You went with davinci's pick{" "}
-            <span className="text-foreground tabular-nums">
-              {q.agreement.accepted} of {q.agreement.total}
-            </span>{" "}
-            times in {q.category.toLowerCase()}.
-          </span>
-          {ratio >= 0.9 && (
-            <Button
-              size="xs"
-              variant="outline"
-              className="ml-auto rounded-full"
-              onClick={() => settle(() => onRule(q))}
-            >
-              <ScaleIcon />
-              Make it a rule
-            </Button>
-          )}
-        </div>
-      )}
-    </ActionCard>
+    <DecisionCard
+      agent="davinci"
+      urgent={q.urgency === "now"}
+      eyebrow={`${q.project} · ${q.category}`}
+      title={q.title}
+      context={q.context}
+      options={q.kind === "choice" ? q.options : undefined}
+      pick={q.pick}
+      onChoose={(o, isPick) => onAnswer(q, o.label, isPick)}
+      consequence={q.consequence}
+      actions={actions}
+      irreversible={!q.reversible}
+      agreement={q.agreement && { ...q.agreement, category: q.category }}
+      onMakeRule={() => onRule(q)}
+    />
   )
 }
 
@@ -1125,10 +857,6 @@ function Thread({
 
 /* ------------------------------ projects ---------------------------- */
 
-// Container queries: the table follows its own width (a side panel may be open).
-const COLS =
-  "grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-y-2.5 @xl:grid-cols-[minmax(8rem,1fr)_minmax(12rem,18rem)_minmax(6rem,8rem)]"
-
 // Many tasks in flight: what needs you first, then what's moving, then the
 // queue; past a handful the rest folds away, and the stage names carry how
 // many tasks sit at each stage, so the pile-up shows without reading rows.
@@ -1136,16 +864,8 @@ const FOLD_AFTER = 8
 const SHOWN = 6
 
 type Task = ProjectState["tasks"][number]
-const rank = (t: Task) =>
-  t.stages.some((s) => s === "waiting" || s === "failed")
-    ? 0
-    : t.stages.every((s) => s === "todo")
-      ? 2
-      : 1
-const atStage = (t: Task) => {
-  const i = t.stages.findIndex((s) => s !== "done")
-  return i === -1 ? t.stages.length - 1 : i
-}
+const rank = (t: Task) => taskRank(t.stages)
+const atStage = (t: Task) => taskStage(t.stages)
 
 function Projects({
   state,
@@ -1206,57 +926,17 @@ function Projects({
               </WidgetHeader>
               <WidgetPanel className="flex flex-col pt-3">
                 <WidgetList>
-                  <div
-                    className={cn(
-                      "grid items-center gap-x-3 px-2 pb-2 @max-xl:hidden",
-                      COLS
-                    )}
-                  >
-                    <span className="eyebrow text-muted-foreground">Task</span>
-                    <StageTrackLabels stages={labels} />
-                    <span className="text-right eyebrow text-muted-foreground">
-                      Now
-                    </span>
-                  </div>
-                  {/* Narrow: the tracks span the row, so do the names. */}
-                  <StageTrackLabels
-                    className="px-2 pb-2 @xl:hidden"
-                    stages={labels}
-                  />
+                  <TaskListHeader stages={labels} />
                   {shown.map((t) => (
-                    <WidgetListRow
+                    <TaskRow
                       key={t.key}
-                      className={COLS}
+                      id={t.key}
+                      title={t.title}
+                      icon={<ModelIcon family={t.family} />}
+                      stages={t.stages.map((status, i) => ({ label: STAGES[i], status }))}
+                      now={t.now}
                       onClick={() => onTask(t.key)}
-                    >
-                      <span className="flex min-w-0 items-center gap-2">
-                        <ModelIcon
-                          family={t.family}
-                          className="size-4 text-muted-foreground"
-                        />
-                        <span className="shrink-0 eyebrow text-muted-foreground">
-                          {t.key}
-                        </span>
-                        <span className="truncate">{t.title}</span>
-                      </span>
-                      <StageTrack
-                        className="order-last col-span-2 @xl:order-none @xl:col-span-1"
-                        stages={t.stages.map((status, i) => ({
-                          label: STAGES[i],
-                          status,
-                        }))}
-                      />
-                      <span
-                        className={cn(
-                          "truncate text-right text-xs",
-                          rank(t) === 0
-                            ? "text-foreground"
-                            : "text-muted-foreground"
-                        )}
-                      >
-                        {t.now}
-                      </span>
-                    </WidgetListRow>
+                    />
                   ))}
                 </WidgetList>
               </WidgetPanel>

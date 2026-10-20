@@ -10,18 +10,26 @@ import { cn } from "@/lib/utils"
 // variant="framed": the floating card-in-card shell (`surface` + widget
 // shadow, 4px gutter). Use when the widget must read as an object of its
 // own: dashboards with neighbours, floating panels, demos.
+//
+// size="sm": the same widget at message density — inside a chat reply, a
+// side panel, a card grid. Smaller header and footer, tighter panels, the
+// big numbers step down. A widget a tool returns in the chat is the same
+// component the dashboard uses, at size="sm". Don't build a second shell.
 
 type WidgetVariant = "plain" | "framed"
+type WidgetSize = "default" | "sm"
 
 function Widget({
   variant = "plain",
+  size = "default",
   className,
   ...props
-}: React.ComponentProps<"section"> & { variant?: WidgetVariant }) {
+}: React.ComponentProps<"section"> & { variant?: WidgetVariant; size?: WidgetSize }) {
   return (
     <section
       data-slot="widget"
       data-variant={variant}
+      data-size={size}
       className={cn(
         "group/widget flex w-full min-w-0 flex-col text-card-foreground",
         variant === "framed"
@@ -39,7 +47,7 @@ function WidgetHeader({ className, ...props }: React.ComponentProps<"header">) {
     <header
       data-slot="widget-header"
       className={cn(
-        "flex min-h-12 items-center gap-2 px-1 group-data-[variant=framed]/widget:min-h-16 group-data-[variant=framed]/widget:pr-3 group-data-[variant=framed]/widget:pl-5",
+        "flex min-h-12 items-center gap-2 px-1 group-data-[size=sm]/widget:min-h-8 group-data-[variant=framed]/widget:min-h-16 group-data-[variant=framed]/widget:pr-3 group-data-[variant=framed]/widget:pl-5",
         className
       )}
       {...props}
@@ -51,7 +59,7 @@ function WidgetTitle({ className, ...props }: React.ComponentProps<"h2">) {
   return (
     <h2
       data-slot="widget-title"
-      className={cn("text-base leading-6 tracking-[-0.011em]", className)}
+      className={cn("text-base leading-6 tracking-[-0.011em] group-data-[size=sm]/widget:text-sm group-data-[size=sm]/widget:font-medium", className)}
       {...props}
     />
   )
@@ -85,7 +93,7 @@ function WidgetPanel({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="widget-panel"
       className={cn(
-        "rounded-2xl bg-card p-5 ring-1 ring-border/70 dark:ring-border",
+        "rounded-2xl bg-card p-5 ring-1 ring-border/70 group-data-[size=sm]/widget:p-3.5 dark:ring-border",
         className
       )}
       {...props}
@@ -168,7 +176,7 @@ function WidgetFooter({ className, ...props }: React.ComponentProps<"footer">) {
     <footer
       data-slot="widget-footer"
       className={cn(
-        "flex min-h-12 flex-wrap items-center gap-x-3 gap-y-2 px-1 group-data-[variant=framed]/widget:min-h-16 group-data-[variant=framed]/widget:px-3",
+        "flex min-h-12 flex-wrap items-center gap-x-3 gap-y-2 px-1 group-data-[size=sm]/widget:min-h-8 group-data-[variant=framed]/widget:min-h-16 group-data-[variant=framed]/widget:px-3",
         className
       )}
       {...props}
@@ -187,6 +195,7 @@ function WidgetMeta({ className, ...props }: React.ComponentProps<"span">) {
 }
 
 export {
+  type WidgetSize,
   type WidgetVariant,
   Widget,
   WidgetActions,

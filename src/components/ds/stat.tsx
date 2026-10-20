@@ -34,7 +34,7 @@ function StatValue({
       data-slot="stat-value"
       data-size={size}
       className={cn(
-        "flex items-baseline gap-1.5 tabular-nums data-[size=lg]:text-4xl data-[size=lg]:tracking-[-0.03em] data-[size=sm]:text-base",
+        "flex items-baseline gap-1.5 tabular-nums data-[size=lg]:text-4xl data-[size=lg]:tracking-[-0.03em] data-[size=sm]:text-base group-data-[size=sm]/widget:data-[size=lg]:text-2xl",
         className
       )}
       {...props}

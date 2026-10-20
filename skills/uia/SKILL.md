@@ -101,6 +101,12 @@ to compose the existing pieces so the result looks like the designer built it.
 - **Separators are straight hairlines.** A `border-t` on a rounded row
   curls up at both ends; draw the line inside the padding instead
   (`WidgetListRow` does). Never put a border on one side of a rounded box.
+- **A widget is a component with props; demo data lives outside.** Build
+  data views as pure components (`components/widgets/*`: data in via props,
+  UI state inside, actions out via callbacks, pending states as props) and
+  keep fixtures and simulations in the example. The same component renders
+  on a page and, at `Widget size="sm"`, inside a chat reply — one shell,
+  two densities, never a chat-only copy.
 - **Every screen has an address.** In an app, each view and sub-view is a
   route (`/app/rules`, `/app/threads/blog`): reload keeps the place, back
   and forward work, a link can point at it. Views take `view` +

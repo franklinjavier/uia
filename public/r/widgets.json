@@ -1,0 +1,15 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "widgets",
+  "title": "Widgets",
+  "author": "uia",
+  "description": "Every data-driven widget, ready to feed with your data.",
+  "registryDependencies": [
+    "franklinjavier/uia/widget-ai-spend",
+    "franklinjavier/uia/widget-fleet-health",
+    "franklinjavier/uia/widget-model-evals",
+    "franklinjavier/uia/widget-model-router",
+    "franklinjavier/uia/widget-agent-runtime"
+  ],
+  "type": "registry:block"
+}

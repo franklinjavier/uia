@@ -5,6 +5,7 @@ import { ChartCard } from "@/components/parts/chart-card"
 import { FileBadge } from "@/components/parts/attachment"
 import { Findings } from "@/components/parts/findings"
 import { Plan } from "@/components/parts/plan"
+import { AiSpend } from "@/components/widgets/ai-spend"
 
 import { Trace } from "@/components/ui/trace"
 import { TranscriptEvent, ResolvedRow } from "@/components/parts/action-card"
@@ -128,6 +129,26 @@ export const tools = defineTools<ChatMessage>()({
   connectApp: {
     client: true,
     render: () => null,
+  },
+
+  // A whole widget as the answer: the same AiSpend the dashboard renders,
+  // fed by the tool's output, at message density.
+  reportSpend: {
+    phase: "working",
+    render: (part) => (
+      <>
+        <Trace>
+          <ToolLine
+            part={part}
+            titles={{ running: "Reading usage", done: "Read usage", error: "Couldn't read usage", denied: "Skipped" }}
+            description={part.input?.period}
+          />
+        </Trace>
+        {part.state === "output-available" && (
+          <AiSpend size="sm" models={part.output.models} periods={part.output.periods} budget={part.output.budget} />
+        )}
+      </>
+    ),
   },
 
   // Reading a file the person attached: trace line, then what it found.

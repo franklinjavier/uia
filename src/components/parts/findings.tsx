@@ -1,12 +1,14 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { Widget, WidgetHeader, WidgetList, WidgetListRow, WidgetPanel, WidgetTitle } from "@/components/ds/widget"
 
 // Findings: what the agent pulled out of a source, ranked, each pointing
 // back to where it came from. Severity is a three-bar signal (the only
 // colour: high reads destructive, medium attention, low muted); the
 // reference ("P. 12", "L. 40", "03:12") sits right, in mono, so the person
-// can check the claim.
+// can check the claim. A Widget at size="sm" with a WidgetList: the same
+// shell and rows as any list on a page.
 //
 //   <Findings title="Risks in q3-board-deck.pdf" icon={<FileBadge name="q3-board-deck.pdf" />}
 //     items={[{ text: "Two enterprise renewals slipped to Q4", severity: "high", ref: "P. 12" }]} />
@@ -49,24 +51,23 @@ function Findings({
   className?: string
 }) {
   return (
-    <div data-slot="findings" className={cn("not-typeset overflow-hidden rounded-2xl border border-border/70 bg-card text-sm", className)}>
-      <div className="flex items-center gap-2 px-3.5 pt-3 pb-2.5">
+    <Widget size="sm" data-slot="findings" className={cn("not-typeset", className)}>
+      <WidgetHeader>
         {icon}
-        <span className="min-w-0 truncate font-medium">{title}</span>
-      </div>
-      <ul className="border-t border-border/70">
-        {items.map((f) => (
-          <li
-            key={f.text}
-            className="relative flex items-center gap-3 px-3.5 py-2.5 before:absolute before:inset-x-3.5 before:top-0 before:h-px before:bg-border/70 first:before:hidden"
-          >
-            <SeveritySignal severity={f.severity} />
-            <span className="min-w-0 flex-1 text-pretty">{f.text}</span>
-            {f.ref && <span className="shrink-0 eyebrow text-faint-foreground">{f.ref}</span>}
-          </li>
-        ))}
-      </ul>
-    </div>
+        <WidgetTitle className="min-w-0 truncate">{title}</WidgetTitle>
+      </WidgetHeader>
+      <WidgetPanel className="py-1.5">
+        <WidgetList>
+          {items.map((f) => (
+            <WidgetListRow key={f.text} className="grid-cols-[auto_minmax(0,1fr)_auto]">
+              <SeveritySignal severity={f.severity} />
+              <span className="text-pretty">{f.text}</span>
+              {f.ref ? <span className="eyebrow text-faint-foreground">{f.ref}</span> : <span />}
+            </WidgetListRow>
+          ))}
+        </WidgetList>
+      </WidgetPanel>
+    </Widget>
   )
 }
 

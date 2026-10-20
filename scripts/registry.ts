@@ -78,10 +78,12 @@ const ITEMS: Item[] = [
   item("meter-bar", "registry:component", "A value against its limit: segments, threshold markers, highlight.", ["src/components/ds/meter-bar.tsx"]),
   item("stage-track", "registry:component", "Where something is in a fixed sequence of stages, on one line.", ["src/components/ds/stage-track.tsx"]),
   item("sparkline", "registry:component", "A recent series as a line over a soft area, latest point marked.", ["src/components/ds/sparkline.tsx"]),
+  item("task-list", "registry:component", "TaskRow + TaskListHeader: tasks through a fixed flow with StageTrack, container-query columns, counts per stage, taskRank to sort.", ["src/components/ds/task-list.tsx"]),
   item("bar-series", "registry:component", "A short series as bars in one hue, the latest at full strength, hover to read.", ["src/components/ds/bar-series.tsx"]),
 
   // parts
   item("action-card", "registry:component", "One shape for every human-in-the-loop moment, plus ResolvedRow and TranscriptEvent.", ["src/components/parts/action-card.tsx"]),
+  item("decision-card", "registry:component", "One decision the agent needs: what, why, options with the agent's pick, consequence, actions as data, urgent glow that drains, agreement → make it a rule.", ["src/components/parts/decision-card.tsx"]),
   item("plan", "registry:component", "A multi-step job the agent runs in front of you: steps check off, the running one spins, a tick meter fills.", ["src/components/parts/plan.tsx"]),
   item("connect-prompt", "registry:component", "Docked above the composer when the agent needs access: ask → connecting → connected.", ["src/components/parts/connect-prompt.tsx"]),
   item("attachment", "registry:component", "File chips (type badge + name, removable in the composer) and a hover preview with the file's gist.", ["src/components/parts/attachment.tsx"]),
@@ -122,6 +124,18 @@ const ITEMS: Item[] = [
   item("chat-error", "registry:component", "A turn that didn't happen: one quiet line with what it cost and Retry.", ["src/components/chat/chat-error.tsx"]),
   item("chat-pill", "registry:component", "The assistant minimised: orb, live phase, Open (attention when it needs you).", ["src/components/chat/chat-pill.tsx"]),
 
+  // Widgets: whole, data-driven views with typed props. The same component
+  // renders on a dashboard and, at size="sm", inside a chat reply.
+  item("widget-ai-spend", "registry:component", "AiSpend: a period's AI cost by model against a budget, projection, alert, models as the meter's legend.", ["src/components/widgets/ai-spend.tsx"]),
+  item("widget-fleet-health", "registry:component", "FleetHealth: tokens/s with sparkline, fleet meters, GPU heatmap with modes, rebalance.", ["src/components/widgets/fleet-health.tsx"]),
+  item("widget-model-evals", "registry:component", "ModelEvals: pass rate vs a baseline and a target, per-suite comparison, failures filtered by suite, re-run.", ["src/components/widgets/model-evals.tsx"]),
+  item("widget-model-router", "registry:component", "ModelRouter: routing policy with a flow graph and routes list, fallback, deploy.", ["src/components/widgets/model-router.tsx"]),
+  item("widget-agent-runtime", "registry:component", "AgentRuntime: sandboxes with lifecycle (cold → warm → idle → zero), invoke.", ["src/components/widgets/agent-runtime.tsx"]),
+
+  // App shell for agent products.
+  item("app-nav", "registry:component", "Side nav of an agent app: brand orb (home), sections, counts (attention where needed), hover nudges, orb for conversations; AppNavSelect for phones.", ["src/components/app/app-nav.tsx"]),
+  item("theme-toggle", "registry:component", "Sun/moon ghost button for an app's own chrome.", ["src/components/app/theme-toggle.tsx"]),
+
   // Reference widgets: complete, working examples of how uia is composed.
   // They install into src/examples/ to be read, run and adapted.
   item("example-model-router", "registry:block", "Example: model router with policy, routing flow, routes list and deploy.", ["src/examples/model-router.tsx"]),
@@ -155,7 +169,10 @@ const BUNDLES = [
     "agent-chat", "chat-thread", "chat-turn", "turn-actions", "composer", "chat-empty", "chat-status", "chat-error", "chat-pill", "attachment",
   ]),
   bundle("hitl", "All human-in-the-loop parts.", [
-    "action-card", "ask-user", "confirmation", "draft-card", "preview-approval", "decision-chip", "part-transition", "tool-line", "plan", "connect-prompt", "findings", "chart-card",
+    "action-card", "ask-user", "confirmation", "draft-card", "preview-approval", "decision-chip", "part-transition", "tool-line", "decision-card", "plan", "connect-prompt", "findings", "chart-card",
+  ]),
+  bundle("widgets", "Every data-driven widget, ready to feed with your data.", [
+    "widget-ai-spend", "widget-fleet-health", "widget-model-evals", "widget-model-router", "widget-agent-runtime",
   ]),
   bundle("examples", "Every reference widget, to read, run and adapt.", [
     "example-assistant", "example-model-router", "example-agent-runtime", "example-ai-spend", "example-fleet-health", "example-model-evals", "example-bottega", "example-davinci",

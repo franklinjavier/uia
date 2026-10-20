@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "task-list",
+  "title": "Task List",
+  "author": "uia",
+  "description": "TaskRow + TaskListHeader: tasks through a fixed flow with StageTrack, container-query columns, counts per stage, taskRank to sort.",
+  "registryDependencies": [
+    "franklinjavier/uia/stage-track",
+    "franklinjavier/uia/theme",
+    "franklinjavier/uia/widget"
+  ],
+  "files": [
+    {
+      "path": "src/components/ds/task-list.tsx",
+      "content": "import * as React from \"react\"\n\nimport { cn } from \"@/lib/utils\"\nimport { StageTrack, StageTrackLabels, type StageStatus } from \"@/components/ds/stage-track\"\nimport { WidgetListRow } from \"@/components/ds/widget\"\n\n// Task list: work moving through a fixed flow (Plan → Build → … → Main),\n// one row per task, inside a WidgetList.\n//\n//   <div className=\"@container\">            ← columns follow the list's own width\n//     <WidgetList>\n//       <TaskListHeader stages={labels} />  ← stage names once (+ counts when many)\n//       {tasks.map((t) => <TaskRow key={t.id} {...t} onClick={…} />)}\n//     </WidgetList>\n//   </div>\n//\n// Wide: name · track · now, in three columns. Narrow: name · now on top,\n// the track full width below, with the stage names over the list in the\n// same grid. Sort with `taskRank` so what needs the person comes first.\n\nexport type TaskStage = { label: string; status: StageStatus }\n\nconst COLS =\n  \"grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-y-2.5 @xl:grid-cols-[minmax(8rem,1fr)_minmax(12rem,18rem)_minmax(6rem,8rem)]\"\n\n/** 0 needs the person (waiting/failed), 1 moving, 2 queued (nothing started). */\nfunction taskRank(stages: StageStatus[]) {\n  return stages.some((s) => s === \"waiting\" || s === \"failed\") ? 0 : stages.every((s) => s === \"todo\") ? 2 : 1\n}\n\n/** Index of the stage the task is at (the first not done). */\nfunction taskStage(stages: StageStatus[]) {\n  const i = stages.findIndex((s) => s !== \"done\")\n  return i === -1 ? stages.length - 1 : i\n}\n\nfunction TaskListHeader({\n  stages,\n  taskLabel = \"Task\",\n  nowLabel = \"Now\",\n}: {\n  /** Stage names; `count` per stage when the list is long. */\n  stages: { label: string; count?: number }[]\n  taskLabel?: string\n  nowLabel?: string\n}) {\n  return (\n    <>\n      <div data-slot=\"task-list-header\" className={cn(\"grid items-center gap-x-3 px-2 pb-2 @max-xl:hidden\", COLS)}>\n        <span className=\"eyebrow text-muted-foreground\">{taskLabel}</span>\n        <StageTrackLabels stages={stages} />\n        <span className=\"text-right eyebrow text-muted-foreground\">{nowLabel}</span>\n      </div>\n      {/* Narrow: the tracks span the row, so do the names. */}\n      <StageTrackLabels className=\"px-2 pb-2 @xl:hidden\" stages={stages} />\n    </>\n  )\n}\n\nfunction TaskRow({\n  id,\n  title,\n  icon,\n  stages,\n  now,\n  onClick,\n  className,\n}: {\n  /** A short key in mono (\"BLOG-5\", \"T-583\"). */\n  id: string\n  title: React.ReactNode\n  /** Who's on it (a ModelIcon, an avatar). */\n  icon?: React.ReactNode\n  stages: TaskStage[]\n  /** Where it is, in words (\"Your eye\", \"Building · 3 of 6\"). */\n  now: React.ReactNode\n  onClick?: () => void\n  className?: string\n}) {\n  const needsYou = taskRank(stages.map((s) => s.status)) === 0\n  return (\n    <WidgetListRow data-slot=\"task-row\" className={cn(COLS, className)} onClick={onClick}>\n      <span className=\"flex min-w-0 items-center gap-2 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground\">\n        {icon}\n        <span className=\"shrink-0 eyebrow text-muted-foreground\">{id}</span>\n        <span className=\"truncate\">{title}</span>\n      </span>\n      <StageTrack className=\"order-last col-span-2 @xl:order-none @xl:col-span-1\" stages={stages} />\n      <span className={cn(\"truncate text-right text-xs\", needsYou ? \"text-foreground\" : \"text-muted-foreground\")}>\n        {now}\n      </span>\n    </WidgetListRow>\n  )\n}\n\nexport { TaskListHeader, TaskRow, taskRank, taskStage }\n",
+      "type": "registry:component",
+      "target": "@components/ds/task-list.tsx"
+    }
+  ],
+  "type": "registry:component"
+}
