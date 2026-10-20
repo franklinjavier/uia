@@ -85,7 +85,7 @@ export type AttachmentFile = {
   summary?: string
 }
 
-/** Hover (or focus) a chip to see what the file is and what's in it. */
+/** Hover a chip (tap on touch) to see what the file is and what's in it. */
 function AttachmentPreview({
   file,
   children,
@@ -93,9 +93,21 @@ function AttachmentPreview({
   file: AttachmentFile
   children: React.ReactElement
 }) {
+  // Hover opens it on a mouse; a tap opens and closes it on touch (a
+  // preview card alone never opens there), and tapping outside dismisses.
+  const [open, setOpen] = React.useState(false)
   return (
-    <PreviewCard.Root>
-      <PreviewCard.Trigger delay={250} render={<span tabIndex={0} className="inline-flex max-w-full cursor-default rounded-full outline-none focus-visible:ring-3 focus-visible:ring-ring/30" />}>
+    <PreviewCard.Root open={open} onOpenChange={setOpen}>
+      <PreviewCard.Trigger
+        delay={250}
+        onClick={(e) => {
+          e.preventDefault()
+          // A mouse already opened it on hover; clicking shouldn't close it.
+          if ((e.nativeEvent as PointerEvent).pointerType === "mouse") return setOpen(true)
+          setOpen((o) => !o)
+        }}
+        render={<span tabIndex={0} role="button" aria-expanded={open} className="inline-flex max-w-full cursor-pointer rounded-full outline-none focus-visible:ring-3 focus-visible:ring-ring/30" />}
+      >
         {children}
       </PreviewCard.Trigger>
       <PreviewCard.Portal>

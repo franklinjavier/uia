@@ -6,7 +6,8 @@ import { springSoft } from "@/lib/motion"
 
 // BarSeries: a short series as bars (weeks, days, releases). One hue,
 // `chart-1`: the bars sit at 30%, the one that matters (the latest by
-// default) at full strength. Hover or focus a bar to read it; the label row
+// default) at full strength. Hover a bar to read it (tap on touch, tap again
+// to let go); the label row
 // keeps the first, the last and the hovered one, never all of them.
 //
 //   <BarSeries data={weeks} format={(v) => v.toLocaleString("en-US")} />
@@ -36,15 +37,21 @@ function BarSeries({
       <div
         className="relative mt-4 flex items-end gap-[3px]"
         style={{ height }}
-        onPointerLeave={() => setActive(null)}
+        onPointerLeave={(e) => e.pointerType === "mouse" && setActive(null)}
       >
         {data.map((d, i) => (
           <button
             key={d.label}
             type="button"
             aria-label={`${d.label}: ${format(d.value)}`}
-            onPointerEnter={() => setActive(i)}
-            onFocus={() => setActive(i)}
+            aria-pressed={active === i}
+            // Mouse reads on hover; touch and keyboard toggle with a tap.
+            onPointerEnter={(e) => e.pointerType === "mouse" && setActive(i)}
+            onClick={(e) =>
+              (e.nativeEvent as PointerEvent).pointerType === "mouse"
+                ? setActive(i)
+                : setActive((a) => (a === i ? null : i))
+            }
             onBlur={() => setActive(null)}
             className="group/bar relative flex h-full flex-1 items-end outline-none"
           >

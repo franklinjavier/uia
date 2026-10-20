@@ -203,6 +203,16 @@ tap target shrinks).
   orb carries presence; the text gets the full width — `AssistantTurn`
   does this); the scroll-to-end button sits bottom-right, off the cards'
   buttons; a full-screen sheet stacks above any floating chrome.
+- **Nothing is hover-only.** A phone has no hover and long-press is hidden:
+  whatever a mouse reveals on hover, a tap reveals and a second tap lets
+  go (`BarSeries` bars, `AttachmentPreview` cards). Check the pointer type
+  so a mouse click doesn't undo its own hover:
+  `e.nativeEvent.pointerType === "mouse"`.
+- **A free-text field gets its own row.** In a form footer (Back · field ·
+  Submit) the field takes the full width on phones and the buttons sit
+  below it, Back left and Submit right (`flex-wrap`, field
+  `max-sm:order-first max-sm:basis-full`; if the input renders inside a
+  wrapper, put those classes on the wrapper).
 - **Many tabs become a select.** A `Segmented` with more than ~4 options
   turns into a `Select` on phones (`max-md:hidden` / `md:hidden` pair).
 - **Check it for real:** emulate a phone (device toolbar or the browser

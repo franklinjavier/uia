@@ -64,13 +64,20 @@ export function AskUser({
           event.preventDefault()
           const data = new FormData(event.currentTarget)
           onSubmit(
-            Object.fromEntries(questions.map((q) => [q.id, String(data.get(q.id) ?? "")]))
+            Object.fromEntries(
+              questions.map((q) => [q.id, String(data.get(q.id) ?? "")])
+            )
           )
         }}
         className="gap-0"
       >
         {questions.map((q, i) => (
-          <QuestionnaireItem key={q.id} name={q.id} required className="gap-3 p-3.5">
+          <QuestionnaireItem
+            key={q.id}
+            name={q.id}
+            required
+            className="gap-3 p-3.5"
+          >
             <ActionCardHeader>
               <QuestionnaireTitle className="mb-0! pt-0.5 text-sm font-medium tracking-normal">
                 {q.question}
@@ -99,7 +106,7 @@ export function AskUser({
                   <QuestionnaireChoice
                     key={choice}
                     value={choice}
-                    className="min-h-10 items-center rounded-none border-0 px-3 py-2 hover:bg-muted/60 data-checked:bg-muted has-[>input:focus-visible]:ring-2 has-[>input:focus-visible]:ring-inset [&>[data-slot=questionnaire-choice-shortcut]]:order-first [&>[data-slot=questionnaire-choice-shortcut]]:ms-0 [&>[data-slot=questionnaire-choice-shortcut]]:translate-y-0 [&>[data-slot=questionnaire-choice-shortcut]]:rounded-md [&>[data-slot=questionnaire-choice-shortcut]]:border-border [&>[data-slot=questionnaire-choice-shortcut]]:bg-muted [&>[data-slot=questionnaire-choice-shortcut]]:uppercase [&[data-checked]>[data-slot=questionnaire-choice-shortcut]]:border-primary [&[data-checked]>[data-slot=questionnaire-choice-shortcut]]:bg-primary [&[data-checked]>[data-slot=questionnaire-choice-shortcut]]:text-primary-foreground"
+                    className="min-h-10 items-center rounded-none border-0 px-3 py-2 hover:bg-muted/60 has-[>input:focus-visible]:ring-2 has-[>input:focus-visible]:ring-inset data-checked:bg-muted [&>[data-slot=questionnaire-choice-shortcut]]:order-first [&>[data-slot=questionnaire-choice-shortcut]]:ms-0 [&>[data-slot=questionnaire-choice-shortcut]]:translate-y-0 [&>[data-slot=questionnaire-choice-shortcut]]:rounded-md [&>[data-slot=questionnaire-choice-shortcut]]:border-border [&>[data-slot=questionnaire-choice-shortcut]]:bg-muted [&>[data-slot=questionnaire-choice-shortcut]]:uppercase [&[data-checked]>[data-slot=questionnaire-choice-shortcut]]:border-primary [&[data-checked]>[data-slot=questionnaire-choice-shortcut]]:bg-primary [&[data-checked]>[data-slot=questionnaire-choice-shortcut]]:text-primary-foreground"
                   >
                     {choice}
                   </QuestionnaireChoice>
@@ -107,26 +114,40 @@ export function AskUser({
               </ActionCardPanel>
               {/* Same button language as every ActionCard: sm pills,
                   primary = default, secondary = secondary. */}
-              <div className="flex items-center gap-2">
+              {/* Phones: the field gets its own row, Back and Submit below. */}
+              <div className="flex flex-wrap items-center gap-2">
                 {i > 0 && (
-                  <QuestionnairePrevious variant="secondary" size="sm" className="min-h-0 shrink-0">
+                  <QuestionnairePrevious
+                    variant="secondary"
+                    size="sm"
+                    className="min-h-0 shrink-0"
+                  >
                     <ChevronLeftIcon data-icon="inline-start" />
                     Back
                   </QuestionnairePrevious>
                 )}
-                <QuestionnaireInput
-                  aria-label="Your own answer"
-                  placeholder="Type your own answer"
-                  // The error is "nothing chosen", not "this field is wrong":
-                  // keep the field calm and say it in one quiet line below.
-                  className="h-7 min-h-0 rounded-full border-border bg-card px-3 text-sm aria-invalid:border-border aria-invalid:ring-0 dark:aria-invalid:border-border"
-                />
+                {/* The input renders inside its own wrapper: lay out that. */}
+                <div className="min-w-0 flex-1 max-sm:order-first max-sm:basis-full">
+                  <QuestionnaireInput
+                    aria-label="Your own answer"
+                    placeholder="Type your own answer"
+                    // The error is "nothing chosen", not "this field is wrong":
+                    // keep the field calm and say it in one quiet line below.
+                    className="h-7 min-h-0 rounded-full border-border bg-card px-3 text-sm aria-invalid:border-border aria-invalid:ring-0 max-sm:h-9 dark:aria-invalid:border-border"
+                  />
+                </div>
                 {i === last ? (
-                  <QuestionnaireSubmit size="sm" className="min-h-0 shrink-0">
+                  <QuestionnaireSubmit
+                    size="sm"
+                    className="ml-auto min-h-0 shrink-0"
+                  >
                     Submit
                   </QuestionnaireSubmit>
                 ) : (
-                  <QuestionnaireNext size="sm" className="min-h-0 shrink-0">
+                  <QuestionnaireNext
+                    size="sm"
+                    className="ml-auto min-h-0 shrink-0"
+                  >
                     Next
                   </QuestionnaireNext>
                 )}
@@ -143,7 +164,13 @@ export function AskUser({
 }
 
 // The chosen option's key, filled: A/B/C, or a pencil for a typed answer.
-export function AnswerKey({ question, answer }: { question: Question; answer: string }) {
+export function AnswerKey({
+  question,
+  answer,
+}: {
+  question: Question
+  answer: string
+}) {
   const index = question.choices.indexOf(answer)
   return (
     <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-primary font-mono text-[11px] text-primary-foreground uppercase [&_svg]:size-3">
@@ -185,7 +212,9 @@ export function AskUserAnswered({
         data-slot="answered-question"
         className="not-typeset flex flex-col gap-2.5 rounded-2xl border border-border/80 bg-card p-3.5 text-sm shadow-xs"
       >
-        <p className="font-medium text-pretty text-muted-foreground">{q.question}</p>
+        <p className="font-medium text-pretty text-muted-foreground">
+          {q.question}
+        </p>
         <div className="flex items-center gap-2.5">
           <AnswerKey question={q} answer={answers[q.id]} />
           <span className="min-w-0">{answers[q.id]}</span>
@@ -202,7 +231,10 @@ export function AskUserAnswered({
     >
       <dl className="flex flex-col divide-y divide-border/70 pt-1">
         {questions.map((q) => (
-          <div key={q.id} className="flex flex-col gap-1.5 py-2.5 first:pt-0 last:pb-0">
+          <div
+            key={q.id}
+            className="flex flex-col gap-1.5 py-2.5 first:pt-0 last:pb-0"
+          >
             <dt className="text-xs text-muted-foreground">{q.question}</dt>
             <dd className="flex items-center gap-2.5">
               {answers[q.id] ? (
