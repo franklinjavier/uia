@@ -247,6 +247,8 @@ const themeItem = {
     "@layer base": {
       body: { "background-color": "var(--background)", "-webkit-font-smoothing": "antialiased" },
       html: { "font-feature-settings": '"cv11", "ss03"' },
+      // iOS zooms into fields under 16px on focus; touch screens get 16px.
+      "@media (pointer: coarse)": { "input, textarea, select": { "font-size": "16px !important" } },
     },
     ".typeset-chat": {
       "--typeset-font-body": "var(--font-sans)",

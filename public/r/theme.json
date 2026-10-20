@@ -122,6 +122,11 @@
       },
       "html": {
         "font-feature-settings": "\"cv11\", \"ss03\""
+      },
+      "@media (pointer: coarse)": {
+        "input, textarea, select": {
+          "font-size": "16px !important"
+        }
       }
     },
     ".typeset-chat": {

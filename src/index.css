@@ -203,4 +203,12 @@
     @apply font-sans;
     font-feature-settings: "cv11", "ss03";
     }
+  /* iOS zooms into any field under 16px on focus. On touch screens every
+     field is 16px, whatever its utility says (important beats the
+     utilities layer); desktop keeps the compact sizes. */
+  @media (pointer: coarse) {
+    input, textarea, select {
+      font-size: 16px !important;
+    }
+  }
 }

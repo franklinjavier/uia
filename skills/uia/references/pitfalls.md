@@ -74,5 +74,12 @@ const W = visualViewport.width
 
 An empty list means nothing overflows; then look at it for crushed text.
 
+**iOS zooms in when a field gets focus.** Safari zooms into any input,
+textarea or select under 16px. The theme sets every field to 16px on touch
+screens (`@media (pointer: coarse)`, `!important` so it beats `text-sm`),
+desktop keeps the compact size. Don't fix it with `maximum-scale=1` in the
+viewport meta: that also blocks pinch zoom on Android. If a project lacks
+the rule, it's missing the uia `theme` item.
+
 **Select items touching the edges.** Padding is on the list, not on groups —
 keep uia's `select`; don't wrap items in extra padded divs.
