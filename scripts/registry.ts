@@ -384,7 +384,7 @@ const typeset = {
 // The agent skill: one copy, in .agents/skills (where Codex and most agents
 // look). Claude Code reaches it through CLAUDE.md → AGENTS.md; the registry
 // never writes those two files, since projects already have their own.
-const SKILL_FILES = ["SKILL.md", "references/tokens.md", "references/components.md", "references/hitl.md", "references/chat.md", "references/pitfalls.md", "references/examples.md", "references/grammar.md", "references/surfaces.md"]
+const SKILL_FILES = ["SKILL.md", "references/tokens.md", "references/components.md", "references/hitl.md", "references/chat.md", "references/pitfalls.md", "references/examples.md", "references/grammar.md", "references/surfaces.md", "references/adopting.md"]
 const skill = {
   name: "skill",
   type: "registry:file",

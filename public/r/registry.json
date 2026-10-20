@@ -2320,6 +2320,11 @@
           "path": "skills/uia/references/surfaces.md",
           "type": "registry:file",
           "target": "~/.agents/skills/uia/references/surfaces.md"
+        },
+        {
+          "path": "skills/uia/references/adopting.md",
+          "type": "registry:file",
+          "target": "~/.agents/skills/uia/references/adopting.md"
         }
       ],
       "docs": "Point your agents at it: add the uia section to AGENTS.md, and make CLAUDE.md import AGENTS.md (see the README)."

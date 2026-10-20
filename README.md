@@ -12,6 +12,10 @@ bun run dev            # playground: every example widget + full chat
 
 Building UI with uia in another project? Do this first:
 
+> **Existing app with its own shadcn setup?** Don't run step 2 with
+> `--overwrite`: follow `skills/uia/references/adopting.md` (piece by piece,
+> keep the app's contracts, map its renderers to uia pieces).
+
 1. **New project** (skip if one exists; it must be shadcn with Base UI):
    ```bash
    bunx --bun shadcn@latest create --preset beqC8BzE --template vite --name app --no-monorepo

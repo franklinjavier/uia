@@ -244,5 +244,6 @@ is decoration. Fix what differs before reporting.
 - `references/components.md` — catalog: what to reach for, imports, examples, registry item names.
 - `references/hitl.md` — the human-in-the-loop patterns, states and copy.
 - `references/chat.md` — `useAgentChat`, the tool registry, assembling a chat (widget or full page).
+- `references/adopting.md` — bringing uia into an existing app: install piece by piece (no `--overwrite`), map its renderers to uia pieces, keep its contracts.
 - `references/surfaces.md` — agent-composed UI: the A2UI format, the uia catalog, rendering, streaming, actions, extending.
 - `references/pitfalls.md` — real bugs met while building uia and how to avoid them.
