@@ -70,14 +70,8 @@ export function App() {
   return (
     <div className="relative min-h-svh bg-background">
       {!bare && (
-        <header
-          className={
-            full
-              ? // Full pages own the top edge: the playground nav floats bottom-left.
-                "fixed bottom-4 left-4 z-50 flex items-center gap-2 rounded-full bg-background/90 p-1 shadow-lg ring-1 ring-border backdrop-blur"
-              : "pointer-events-none absolute inset-x-0 top-0 z-10 flex h-16 items-center justify-center gap-2 px-4 *:pointer-events-auto"
-          }
-        >
+        // The playground's own chrome floats bottom-left, out of every example's way.
+        <header className="fixed bottom-4 left-4 z-50 flex items-center gap-2 rounded-full bg-background/90 p-1 shadow-lg ring-1 ring-border backdrop-blur">
           {/* Tabs from md; a select on phones, where nine tabs don't fit. */}
           <Segmented
             variant="sans"
@@ -106,7 +100,6 @@ export function App() {
           <Button
             variant="outline"
             size="icon-sm"
-            className={full ? "" : "absolute right-4"}
             onClick={() => setTheme(isDark ? "light" : "dark")}
           >
             {isDark ? <SunIcon /> : <MoonIcon />}
@@ -117,7 +110,7 @@ export function App() {
       {full ? (
         <Active />
       ) : (
-        <main className="relative flex min-h-svh items-center justify-center px-4 py-20">
+        <main className="relative flex min-h-svh items-center justify-center px-4 pt-16 pb-28">
           <Active />
         </main>
       )}

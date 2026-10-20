@@ -97,7 +97,7 @@ export function Bottega() {
           </Select>
         </header>
 
-        <div className="mx-auto flex w-full max-w-[60rem] flex-col gap-8 px-4 py-6 sm:px-6 sm:py-8">
+        <div className="mx-auto flex w-full max-w-[60rem] flex-col gap-8 px-4 pt-6 pb-28 sm:px-6 sm:pt-8 lg:pb-8">
           {/* What needs the person: the only orange on the page. */}
           <section className="flex flex-col gap-3">
             <div className="flex items-baseline gap-2 px-1">
