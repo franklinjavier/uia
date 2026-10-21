@@ -59,7 +59,7 @@ function ChatPill({
       transition={enter}
       aria-label={`Open ${name}`}
       className={cn(
-        "flex h-14 items-center gap-3 border border-border bg-card py-2 pr-2.5 pl-2.5 text-left shadow-lg outline-none transition-colors hover:bg-muted/40 focus-visible:ring-3 focus-visible:ring-ring/30",
+        "flex h-14 items-center gap-3 border border-border bg-card py-2 pr-2.5 pl-2.5 text-left shadow-[0_12px_40px_-14px_rgb(0_0_0/0.18)] dark:shadow-[0_12px_40px_-14px_rgb(0_0_0/0.6)] outline-none transition-colors hover:bg-muted/40 focus-visible:ring-3 focus-visible:ring-ring/30",
         className
       )}
     >

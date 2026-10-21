@@ -151,6 +151,20 @@ task phrased as the person would type it).
   content fades in once the shape has mostly settled (delay ~0.18 s), and
   Minimise morphs it back. Keep the open state above the session's `key` so
   starting over doesn't close it. See `example-assistant`, which starts closed.
+  - While it grows, it is a **card**: hairline ring + soft shadow and ~24 px
+    corners held until ~85% of the way, then gone (animate `borderRadius` and
+    `boxShadow` keyframes with `times: [0, 0.86, 1]`; literal rgba colours,
+    since tokens can't be tweened). Ease in-out (~0.75 s) so the growth is
+    visible; content fades in at ~0.4 s.
+  - The entrance plays only when opening from the pill. A session remount
+    (new scenario, New chat) must not replay it: pass `initial={false}`.
+  - Closed, the pill is **weightless**: three slow, out-of-step drifts (rise
+    ~5 s, sway ~8 s, tilt ±0.8° ~6 s, `repeatType: "mirror"`), none under
+    reduced motion. Its shadow is soft and wide, never `shadow-lg`.
+- **A picked suggestion is carried into the first bubble**: its words lift
+  off the row and travel (x brisk, y gentle, so the path arcs, ~0.85 s) to
+  the first user bubble, which takes shape around them; the real bubble and
+  the agent's turn stay hidden until they land.
 - **Empty state suggestions are rows, not pills**: `ChatEmpty` lists
   `ChatSuggestion`s as full-width rows (icon + task, hairline between) in a
   `max-w-md` column, arriving one after another (stagger ~45 ms). Never a

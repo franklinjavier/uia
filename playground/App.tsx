@@ -1,17 +1,11 @@
 import * as React from "react"
+import { motion } from "motion/react"
 import { ChevronsUpDownIcon, MoonIcon, SunIcon } from "lucide-react"
 
 import { useTheme } from "@/components/theme-provider"
 import { PlaygroundDock } from "./playground-dock"
 import { navigate, usePath } from "./router"
 import { Button } from "@/components/ui/button"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Assistant } from "@/examples/assistant/assistant"
 import { AgentRuntimeExample as AgentRuntime } from "@/examples/agent-runtime"
 import { AiSpendExample as AiSpend } from "@/examples/ai-spend"
@@ -96,31 +90,42 @@ export function App() {
     <div className="relative min-h-svh bg-background">
       {!bare && (
         // The playground's own chrome: a draggable pill, out of every example's way.
-        <PlaygroundDock onDragStart={() => setPickerOpen(false)}>
-          <Select
-            open={pickerOpen}
-            onOpenChange={setPickerOpen}
-            value={active}
-            onValueChange={(v) => v && go(v as WidgetKey)}
-          >
-            <SelectTrigger
-              aria-label="Example"
-              icon={<ChevronsUpDownIcon />}
-              // The dock drags from anywhere: open on a real click, not on press.
-              onPointerDown={(e) => e.preventBaseUIHandler()}
-              onMouseDown={(e) => e.preventBaseUIHandler()}
-              onClick={() => setPickerOpen((o) => !o)}
-            >
-              <SelectValue>{(v: WidgetKey) => WIDGETS[v].label}</SelectValue>
-            </SelectTrigger>
-            <SelectContent side="top" alignItemWithTrigger={false}>
-              {Object.entries(WIDGETS).map(([key, w]) => (
-                <SelectItem key={key} value={key}>
+        <PlaygroundDock
+          onDragStart={() => setPickerOpen(false)}
+          open={pickerOpen}
+          onOpenChange={setPickerOpen}
+          menu={
+            <nav aria-label="Examples" className="flex max-h-[min(70svh,32rem)] flex-col overflow-y-auto pb-1">
+              {Object.entries(WIDGETS).map(([key, w], i) => (
+                <motion.button
+                  key={key}
+                  type="button"
+                  aria-current={key === active ? "page" : undefined}
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0, transition: { duration: 0.2, delay: 0.14 + i * 0.018 } }}
+                  onClick={() => {
+                    setPickerOpen(false)
+                    go(key as WidgetKey)
+                  }}
+                  className="flex h-8 items-center rounded-xl px-3 text-left text-sm text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:bg-muted aria-[current=page]:text-foreground aria-[current=page]:bg-muted/60"
+                >
                   {w.label}
-                </SelectItem>
+                </motion.button>
               ))}
-            </SelectContent>
-          </Select>
+            </nav>
+          }
+        >
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label="Example"
+            aria-expanded={pickerOpen}
+            className="gap-1.5 rounded-full px-2.5 font-normal"
+            onClick={() => setPickerOpen((o) => !o)}
+          >
+            {WIDGETS[active].label}
+            <ChevronsUpDownIcon className="text-muted-foreground" />
+          </Button>
           <Button
             variant="outline"
             size="icon-sm"
