@@ -355,7 +355,10 @@ function Session({
 
   return (
     <LayoutGroup>
-      <AnimatePresence mode="popLayout" initial={false}>
+      {/* No initial={false} here: it would also silence every entrance below
+          (chart bars, turns) whenever a new session mounts. The page gates
+          its own entrance with `morph`. */}
+      <AnimatePresence mode="popLayout">
         {minimised ? (
           // Closed: just the pill, the orb breathing in the middle of the page.
           <motion.div
