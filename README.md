@@ -1,4 +1,9 @@
-# uia
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="public/brand/logo-dark.png" />
+    <img src="public/brand/logo-light.png" alt="uia" width="440" />
+  </picture>
+</h1>
 
 Design system for AI products: shadcn (Base UI, `base-rhea`) + our tokens,
 generative-UI parts for human-in-the-loop flows, and a composable chat kit.
