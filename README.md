@@ -1,7 +1,7 @@
 <h1>
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="public/brand/logo-dark.png" />
-    <img src="public/brand/logo-light.png" alt="uia" width="440" />
+    <img src="public/brand/logo-light.png" alt="uia — agent UI" width="280" />
   </picture>
 </h1>
 
