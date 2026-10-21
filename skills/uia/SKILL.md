@@ -243,7 +243,7 @@ is decoration. Fix what differs before reporting.
 - `references/tokens.md` — every token, what it means, when to use it.
 - `references/components.md` — catalog: what to reach for, imports, examples, registry item names.
 - `references/hitl.md` — the human-in-the-loop patterns, states and copy.
-- `references/chat.md` — `useAgentChat`, the tool registry, assembling a chat (widget or full page).
+- `references/chat.md` — `useAgentChat`, the tool registry, assembling a chat (full page that opens from its pill).
 - `references/adopting.md` — bringing uia into an existing app: replace its UI layer (keep contracts and transport; one adapter maps its blocks to uia parts) or adopt piece by piece.
 - `references/surfaces.md` — agent-composed UI: the A2UI format, the uia catalog, rendering, streaming, actions, extending.
 - `references/pitfalls.md` — real bugs met while building uia and how to avoid them.

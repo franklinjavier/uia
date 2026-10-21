@@ -30,7 +30,7 @@ const scenario =
   new URLSearchParams(window.location.search).get("scenario") ?? undefined
 
 function FullChat() {
-  return <Assistant layout="full" initialScenario={scenario as never} />
+  return <Assistant initialScenario={scenario as never} />
 }
 
 // davinci's views are routes: /davinci2, /davinci2/threads/blog,
@@ -48,13 +48,8 @@ function DavinciInboxPage() {
   )
 }
 
-function AssistantWidget() {
-  return <Assistant initialScenario={scenario as never} />
-}
-
 const WIDGETS = {
-  chat: { label: "Full chat", component: FullChat, full: true },
-  assistant: { label: "Assistant", component: AssistantWidget, full: false },
+  chat: { label: "Assistant", component: FullChat, full: true },
   router: { label: "Model router", component: ModelRouter, full: false },
   runtime: { label: "Agent runtime", component: AgentRuntime, full: false },
   spend: { label: "AI spend", component: AiSpend, full: false },

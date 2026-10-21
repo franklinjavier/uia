@@ -141,10 +141,20 @@ task phrased as the person would type it).
   An assistant turn that failed before anything arrived renders nothing.
 - **Regenerate** lives in the last turn's actions: `ChatTurn
   onRegenerate={isLast && !busy ? () => chat.regenerate() : undefined}`.
-- **Header actions are few and real**: New chat (resets) and Minimise. A
-  minimised assistant is a `ChatPill` — orb, the live phase as an eyebrow,
-  "Open" turning `attention` when it needs the person — and reopening keeps
-  the conversation.
+- **Header actions are few and real**: New chat (only once there is a
+  conversation) and Minimise. Never show an action that does nothing in this
+  layout, and never a disabled one for "nothing to do yet": hide it.
+- **Closed is a `ChatPill`** — the orb always breathing, the live phase as an
+  eyebrow, "Open" turning `attention` when it needs the person. Give the pill
+  and the page the same `layoutId` inside a `LayoutGroup`: opening morphs the
+  pill into the page (spring, ~0.6 s, `borderRadius` in `style`), the page's
+  content fades in once the shape has mostly settled (delay ~0.18 s), and
+  Minimise morphs it back. Keep the open state above the session's `key` so
+  starting over doesn't close it. See `example-assistant`, which starts closed.
+- **Empty state suggestions are rows, not pills**: `ChatEmpty` lists
+  `ChatSuggestion`s as full-width rows (icon + task, hairline between) in a
+  `max-w-md` column, arriving one after another (stagger ~45 ms). Never a
+  centred stack of different-width pills.
 
 ### Layouts
 
@@ -153,12 +163,8 @@ the middle, content column `mx-auto max-w-[720px]`, composer in a card at the
 bottom (`rounded-2xl border bg-card shadow-xs`) inside the same column. Page
 background `bg-background`. Nothing under the composer.
 
-**Widget** — `WidgetHeader` (orb + title), **one** `WidgetPanel
-className="flex flex-col overflow-hidden p-0"` holding the thread
-(`<div className="h-[480px]">`) and the composer below a hairline
-(`<div className="border-t border-border/70">`), and an optional
-`WidgetFooter` with `ChatStatus`. The conversation and its composer are one
-object; don't split them into two panels.
+A chat panel inside a dashboard widget is not a pattern any more: the
+assistant is a page that opens from its pill.
 
 **Embedded parts only** — when the host app already has its chat and you only
 add tool UIs, you only need the registry entries (`render`) and the

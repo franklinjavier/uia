@@ -5,11 +5,15 @@ import { enter } from "@/lib/motion"
 import { AgentOrb, type AgentPhase } from "@/components/ds/agent-orb"
 
 // ChatPill: the assistant, minimised. The work keeps going; the pill keeps
-// saying what it's doing (the orb moves, the eyebrow names the phase) so the
-// person can look away without losing track. When the agent waits on them
+// saying what it's doing (the orb always moves — breathing when idle — and
+// the eyebrow names the phase) so the person can look away without losing
+// track. When the agent waits on them
 // the "Open" tag turns `attention`. Click anywhere to bring the panel back.
 //
 //   {minimised ? <ChatPill phase={chat.phase} onOpen={() => setMinimised(false)} /> : <Panel … />}
+//
+// Give it the same `layoutId` as the panel and it morphs into it on open
+// (and back on minimise) inside a motion `LayoutGroup`.
 
 const STATUS: Record<AgentPhase, string> = {
   idle: "Ready",
@@ -26,6 +30,7 @@ function ChatPill({
   phase = "idle",
   status,
   onOpen,
+  layoutId,
   className,
 }: {
   name?: string
@@ -33,6 +38,8 @@ function ChatPill({
   /** Override the phase word ("3 of 4 steps"). */
   status?: string
   onOpen: () => void
+  /** Shared with the panel it opens into, so one morphs into the other. */
+  layoutId?: string
   className?: string
 }) {
   const busy = phase !== "idle"
@@ -43,17 +50,20 @@ function ChatPill({
       data-slot="chat-pill"
       data-phase={phase}
       onClick={onOpen}
+      layoutId={layoutId}
+      // Set in style (not a class) so motion corrects it while morphing.
+      style={{ borderRadius: 28 }}
       initial={{ opacity: 0, y: 8, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 8, scale: 0.96 }}
       transition={enter}
       aria-label={`Open ${name}`}
       className={cn(
-        "flex h-14 items-center gap-3 rounded-full border border-border bg-card py-2 pr-2.5 pl-2.5 text-left shadow-lg outline-none transition-colors hover:bg-muted/40 focus-visible:ring-3 focus-visible:ring-ring/30",
+        "flex h-14 items-center gap-3 border border-border bg-card py-2 pr-2.5 pl-2.5 text-left shadow-lg outline-none transition-colors hover:bg-muted/40 focus-visible:ring-3 focus-visible:ring-ring/30",
         className
       )}
     >
-      <AgentOrb phase={phase} active={busy} size={32} />
+      <AgentOrb phase={phase} size={32} />
       <span className="flex min-w-0 flex-col pr-2">
         <span className="text-sm">{name}</span>
         <span className={cn("eyebrow", busy && !waiting ? "shimmer text-muted-foreground" : "text-muted-foreground")}>

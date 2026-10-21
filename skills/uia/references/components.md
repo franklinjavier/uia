@@ -254,7 +254,7 @@ expandable.
 | `ChatTurn`, `UserTurn`, `AssistantTurn`, `ChatParts` | `chat-turn` | Renders a message: text, reasoning, sources, and your tools. |
 | `TurnActions`, `TurnAction`, `TurnActionsRow` | `turn-actions` | Copy / vote row under a finished turn. |
 | `Composer` + `ComposerInput`, `ComposerToolbar`, `ComposerAttach`, `ComposerMic`, `ComposerModelSelect`, `ComposerSubmit`, `ComposerButton` | `composer` | The prompt box. |
-| `ChatEmpty`, `ChatSuggestion` | `chat-empty` | Empty state: orb, greeting, suggestion pills. |
+| `ChatEmpty`, `ChatSuggestion` | `chat-empty` | Empty state: orb, greeting, suggestions as staggered rows. |
 | `ChatStatus` | `chat-status` | Dot + mono status line (for widget footers). |
 
 Wiring is in `chat.md`.

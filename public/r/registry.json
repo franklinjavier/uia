@@ -1332,10 +1332,14 @@
       "title": "Chat Empty",
       "description": "First screen: resting orb, greeting, suggestions.",
       "author": "uia",
+      "dependencies": [
+        "motion"
+      ],
       "registryDependencies": [
         "empty",
         "franklinjavier/uia/agent-orb",
         "franklinjavier/uia/button",
+        "franklinjavier/uia/motion",
         "franklinjavier/uia/theme"
       ],
       "files": [
@@ -2152,6 +2156,7 @@
         "franklinjavier/uia/example-ai-spend",
         "franklinjavier/uia/findings",
         "franklinjavier/uia/model-icons",
+        "franklinjavier/uia/motion",
         "franklinjavier/uia/part-transition",
         "franklinjavier/uia/plan",
         "franklinjavier/uia/search-results",

@@ -1,5 +1,5 @@
 import * as React from "react"
-import { AnimatePresence } from "motion/react"
+import { AnimatePresence, LayoutGroup, motion } from "motion/react"
 import {
   BrainIcon,
   ChartColumnIcon,
@@ -13,10 +13,11 @@ import {
 import { getToolName, isToolUIPart } from "ai"
 
 import { cn } from "@/lib/utils"
+import { easeOut } from "@/lib/motion"
 import { getMessageText } from "@/lib/ai"
 import { AgentOrb } from "@/components/ds/agent-orb"
 import { ModelIcon } from "@/components/ds/model-icons"
-import { Widget, WidgetHeader, WidgetPanel, WidgetTitle } from "@/components/ds/widget"
+import { WidgetTitle } from "@/components/ds/widget"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { AttachmentChip, AttachmentPreview } from "@/components/parts/attachment"
@@ -51,6 +52,10 @@ import { data, tools } from "@/examples/assistant/tools"
 
 // The playground's assistant: nothing here but composition of the chat kit
 // (components/chat) with the demo's tools and scripted conversations.
+//
+// It starts closed, as a ChatPill with the orb breathing in the middle of an
+// empty page. Opening it morphs the pill into the full-page chat (shared
+// `layoutId`); Minimise morphs it back.
 
 const SCENARIO_ICONS = { globe: GlobeIcon, pen: PenLineIcon, code: CodeIcon, chart: ChartColumnIcon, file: FileTextIcon }
 
@@ -62,24 +67,27 @@ const MODELS = {
   grok: { name: "Grok", provider: "xAI", icon: <ModelIcon family="grok" /> },
 }
 
-export type AssistantLayout = "widget" | "full"
-
 export function Assistant({
-  layout = "widget",
   initialScenario,
+  defaultOpen = Boolean(initialScenario),
 }: {
-  layout?: AssistantLayout
   /** Start straight into a scripted scenario instead of the empty state. */
   initialScenario?: ScenarioKey
+  /** Start open instead of as the pill (default: open when a scenario is given). */
+  defaultOpen?: boolean
 }) {
   const [scenario, setScenario] = React.useState<ScenarioKey>(initialScenario ?? "draft")
   const [run, setRun] = React.useState(0)
   const [started, setStarted] = React.useState(Boolean(initialScenario))
+  // Lives here, not in the session: picking a scenario or starting over
+  // remounts the session, and must not close the chat.
+  const [minimised, setMinimised] = React.useState(!defaultOpen)
 
   return (
     <Session
       key={`${scenario}-${run}`}
-      layout={layout}
+      minimised={minimised}
+      onMinimisedChange={setMinimised}
       scenario={scenario}
       autoStart={started}
       onPick={(key) => {
@@ -96,13 +104,15 @@ export function Assistant({
 }
 
 function Session({
-  layout,
+  minimised,
+  onMinimisedChange: setMinimised,
   scenario,
   autoStart,
   onPick,
   onReset,
 }: {
-  layout: AssistantLayout
+  minimised: boolean
+  onMinimisedChange: (minimised: boolean) => void
   scenario: ScenarioKey
   autoStart: boolean
   onPick: (key: ScenarioKey) => void
@@ -122,7 +132,6 @@ function Session({
   const [model, setModel] = React.useState<keyof typeof MODELS>("claude")
   const [search, setSearch] = React.useState(true)
   const [think, setThink] = React.useState(true)
-  const [minimised, setMinimised] = React.useState(false)
 
   // A client tool answered outside the transcript: Connect docks above the
   // composer while the turn waits on it, then says what happens next.
@@ -136,11 +145,8 @@ function Session({
   }
   useScriptedSession({ autoStart, next, messages, busy, sendMessage, setMessages })
 
-  const full = layout === "full"
-
   // Header actions only when they do something: start over once there's a
-  // conversation, and get out of the way (the chat folds into a ChatPill, on
-  // the page as in the widget).
+  // conversation, and get out of the way (the chat folds back into its pill).
   const header = (
     <>
       <AgentOrb phase={chat.phase} />
@@ -158,11 +164,11 @@ function Session({
     </>
   )
 
-  const column = full ? "mx-auto w-full max-w-[720px]" : ""
+  const column = "mx-auto w-full max-w-[720px]"
 
   const conversation =
     messages.length === 0 ? (
-      <ChatEmpty title="Good evening" description="What are we working on?" size={full ? "lg" : "default"}>
+      <ChatEmpty title="Good evening" description="What are we working on?" size="lg">
         {(Object.keys(SCENARIOS) as ScenarioKey[]).map((key) => {
           const Icon = SCENARIO_ICONS[SCENARIOS[key].icon]
           return (
@@ -173,7 +179,7 @@ function Session({
         })}
       </ChatEmpty>
     ) : (
-      <ChatThread busy={busy} className={cn(full && cn(column, "px-6 py-10"))}>
+      <ChatThread busy={busy} className={cn(column, "px-6 py-10")}>
         {messages.map((message, index) => (
           <ChatThreadItem key={index} message={message}>
             <ChatTurn
@@ -240,57 +246,56 @@ function Session({
     </Composer>
   )
 
-  if (full) {
-    // Minimised, the page gives way and the chat waits as a pill in the
-    // corner, still showing what the agent is doing.
-    if (minimised)
-      return (
-        <div data-slot="assistant-page" className="h-svh w-full bg-background">
-          <AnimatePresence>
-            <ChatPill
-              key="pill"
-              phase={chat.phase}
-              onOpen={() => setMinimised(false)}
-              className="fixed right-6 bottom-6"
-            />
-          </AnimatePresence>
-        </div>
-      )
-    return (
-      <div data-slot="assistant-page" className="flex h-svh w-full flex-col bg-background">
-        {/* pr-16 leaves room for the playground's theme toggle */}
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border/70 pr-16 pl-5">
-          {header}
-        </header>
-        <div className="relative min-h-0 flex-1">{conversation}</div>
-        <div className={cn(column, "flex shrink-0 flex-col gap-2 px-6 pb-6")}>
-          <AnimatePresence>{connect.prompt}</AnimatePresence>
-          <div className="rounded-2xl border border-border bg-card shadow-xs">{composer}</div>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      {minimised ? (
-        <ChatPill key="pill" phase={chat.phase} onOpen={() => setMinimised(false)} />
-      ) : (
-        <Widget key="panel" className="w-full max-w-[620px]">
-          <WidgetHeader>{header}</WidgetHeader>
-          {/* One panel: the conversation and its composer belong together. */}
-          <WidgetPanel className="flex flex-col overflow-hidden p-0">
-            <div className="h-[480px]">{conversation}</div>
-            <AnimatePresence>
-              {connect.prompt && <div className="border-t border-border/70 p-2">{connect.prompt}</div>}
-            </AnimatePresence>
-            <div className="border-t border-border/70">{composer}</div>
-          </WidgetPanel>
-        </Widget>
-      )}
-    </AnimatePresence>
+    <LayoutGroup>
+      <AnimatePresence mode="popLayout" initial={false}>
+        {minimised ? (
+          // Closed: just the pill, the orb breathing in the middle of the page.
+          <motion.div
+            key="closed"
+            data-slot="assistant-closed"
+            className="flex h-svh w-full items-center justify-center bg-background px-6"
+            exit={{ opacity: 1 }}
+          >
+            <ChatPill layoutId={SURFACE} phase={chat.phase} onOpen={() => setMinimised(false)} />
+          </motion.div>
+        ) : (
+          // Open: the pill grows into the page; its content arrives once the
+          // shape has mostly settled.
+          <motion.div
+            key="open"
+            layoutId={SURFACE}
+            data-slot="assistant-page"
+            transition={MORPH}
+            style={{ borderRadius: 0 }}
+            className="flex h-svh w-full flex-col overflow-hidden bg-background"
+          >
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1, transition: { ...easeOut, delay: 0.18 } }}
+              exit={{ opacity: 0, transition: { duration: 0.1 } }}
+              className="flex min-h-0 flex-1 flex-col"
+            >
+              {/* pr-16 leaves room for the playground's theme toggle */}
+              <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border/70 pr-16 pl-5">
+                {header}
+              </header>
+              <div className="relative min-h-0 flex-1">{conversation}</div>
+              <div className={cn(column, "flex shrink-0 flex-col gap-2 px-6 pb-6")}>
+                <AnimatePresence>{connect.prompt}</AnimatePresence>
+                <div className="rounded-2xl border border-border bg-card shadow-xs">{composer}</div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </LayoutGroup>
   )
 }
+
+/** The pill and the page are one surface: this id lets one morph into the other. */
+const SURFACE = "assistant-surface"
+const MORPH = { type: "spring", bounce: 0.12, duration: 0.6 } as const
 
 function HeaderAction({
   label,
