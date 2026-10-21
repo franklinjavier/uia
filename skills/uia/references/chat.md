@@ -97,6 +97,10 @@ and never after a server tool that finished in-stream (that would loop).
 </Composer>
 ```
 
+While a reply streams, `ComposerSubmit busy` turns into Stop with the
+agent's breathing orb ringed around it (the same ring that dots the i of
+the logo). It's the orb, not a spinner: no other ring or loader goes there.
+
 Empty conversation → `ChatEmpty` with 2–4 `ChatSuggestion`s (icon + a real
 task phrased as the person would type it).
 

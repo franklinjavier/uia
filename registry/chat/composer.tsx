@@ -1,5 +1,6 @@
 import * as React from "react"
 import { ArrowUpIcon, MicIcon, PlusIcon, SquareIcon } from "lucide-react"
+import { ThinkingOrb } from "thinking-orbs"
 
 import { cn } from "@/lib/utils"
 import {
@@ -125,7 +126,11 @@ function ComposerMic({ className, ...props }: React.ComponentProps<typeof InputG
   )
 }
 
-/** Send, or Stop while a reply streams. */
+/**
+ * Send, or Stop while a reply streams. While busy the agent's orb (its
+ * breathing ring, the same one that dots the i of the logo) circles the
+ * stop button: the reply is alive, and this is where you end it.
+ */
 function ComposerSubmit({
   busy = false,
   onStop,
@@ -146,7 +151,12 @@ function ComposerSubmit({
         className={cn("relative", className)}
         onClick={onStop}
       >
-        <span className="absolute -inset-1 animate-spin-slow rounded-full border border-dashed border-brand" />
+        <ThinkingOrb
+          aria-hidden
+          state="breathing"
+          size={64}
+          className="pointer-events-none absolute top-1/2 left-1/2 -translate-1/2"
+        />
         <SquareIcon className="size-3 fill-current" />
       </ComposerButton>
     )

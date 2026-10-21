@@ -1310,7 +1310,8 @@
       "description": "Prompt box as parts: input, toolbar, attach, model select, submit.",
       "author": "uia",
       "dependencies": [
-        "lucide-react"
+        "lucide-react",
+        "thinking-orbs"
       ],
       "registryDependencies": [
         "franklinjavier/uia/select",
