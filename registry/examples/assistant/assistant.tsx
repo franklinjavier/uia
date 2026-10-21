@@ -138,15 +138,19 @@ function Session({
 
   const full = layout === "full"
 
-  // Two header actions, both real: start over, and get out of the way.
+  // Header actions only when they do something: start over once there's a
+  // conversation, and get out of the way (the chat folds into a ChatPill, on
+  // the page as in the widget).
   const header = (
     <>
       <AgentOrb phase={chat.phase} />
       <WidgetTitle>Assistant</WidgetTitle>
       <span className="ml-auto flex items-center gap-0.5">
-        <HeaderAction label="New chat" onClick={onReset} disabled={messages.length === 0}>
-          <SquarePenIcon />
-        </HeaderAction>
+        {messages.length > 0 && (
+          <HeaderAction label="New chat" onClick={onReset}>
+            <SquarePenIcon />
+          </HeaderAction>
+        )}
         <HeaderAction label="Minimise" onClick={() => setMinimised(true)}>
           <MinusIcon />
         </HeaderAction>
@@ -237,6 +241,21 @@ function Session({
   )
 
   if (full) {
+    // Minimised, the page gives way and the chat waits as a pill in the
+    // corner, still showing what the agent is doing.
+    if (minimised)
+      return (
+        <div data-slot="assistant-page" className="h-svh w-full bg-background">
+          <AnimatePresence>
+            <ChatPill
+              key="pill"
+              phase={chat.phase}
+              onOpen={() => setMinimised(false)}
+              className="fixed right-6 bottom-6"
+            />
+          </AnimatePresence>
+        </div>
+      )
     return (
       <div data-slot="assistant-page" className="flex h-svh w-full flex-col bg-background">
         {/* pr-16 leaves room for the playground's theme toggle */}
