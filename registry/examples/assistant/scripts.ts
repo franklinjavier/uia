@@ -450,10 +450,10 @@ const compose = createChat<ChatMessage>()
   })
 
 export const SCENARIOS = {
-  research: { label: "What shipped in the last release?", icon: "globe", turns: 3, chat: research },
+  metrics: { label: "How did weekly signups trend?", icon: "chart", turns: 3, chat: metrics },
   draft: { label: "Draft a launch announcement", icon: "pen", turns: 1, chat: draft },
   code: { label: "Write a debounce hook", icon: "code", turns: 1, chat: code },
-  metrics: { label: "How did weekly signups trend?", icon: "chart", turns: 3, chat: metrics },
+  research: { label: "What shipped in the last release?", icon: "globe", turns: 3, chat: research },
   deck: { label: "Summarize the risks in a deck", icon: "file", turns: 1, chat: deck },
   spend: { label: "How's our AI spend this month?", icon: "chart", turns: 1, chat: spend },
   compose: { label: "Which model should handle code reviews?", icon: "code", turns: 1, chat: compose },
