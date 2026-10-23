@@ -34,6 +34,11 @@ Widget
   *scope* of everything below (environment, region, cluster, month). Put it
   in `WidgetActions` as a `Select` with a leading muted icon. Nothing else:
   no info icon, no settings, no close.
+  - *Extension:* when part of the list is waiting on the person, the header
+    may carry one `StatusBadge tone="attention"` count ("2 need you") — and
+    it is a button that filters to exactly those (PurchaseOrders). Why: it is
+    the one fact that decides where to look first, and it does something.
+    A count that doesn't filter stays out of the header.
 - **Two panels is the default.** A third only when there's a genuinely
   separate block. Never one panel per stat.
 - **Footer:** `WidgetMeta` with a `StatusDot tone="success" pulse` when the
@@ -41,6 +46,16 @@ Widget
   one action is a `brand` button, `min-w-32`, with three states: idle,
   working (spinner + "-ing" label), done (check + past tense, ~1.8 s) — see
   Deploy policy / Rebalance. Disable it when there's nothing to do.
+  - *Extension:* a `secondary` button may sit left of the primary when it is
+    a real second verb on the same thing — a bulk action on the same
+    selection (Mark billed · **Approve 2**) or undoing the form (Reset ·
+    **Show 142 bills**). Never two `brand` buttons; Reset appears only once
+    something changed. Why: these footers act on what the person picked;
+    hiding the second verb in a menu would add a control that only exists
+    to hold it.
+  - With rows selected, the meta becomes the selection ("2 selected
+    $16,480.00") and the primary counts what it will act on ("Approve 2",
+    only the rows it applies to).
 
 ## 2. The hero: one number and what explains it
 

@@ -11,6 +11,7 @@ import { AgentRuntimeExample as AgentRuntime } from "@/examples/agent-runtime"
 import { AiSpendExample as AiSpend } from "@/examples/ai-spend"
 import { FleetHealthExample as FleetHealth } from "@/examples/fleet-health"
 import { GroundStationExample as GroundStation } from "@/examples/ground-station"
+import { PurchaseOrdersExample as PurchaseOrders } from "@/examples/purchase-orders"
 import { ModelEvalsExample as ModelEvals } from "@/examples/model-evals"
 import { Bottega } from "@/examples/bottega/bottega"
 import { Davinci } from "@/examples/davinci/davinci"
@@ -50,6 +51,7 @@ const WIDGETS = {
   spend: { label: "AI spend", component: AiSpend, full: false },
   fleet: { label: "Fleet health", component: FleetHealth, full: false },
   ground: { label: "Ground station", component: GroundStation, full: false },
+  orders: { label: "Purchase orders", component: PurchaseOrders, full: false },
   evals: { label: "Evals", component: ModelEvals, full: false },
   bottega: { label: "Bottega", component: Bottega, full: true },
   davinci: { label: "davinci (one chat)", component: Davinci, full: true },

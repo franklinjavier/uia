@@ -1443,6 +1443,63 @@
       ]
     },
     {
+      "name": "block-purchase-orders",
+      "type": "registry:component",
+      "title": "Block Purchase Orders",
+      "description": "PurchaseOrders: orders as a schedule (placed → delivery, filled as billed, today line), status tabs with counts, date chip, supplier, search, bulk Approve / Mark billed.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react",
+        "motion"
+      ],
+      "registryDependencies": [
+        "checkbox",
+        "franklinjavier/uia/button",
+        "franklinjavier/uia/motion",
+        "franklinjavier/uia/segmented",
+        "franklinjavier/uia/select",
+        "franklinjavier/uia/status",
+        "franklinjavier/uia/theme",
+        "franklinjavier/uia/widget",
+        "input"
+      ],
+      "files": [
+        {
+          "path": "registry/blocks/purchase-orders.tsx",
+          "type": "registry:component",
+          "target": "@components/blocks/purchase-orders.tsx"
+        }
+      ]
+    },
+    {
+      "name": "block-bills-filter",
+      "type": "registry:component",
+      "title": "Block Bills Filter",
+      "description": "BillsFilter: due-date range, amount range over a histogram, overdue switch, document types with counts, live \"Show N bills\".",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react",
+        "motion"
+      ],
+      "registryDependencies": [
+        "checkbox",
+        "franklinjavier/uia/button",
+        "franklinjavier/uia/motion",
+        "franklinjavier/uia/number-ticker",
+        "franklinjavier/uia/theme",
+        "franklinjavier/uia/widget",
+        "slider",
+        "switch"
+      ],
+      "files": [
+        {
+          "path": "registry/blocks/bills-filter.tsx",
+          "type": "registry:component",
+          "target": "@components/blocks/bills-filter.tsx"
+        }
+      ]
+    },
+    {
       "name": "block-ground-station",
       "type": "registry:component",
       "title": "Block Ground Station",
@@ -1945,6 +2002,25 @@
       ]
     },
     {
+      "name": "example-purchase-orders",
+      "type": "registry:block",
+      "title": "Example Purchase Orders",
+      "description": "Example: September's purchase orders and the bills filter over seeded data.",
+      "author": "uia",
+      "registryDependencies": [
+        "franklinjavier/uia/block-bills-filter",
+        "franklinjavier/uia/block-purchase-orders",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/examples/purchase-orders.tsx",
+          "type": "registry:file",
+          "target": "~/src/examples/purchase-orders.tsx"
+        }
+      ]
+    },
+    {
       "name": "example-ground-station",
       "type": "registry:block",
       "title": "Example Ground Station",
@@ -2304,6 +2380,8 @@
         "franklinjavier/uia/block-ai-spend",
         "franklinjavier/uia/block-fleet-health",
         "franklinjavier/uia/block-ground-station",
+        "franklinjavier/uia/block-purchase-orders",
+        "franklinjavier/uia/block-bills-filter",
         "franklinjavier/uia/block-model-evals",
         "franklinjavier/uia/block-model-router",
         "franklinjavier/uia/block-agent-runtime"
@@ -2322,6 +2400,7 @@
         "franklinjavier/uia/example-ai-spend",
         "franklinjavier/uia/example-fleet-health",
         "franklinjavier/uia/example-ground-station",
+        "franklinjavier/uia/example-purchase-orders",
         "franklinjavier/uia/example-model-evals",
         "franklinjavier/uia/example-bottega",
         "franklinjavier/uia/example-davinci",

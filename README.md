@@ -137,7 +137,7 @@ npx shadcn@latest add @uia/chat
 | Chat | `agent-chat`, `chat-thread`, `chat-turn`, `turn-actions`, `composer`, `chat-empty`, `chat-status` |
 | Bundles | `uia`, `chat`, `hitl` |
 | Lib | `motion`, `ai`, `url`, `highlighter` |
-| Examples | `examples` (bundle), `example-assistant`, `example-model-router`, `example-agent-runtime`, `example-ai-spend`, `example-fleet-health`, `example-ground-station`, `example-model-evals`, `example-bottega` (page) |
+| Examples | `examples` (bundle), `example-assistant`, `example-model-router`, `example-agent-runtime`, `example-ai-spend`, `example-fleet-health`, `example-ground-station`, `example-purchase-orders`, `example-model-evals`, `example-bottega` (page) |
 | Agent skill | `skill` |
 
 ```bash
