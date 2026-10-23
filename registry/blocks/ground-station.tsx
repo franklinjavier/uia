@@ -1,6 +1,7 @@
 import * as React from "react"
 import { motion, useReducedMotion } from "motion/react"
-import { CheckIcon, Loader2Icon, RadioTowerIcon, TargetIcon } from "lucide-react"
+import { AnimatePresence } from "motion/react"
+import { CheckIcon, Loader2Icon, LocateFixedIcon, RadioTowerIcon, TargetIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { springSoft } from "@/lib/motion"
@@ -155,6 +156,50 @@ function project(v: V3, yaw: number, pitch: number, r: number, c: number): Proje
   return { x: c + r * x1, y: c - r * z2, front: !behind }
 }
 
+/** A vector in view space (same rotation as `project`, no projection). */
+function view(v: V3, yaw: number, pitch: number): V3 {
+  const x1 = v[0] * Math.cos(yaw) - v[1] * Math.sin(yaw)
+  const y1 = v[0] * Math.sin(yaw) + v[1] * Math.cos(yaw)
+  const z1 = v[2]
+  return [x1, y1 * Math.cos(pitch) - z1 * Math.sin(pitch), y1 * Math.sin(pitch) + z1 * Math.cos(pitch)]
+}
+
+/** Where the sun is overhead at UTC second-of-day `t` (late October: −12°). */
+function sunPoint(t: number): V3 {
+  const lon = rad(((12 * 3600 - (t % 86400)) / 3600) * 15) + earthAngle(t)
+  const lat = rad(-12)
+  return [Math.cos(lat) * Math.cos(lon), Math.cos(lat) * Math.sin(lon), Math.sin(lat)]
+}
+
+/**
+ * The night side as a filled path: the front half of the terminator (the
+ * great circle facing away from the sun) closed by the limb arc that lies
+ * in shadow.
+ */
+function nightPath(sun: V3, r: number, c: number) {
+  // Two axes spanning the terminator plane.
+  const a0 = cross(sun, Math.abs(sun[2]) < 0.9 ? [0, 0, 1] : [1, 0, 0])
+  const a = a0.map((x) => x / norm(a0)) as V3
+  const b = cross(sun, a)
+  const ring = Array.from({ length: 180 }, (_, i) => {
+    const t = (i / 180) * 2 * Math.PI
+    return [a[0] * Math.cos(t) + b[0] * Math.sin(t), a[1] * Math.cos(t) + b[1] * Math.sin(t), a[2] * Math.cos(t) + b[2] * Math.sin(t)] as V3
+  })
+  // Rotate the ring so its front half (y < 0, towards the viewer) is contiguous.
+  const k = ring.findIndex((p, i) => p[1] < 0 && ring[(i + 179) % 180][1] >= 0)
+  if (k < 0) return sun[1] > 0 ? `M${c - r} ${c}a${r} ${r} 0 1 0 ${2 * r} 0a${r} ${r} 0 1 0 ${-2 * r} 0` : ""
+  const front = [...ring.slice(k), ...ring.slice(0, k)].filter((p) => p[1] < 0)
+  const pt = (p: V3) => `${(c + r * p[0]).toFixed(1)} ${(c - r * p[2]).toFixed(1)}`
+  const A = front[0]
+  const B = front[front.length - 1]
+  // Close along the limb, on whichever side faces away from the sun.
+  const angle = (p: V3) => Math.atan2(p[2], p[0])
+  const mid = (angle(A) + angle(B)) / 2
+  const midNight = Math.cos(mid) * sun[0] + Math.sin(mid) * sun[2] < 0
+  const sweep = midNight === angle(B) < angle(A) ? 1 : 0
+  return `M${pt(front[0])}${front.slice(1).map((p) => `L${pt(p)}`).join("")}A${r} ${r} 0 0 ${sweep} ${pt(A)}Z`
+}
+
 /** Polyline split into front and back runs. */
 function runs(points: Projected[]) {
   const front: string[] = []
@@ -200,7 +245,7 @@ function Globe({
   const [grabbing, setGrabbing] = React.useState(false)
   const size = 220
   const c = size / 2
-  const r = 66
+  const r = 72
 
   // Follow the station round the planet; dragging adds an offset on top.
   const yaw = -Math.PI / 2 - (rad(site.lon) + earthAngle(time)) + drag.yaw
@@ -230,11 +275,29 @@ function Globe({
 
   const station = P(sitePoint(site, time))
   const selected = satellites.find((s) => s.id === selectedId)
+  const night = nightPath(view(sunPoint(time), yaw, pitch), r, c)
+  const turned = drag.yaw !== 0 || drag.pitch !== 0
 
   return (
+    <>
+    <AnimatePresence>
+      {turned && (
+        <motion.div
+          className="absolute top-4 right-4 z-10"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.9 }}
+          transition={springSoft}
+        >
+          <Button variant="ghost" size="icon-sm" aria-label={`Face ${site.name}`} title={`Face ${site.name}`} className="text-muted-foreground" onClick={() => setDrag({ yaw: 0, pitch: 0 })}>
+            <LocateFixedIcon />
+          </Button>
+        </motion.div>
+      )}
+    </AnimatePresence>
     <svg
       viewBox={`0 0 ${size} ${size}`}
-      className={cn("mx-auto block h-52 w-52 touch-none select-none", grabbing ? "cursor-grabbing" : "cursor-grab")}
+      className={cn("mx-auto block size-60 touch-none select-none", grabbing ? "cursor-grabbing" : "cursor-grab")}
       role="img"
       aria-label={`Globe: ${site.name} and ${satellites.length} orbits. Drag to turn.`}
       onPointerDown={(e) => {
@@ -257,7 +320,10 @@ function Globe({
       }}
       onDoubleClick={() => setDrag({ yaw: 0, pitch: 0 })}
     >
-      <circle cx={c} cy={c} r={r} className="fill-card stroke-foreground/45" strokeWidth={1} />
+      <circle cx={c} cy={c} r={r} className="fill-card" />
+      {/* The night side: shade gives the sphere its volume. */}
+      {night && <path d={night} className="fill-foreground/[0.09] dark:fill-black/50" />}
+      <circle cx={c} cy={c} r={r} className="fill-none stroke-foreground/45" strokeWidth={1} />
       {graticule.map((line, i) => {
         const { front, back } = runs(line.map((v) => P(toInertial(v))))
         return (
@@ -303,12 +369,15 @@ function Globe({
       )}
 
       {satellites.map((s) => {
-        const p = P(orbitPoint(s.orbit, argAt(s.orbit, time)), shown(s.orbit.alt))
+        const u = argAt(s.orbit, time)
+        const p = P(orbitPoint(s.orbit, u), shown(s.orbit.alt))
+        const q = P(orbitPoint(s.orbit, u + 0.05), shown(s.orbit.alt))
+        const heading = deg(Math.atan2(q.y - p.y, q.x - p.x))
         const on = s.id === selectedId
         const isLive = live[s.id] !== undefined
         return (
           <g key={`sat-${s.id}`} opacity={p.front ? 1 : 0.35} className={isLive ? "text-success" : on ? "text-foreground" : "text-muted-foreground"}>
-            <rect x={p.x - 3} y={p.y - 3} width={6} height={6} rx={1} transform={`rotate(45 ${p.x} ${p.y})`} className="fill-card stroke-current" strokeWidth={1.25} />
+            <SatelliteGlyph x={p.x} y={p.y} heading={heading} />
             {on && selected && (
               <text x={p.x + 8} y={p.y - 4} className="fill-current font-mono text-[8px] tracking-wider uppercase">
                 <tspan>{s.id}</tspan>
@@ -322,6 +391,19 @@ function Globe({
       })}
       <title>{`Mask ${mask}°`}</title>
     </svg>
+    </>
+  )
+}
+
+/** A satellite: a body between two solar panels, panels across its heading. */
+function SatelliteGlyph({ x, y, heading }: { x: number; y: number; heading: number }) {
+  return (
+    <g transform={`translate(${x} ${y}) rotate(${heading + 90})`}>
+      <path d="M-2 0H-3.5M2 0H3.5" className="stroke-current" strokeWidth={1} />
+      <rect x={-9} y={-2.25} width={5.5} height={4.5} rx={0.75} className="fill-card stroke-current" strokeWidth={1} />
+      <rect x={3.5} y={-2.25} width={5.5} height={4.5} rx={0.75} className="fill-card stroke-current" strokeWidth={1} />
+      <rect x={-2} y={-2.5} width={4} height={5} rx={1} className="fill-current" />
+    </g>
   )
 }
 
@@ -338,13 +420,13 @@ function SkyPlot({ track, now, live }: { track: { az: number; el: number }[]; no
   const pts = track.map(at)
   const here = now && at(now)
   return (
-    <svg viewBox="0 0 64 64" className="size-16 shrink-0" aria-hidden>
+    <svg viewBox="0 0 64 64" className="size-[76px] shrink-0" aria-hidden>
       <circle cx={c} cy={c} r={R} className="fill-none stroke-foreground/25" strokeWidth={0.75} />
       <circle cx={c} cy={c} r={R * 0.66} className="fill-none stroke-foreground/15" strokeWidth={0.75} strokeDasharray="1.5 2" />
       <circle cx={c} cy={c} r={R * 0.33} className="fill-none stroke-foreground/15" strokeWidth={0.75} />
       <path d={`M${c} ${c - R}V${c + R}M${c - R} ${c}H${c + R}`} className="stroke-foreground/15" strokeWidth={0.75} />
       {["N", "E", "S", "W"].map((l, i) => (
-        <text key={l} x={c + [0, R + 3, 0, -R - 3][i]} y={c + [-R - 1.5, 1.5, R + 4.5, 1.5][i]} textAnchor="middle" className="fill-faint-foreground font-mono text-[4px]">
+        <text key={l} x={c + [0, R + 3, 0, -R - 3][i]} y={c + [-R - 1.5, 1.5, R + 4.5, 1.5][i]} textAnchor="middle" className="fill-muted-foreground font-mono text-[5px]">
           {l}
         </text>
       ))}
@@ -370,7 +452,7 @@ function PassTimeline({ windows, now, span, live }: { windows: Pass[]; now: numb
   const pct = (t: number) => Math.max(0, Math.min(100, ((t - now) / span) * 100))
   return (
     <div className="flex w-full flex-col gap-1" aria-hidden>
-      <div className="relative h-3">
+      <div className="relative h-4">
         <div className="absolute inset-x-0 bottom-0 h-px bg-border" />
         {[1, 2].map((i) => (
           <div key={i} className="absolute bottom-0 h-1 w-px bg-border" style={{ left: `${(i / 3) * 100}%` }} />
@@ -388,7 +470,7 @@ function PassTimeline({ windows, now, span, live }: { windows: Pass[]; now: numb
                 "absolute bottom-0 rounded-[2px] border",
                 current ? "border-success bg-success/80" : "border-foreground/50 bg-card"
               )}
-              style={{ left: `${left}%`, width: `max(6px, ${width}%)`, height: `${5 + (w.maxEl / 90) * 7}px` }}
+              style={{ left: `${left}%`, width: `max(8px, ${width}%)`, height: `${7 + (w.maxEl / 90) * 9}px` }}
             />
           )
         })}
@@ -423,6 +505,13 @@ const aos = (seconds: number) => {
   if (m < 60) return `${m}m`
   return m % 60 ? `${Math.floor(m / 60)}h ${m % 60}m` : `${m / 60}h`
 }
+
+const swap = {
+  initial: { opacity: 0, y: 4 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -4 },
+  transition: { duration: 0.2 },
+} as const
 
 const coord = (v: number, pos: string, neg: string) => `${Math.abs(v).toFixed(1)}°${v >= 0 ? pos : neg}`
 
@@ -462,6 +551,9 @@ export function GroundStation({
 }) {
   const site = stations.find((s) => s.id === stationId) ?? stations[0]
   const [booked, setBooked] = React.useState<{ key: string; state: "pending" | "done" } | null>(null)
+  // Switching station says so for a moment, where the clock usually is.
+  const [notice, setNotice] = React.useState<string | null>(null)
+  const noticeTimer = React.useRef<number | undefined>(undefined)
 
   // Everything below is a function of (site, orbits, time): no state to drift.
   const rows = satellites.map((s) => {
@@ -492,7 +584,16 @@ export function GroundStation({
       <WidgetHeader>
         <WidgetTitle>{title}</WidgetTitle>
         <WidgetActions>
-          <Select value={site.id} onValueChange={(v) => v && onStationChange?.(v)}>
+          <Select
+            value={site.id}
+            onValueChange={(v) => {
+              if (!v || v === site.id) return
+              onStationChange?.(v)
+              setNotice(`Tracking from ${stations.find((s) => s.id === v)?.name ?? v}`)
+              window.clearTimeout(noticeTimer.current)
+              noticeTimer.current = window.setTimeout(() => setNotice(null), 2600)
+            }}
+          >
             <SelectTrigger aria-label="Station">
               <RadioTowerIcon className="text-muted-foreground" />
               <SelectValue>{(v: string) => stations.find((s) => s.id === v)?.name}</SelectValue>
@@ -598,7 +699,12 @@ export function GroundStation({
                 // Phones keep name and state; the timeline needs room to mean anything.
                 className="grid-cols-[auto_minmax(0,1fr)_92px] gap-x-3 sm:grid-cols-[auto_minmax(0,1fr)_minmax(64px,120px)_92px]"
               >
-                <StatusDot tone={r.live ? (r.sat.id === sel.sat.id ? "success" : "info") : "neutral"} pulse={r.live} />
+                {/* Filled: in view now. Hollow: out of view. */}
+                {r.live ? (
+                  <StatusDot tone={r.sat.id === sel.sat.id ? "success" : "info"} pulse />
+                ) : (
+                  <span aria-hidden className="size-1.5 shrink-0 rounded-full border border-muted-foreground/70" />
+                )}
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate">{r.sat.id}</span>
                   <span className="truncate font-mono text-[11px] text-muted-foreground uppercase">{r.sat.label}</span>
@@ -616,11 +722,24 @@ export function GroundStation({
       </WidgetPanel>
 
       <WidgetFooter>
-        <WidgetMeta className="flex items-center gap-2 font-mono">
-          <StatusDot tone="success" pulse />
-          UTC {clock(time)}
-          {speed !== 1 && <span className="text-faint-foreground">· ×{speed}</span>}
-        </WidgetMeta>
+        <AnimatePresence mode="wait" initial={false}>
+          {notice ? (
+            <motion.span key="notice" {...swap}>
+              <WidgetMeta className="flex items-center gap-2 text-foreground">
+                <CheckIcon className="size-3.5 text-success" />
+                {notice}
+              </WidgetMeta>
+            </motion.span>
+          ) : (
+            <motion.span key="clock" {...swap}>
+              <WidgetMeta className="flex items-center gap-2 font-mono">
+                <StatusDot tone="success" pulse />
+                UTC {clock(time)}
+                {speed !== 1 && <span className="text-faint-foreground">· ×{speed}</span>}
+              </WidgetMeta>
+            </motion.span>
+          )}
+        </AnimatePresence>
         {book && onBook && (
           <Button
             variant="brand"
