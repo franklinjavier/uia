@@ -132,6 +132,7 @@ const ITEMS: Item[] = [
   // Blocks: whole product views (data-driven widgets) with typed props. The same component
   // renders on a dashboard and, at size="sm", inside a chat reply.
   item("block-ai-spend", "registry:component", "AiSpend: a period's AI cost by model against a budget, projection, alert, models as the meter's legend.", ["registry/blocks/ai-spend.tsx"]),
+  item("block-ground-station", "registry:component", "GroundStation: drag-to-turn globe with orbits, sky plot of the next pass or live downlink, onboard storage, satellites with their passes, book a pass.", ["registry/blocks/ground-station.tsx"]),
   item("block-fleet-health", "registry:component", "FleetHealth: tokens/s with sparkline, fleet meters, GPU heatmap with modes, rebalance.", ["registry/blocks/fleet-health.tsx"]),
   item("block-model-evals", "registry:component", "ModelEvals: pass rate vs a baseline and a target, per-suite comparison, failures filtered by suite, re-run.", ["registry/blocks/model-evals.tsx"]),
   item("block-model-router", "registry:component", "ModelRouter: routing policy with a flow graph and routes list, fallback, deploy.", ["registry/blocks/model-router.tsx"]),
@@ -167,6 +168,7 @@ const ITEMS: Item[] = [
   item("example-agent-runtime", "registry:block", "Example: scale-to-zero sandboxes with an isometric scene and invoke.", ["registry/examples/agent-runtime.tsx"]),
   item("example-ai-spend", "registry:block", "Example: monthly AI spend by model against a budget, with alert and projection.", ["registry/examples/ai-spend.tsx"]),
   item("example-model-evals", "registry:block", "Example (pt-BR): pass rate vs a baseline and a target, per-suite comparison, failures filtered by suite, re-run.", ["registry/examples/model-evals.tsx"]),
+  item("example-ground-station", "registry:block", "Example: three stations, three satellites on real orbits at ×60, onboard data and Book.", ["registry/examples/ground-station.tsx"]),
   item("example-fleet-health", "registry:block", "Example: tokens/s with sparkline, fleet meters and a GPU heatmap.", ["registry/examples/fleet-health.tsx"]),
   item("example-bottega", "registry:block", "Example page (pt-BR): an agent workshop — decisions strip, projects by stage, production, activity and the one conversation with decision cards.", [
     "registry/examples/bottega/bottega.tsx",
@@ -209,10 +211,10 @@ const BUNDLES = [
     "action-card", "ask-user", "confirmation", "draft-card", "preview-approval", "decision-chip", "part-transition", "tool-line", "decision-card", "status-card", "activity", "policy", "diff", "citation", "plan", "connect-prompt", "findings", "chart-card",
   ]),
   bundle("blocks", "Every product block (data-driven widget), ready to feed with your data.", [
-    "block-ai-spend", "block-fleet-health", "block-model-evals", "block-model-router", "block-agent-runtime",
+    "block-ai-spend", "block-fleet-health", "block-ground-station", "block-model-evals", "block-model-router", "block-agent-runtime",
   ]),
   bundle("examples", "Every reference widget, to read, run and adapt.", [
-    "example-assistant", "example-model-router", "example-agent-runtime", "example-ai-spend", "example-fleet-health", "example-model-evals", "example-bottega", "example-davinci", "example-surface", "example-davinci-surface",
+    "example-assistant", "example-model-router", "example-agent-runtime", "example-ai-spend", "example-fleet-health", "example-ground-station", "example-model-evals", "example-bottega", "example-davinci", "example-surface", "example-davinci-surface",
   ]),
 ]
 
@@ -241,7 +243,7 @@ function bundle(name: string, description: string, deps: string[]) {
 // Blocks and their example fixtures share names on purpose and resolve fine
 // (they're imported by distinct aliases, never relatively).
 {
-  const allowed = new Set(["ai-spend", "fleet-health", "model-evals", "model-router", "agent-runtime"])
+  const allowed = new Set(["ai-spend", "fleet-health", "ground-station", "model-evals", "model-router", "agent-runtime"])
   const seen = new Map<string, string>()
   for (const it of ITEMS)
     for (const f of it.files) {

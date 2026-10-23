@@ -1443,6 +1443,34 @@
       ]
     },
     {
+      "name": "block-ground-station",
+      "type": "registry:component",
+      "title": "Block Ground Station",
+      "description": "GroundStation: drag-to-turn globe with orbits, sky plot of the next pass or live downlink, onboard storage, satellites with their passes, book a pass.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react",
+        "motion"
+      ],
+      "registryDependencies": [
+        "franklinjavier/uia/button",
+        "franklinjavier/uia/meter-bar",
+        "franklinjavier/uia/motion",
+        "franklinjavier/uia/select",
+        "franklinjavier/uia/stat",
+        "franklinjavier/uia/status",
+        "franklinjavier/uia/theme",
+        "franklinjavier/uia/widget"
+      ],
+      "files": [
+        {
+          "path": "registry/blocks/ground-station.tsx",
+          "type": "registry:component",
+          "target": "@components/blocks/ground-station.tsx"
+        }
+      ]
+    },
+    {
       "name": "block-fleet-health",
       "type": "registry:component",
       "title": "Block Fleet Health",
@@ -1917,6 +1945,24 @@
       ]
     },
     {
+      "name": "example-ground-station",
+      "type": "registry:block",
+      "title": "Example Ground Station",
+      "description": "Example: three stations, three satellites on real orbits at ×60, onboard data and Book.",
+      "author": "uia",
+      "registryDependencies": [
+        "franklinjavier/uia/block-ground-station",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/examples/ground-station.tsx",
+          "type": "registry:file",
+          "target": "~/src/examples/ground-station.tsx"
+        }
+      ]
+    },
+    {
       "name": "example-fleet-health",
       "type": "registry:block",
       "title": "Example Fleet Health",
@@ -2257,6 +2303,7 @@
       "registryDependencies": [
         "franklinjavier/uia/block-ai-spend",
         "franklinjavier/uia/block-fleet-health",
+        "franklinjavier/uia/block-ground-station",
         "franklinjavier/uia/block-model-evals",
         "franklinjavier/uia/block-model-router",
         "franklinjavier/uia/block-agent-runtime"
@@ -2274,6 +2321,7 @@
         "franklinjavier/uia/example-agent-runtime",
         "franklinjavier/uia/example-ai-spend",
         "franklinjavier/uia/example-fleet-health",
+        "franklinjavier/uia/example-ground-station",
         "franklinjavier/uia/example-model-evals",
         "franklinjavier/uia/example-bottega",
         "franklinjavier/uia/example-davinci",

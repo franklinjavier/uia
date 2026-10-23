@@ -7,6 +7,7 @@
   "registryDependencies": [
     "franklinjavier/uia/block-ai-spend",
     "franklinjavier/uia/block-fleet-health",
+    "franklinjavier/uia/block-ground-station",
     "franklinjavier/uia/block-model-evals",
     "franklinjavier/uia/block-model-router",
     "franklinjavier/uia/block-agent-runtime"
