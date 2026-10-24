@@ -107,9 +107,11 @@ function seedDocuments(): BillDocument[] {
   const r = rng(11)
   return Array.from({ length: 196 }, (_, i) => {
     const kind = i < 184 ? "bill" : "credit"
-    // Two humps: everyday bills around $1.5k, larger ones around $9k.
-    const big = r() < 0.32
-    const base = big ? 6500 + r() * 6000 : 300 + r() * r() * 3200
+    // Two soft humps: everyday bills around $1.8k, larger ones around $9k.
+    const big = r() < 0.38
+    const normal =
+      Math.sqrt(-2 * Math.log(r() || 1e-9)) * Math.cos(2 * Math.PI * r())
+    const base = Math.max(120, big ? 9000 + normal * 1700 : 1800 + normal * 650)
     const due = 1 + Math.floor(r() * 45)
     return {
       id: `D-${1000 + i}`,
@@ -133,6 +135,7 @@ export function PurchaseOrdersExample() {
     <div className="flex w-full flex-wrap items-start justify-center gap-6">
       <PurchaseOrders
         orders={orders}
+        defaultSelected={["PO-0421", "PO-0437"]}
         today={TODAY}
         period={{ from: iso(1), to: iso(30), label: "September" }}
         onApprove={(ids) =>

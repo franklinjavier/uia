@@ -315,7 +315,7 @@ The `example-*` files are only fixtures: data, simulation timers, and a
 | `AiSpend` | `block-ai-spend` | `models`, `periods`, `budget`, `alertAt`, `period`/`onPeriodChange`, `currency`, `locale`, `size` |
 | `FleetHealth` | `block-fleet-health` | `nodes`, `tokens`, `queue`, `powerCap`, `interval`, `clusters`/`cluster`, `mode`, `onRebalance`, `rebalancing`, `live` |
 | `GroundStation` | `block-ground-station` | `stations`/`stationId`, `satellites` (orbit elements + onboard), `selectedId`, `time`, `speed`, `mask`, `horizon`, `onBook`; exports `look` and `passes` so the host computes the same visibility |
-| `PurchaseOrders` | `block-purchase-orders` | `orders` (status, amount, ordered/delivery dates, billed share), `today`, `period`, `onApprove(ids)`, `onMarkBilled(ids)` |
+| `PurchaseOrders` | `block-purchase-orders` | `orders` (status, amount, ordered/delivery dates, billed share), `today`, `period`, `onApprove(ids)`, `onMarkBilled(ids)`, `defaultSelected`; the verbs show only with a selection, the list cuts at whole rows and fades while more sit below |
 | `MergeConflicts` | `block-merge-conflicts` | `number`, `title`, `head`/`base`, `branches` (lane order), `commits` (newest first, `parents`, `pending`), `files` (ours/theirs commit, hunks with `result` lines by origin, `outcome`, `note`), `state` (conflict → resolving → resolved → merging → merged), `resolved`, `onResolve`, `onMerge`, `size` |
 | `BillsFilter` | `block-bills-filter` | `documents`, `defaults`, `onApply(filter, count)`; exports `matches` |
 | `ModelEvals` | `block-model-evals` | `model`, `suites`, `baselines`, `failures`, `target`, `min`, `baseline`, `onRerun`, `running`, `labels`, `locale` |

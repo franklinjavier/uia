@@ -95,6 +95,7 @@ export function PurchaseOrders({
   period,
   onApprove,
   onMarkBilled,
+  defaultSelected = [],
   className,
 }: {
   title?: string
@@ -105,13 +106,25 @@ export function PurchaseOrders({
   period: { from: string; to: string; label: string }
   onApprove?: (ids: string[]) => void | Promise<void>
   onMarkBilled?: (ids: string[]) => void | Promise<void>
+  /** Order ids that start selected. */
+  defaultSelected?: string[]
   className?: string
 }) {
   const [status, setStatus] = React.useState<OrderStatus | "all">("all")
   const [inPeriod, setInPeriod] = React.useState(true)
   const [supplier, setSupplier] = React.useState("any")
   const [query, setQuery] = React.useState<string | null>(null)
-  const [selected, setSelected] = React.useState<Set<string>>(new Set())
+  const [selected, setSelected] = React.useState<Set<string>>(
+    () => new Set(defaultSelected)
+  )
+  // A fade at the list's foot while more rows sit below it.
+  const [more, setMore] = React.useState(false)
+  const list = React.useRef<HTMLDivElement>(null)
+  const measure = () => {
+    const el = list.current
+    if (el) setMore(el.scrollTop + el.clientHeight < el.scrollHeight - 2)
+  }
+  React.useLayoutEffect(measure)
   const [action, setAction] = React.useState<Action>(null)
 
   const from = day(period.from)
@@ -384,7 +397,17 @@ export function PurchaseOrders({
               </span>
             </div>
 
-            <div role="list" className="relative max-h-[300px] overflow-y-auto">
+            <div
+              ref={list}
+              role="list"
+              onScroll={measure}
+              className={cn(
+                // Whole rows only: a row is 56px, so the cut never slices one.
+                "relative max-h-[280px] overflow-y-auto transition-[mask-image]",
+                more &&
+                  "[mask-image:linear-gradient(to_bottom,black_calc(100%-48px),transparent)]"
+              )}
+            >
               {visible.length === 0 && (
                 <p className="px-2 py-6 text-sm text-muted-foreground">
                   No orders match.
@@ -493,58 +516,61 @@ export function PurchaseOrders({
             </span>
           </WidgetMeta>
         )}
-        <div className="ml-auto flex gap-2">
-          {/* The secondary action: a real second verb for the same selection. */}
-          <Button
-            variant="secondary"
-            disabled={toBill.length === 0 || action !== null}
-            onClick={() =>
-              run(
-                "bill",
-                toBill.map((o) => o.id),
-                onMarkBilled
-              )
-            }
-          >
-            {action?.name === "bill" && action.state === "pending" && (
-              <Loader2Icon className="animate-spin" />
-            )}
-            {action?.name === "bill" && action.state === "done" && (
-              <CheckIcon />
-            )}
-            {action?.name === "bill"
-              ? action.state === "pending"
-                ? "Marking…"
-                : "Marked"
-              : "Mark billed"}
-          </Button>
-          <Button
-            variant="brand"
-            className="min-w-32"
-            disabled={toApprove.length === 0 || action !== null}
-            onClick={() =>
-              run(
-                "approve",
-                toApprove.map((o) => o.id),
-                onApprove
-              )
-            }
-          >
-            {action?.name === "approve" && action.state === "pending" && (
-              <Loader2Icon className="animate-spin" />
-            )}
-            {action?.name === "approve" && action.state === "done" && (
-              <CheckIcon />
-            )}
-            {action?.name === "approve"
-              ? action.state === "pending"
-                ? "Approving…"
-                : "Approved"
-              : toApprove.length > 0
-                ? `Approve ${toApprove.length}`
-                : "Approve"}
-          </Button>
-        </div>
+        {/* The verbs act on a selection, so they arrive with one. */}
+        {picked.length > 0 && (
+          <div className="ml-auto flex gap-2">
+            {/* The secondary action: a real second verb for the same selection. */}
+            <Button
+              variant="secondary"
+              disabled={toBill.length === 0 || action !== null}
+              onClick={() =>
+                run(
+                  "bill",
+                  toBill.map((o) => o.id),
+                  onMarkBilled
+                )
+              }
+            >
+              {action?.name === "bill" && action.state === "pending" && (
+                <Loader2Icon className="animate-spin" />
+              )}
+              {action?.name === "bill" && action.state === "done" && (
+                <CheckIcon />
+              )}
+              {action?.name === "bill"
+                ? action.state === "pending"
+                  ? "Marking…"
+                  : "Marked"
+                : "Mark billed"}
+            </Button>
+            <Button
+              variant="brand"
+              className="min-w-32"
+              disabled={toApprove.length === 0 || action !== null}
+              onClick={() =>
+                run(
+                  "approve",
+                  toApprove.map((o) => o.id),
+                  onApprove
+                )
+              }
+            >
+              {action?.name === "approve" && action.state === "pending" && (
+                <Loader2Icon className="animate-spin" />
+              )}
+              {action?.name === "approve" && action.state === "done" && (
+                <CheckIcon />
+              )}
+              {action?.name === "approve"
+                ? action.state === "pending"
+                  ? "Approving…"
+                  : "Approved"
+                : toApprove.length > 0
+                  ? `Approve ${toApprove.length}`
+                  : "Approve"}
+            </Button>
+          </div>
+        )}
       </WidgetFooter>
     </Widget>
   )
