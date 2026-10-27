@@ -10,6 +10,7 @@ import {
   ChartColumnIcon,
   CodeIcon,
   FileTextIcon,
+  GitMergeIcon,
   GlobeIcon,
   MinusIcon,
   PenLineIcon,
@@ -78,6 +79,7 @@ const SCENARIO_ICONS = {
   code: CodeIcon,
   chart: ChartColumnIcon,
   file: FileTextIcon,
+  merge: GitMergeIcon,
 }
 
 const MODELS = {
