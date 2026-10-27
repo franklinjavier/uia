@@ -10,6 +10,7 @@
     "franklinjavier/uia/block-ground-station",
     "franklinjavier/uia/block-purchase-orders",
     "franklinjavier/uia/block-bills-filter",
+    "franklinjavier/uia/block-merge-conflicts",
     "franklinjavier/uia/block-model-evals",
     "franklinjavier/uia/block-model-router",
     "franklinjavier/uia/block-agent-runtime"

@@ -135,6 +135,7 @@ const ITEMS: Item[] = [
   item("block-purchase-orders", "registry:component", "PurchaseOrders: orders as a schedule (placed → delivery, filled as billed, today line), status tabs with counts, date chip, supplier, search, bulk Approve / Mark billed.", ["registry/blocks/purchase-orders.tsx"]),
   item("block-bills-filter", "registry:component", "BillsFilter: due-date range, amount range over a histogram, overdue switch, document types with counts, live \"Show N bills\".", ["registry/blocks/bills-filter.tsx"]),
   item("block-ground-station", "registry:component", "GroundStation: drag-to-turn globe with orbits, sky plot of the next pass or live downlink, onboard storage, satellites with their passes, book a pass.", ["registry/blocks/ground-station.tsx"]),
+  item("block-merge-conflicts", "registry:component", "MergeConflicts: a pull request behind its base — branches as a commit graph, the files both sides changed side by side, merge the base in and resolve, merge.", ["registry/blocks/merge-conflicts.tsx"]),
   item("block-fleet-health", "registry:component", "FleetHealth: tokens/s with sparkline, fleet meters, GPU heatmap with modes, rebalance.", ["registry/blocks/fleet-health.tsx"]),
   item("block-model-evals", "registry:component", "ModelEvals: pass rate vs a baseline and a target, per-suite comparison, failures filtered by suite, re-run.", ["registry/blocks/model-evals.tsx"]),
   item("block-model-router", "registry:component", "ModelRouter: routing policy with a flow graph and routes list, fallback, deploy.", ["registry/blocks/model-router.tsx"]),
@@ -172,6 +173,7 @@ const ITEMS: Item[] = [
   item("example-model-evals", "registry:block", "Example (pt-BR): pass rate vs a baseline and a target, per-suite comparison, failures filtered by suite, re-run.", ["registry/examples/model-evals.tsx"]),
   item("example-purchase-orders", "registry:block", "Example: September's purchase orders and the bills filter over seeded data.", ["registry/examples/purchase-orders.tsx"]),
   item("example-ground-station", "registry:block", "Example: three stations, three satellites on real orbits at ×60, onboard data and Book.", ["registry/examples/ground-station.tsx"]),
+  item("example-merge-conflicts", "registry:block", "Example: PR #128 behind main after a key rotation, two files resolved one by one, then merged.", ["registry/examples/merge-conflicts.tsx"]),
   item("example-fleet-health", "registry:block", "Example: tokens/s with sparkline, fleet meters and a GPU heatmap.", ["registry/examples/fleet-health.tsx"]),
   item("example-bottega", "registry:block", "Example page (pt-BR): an agent workshop — decisions strip, projects by stage, production, activity and the one conversation with decision cards.", [
     "registry/examples/bottega/bottega.tsx",
@@ -214,10 +216,10 @@ const BUNDLES = [
     "action-card", "ask-user", "confirmation", "draft-card", "preview-approval", "decision-chip", "part-transition", "tool-line", "decision-card", "status-card", "activity", "policy", "diff", "citation", "plan", "connect-prompt", "findings", "chart-card",
   ]),
   bundle("blocks", "Every product block (data-driven widget), ready to feed with your data.", [
-    "block-ai-spend", "block-fleet-health", "block-ground-station", "block-purchase-orders", "block-bills-filter", "block-model-evals", "block-model-router", "block-agent-runtime",
+    "block-ai-spend", "block-fleet-health", "block-ground-station", "block-purchase-orders", "block-bills-filter", "block-merge-conflicts", "block-model-evals", "block-model-router", "block-agent-runtime",
   ]),
   bundle("examples", "Every reference widget, to read, run and adapt.", [
-    "example-assistant", "example-model-router", "example-agent-runtime", "example-ai-spend", "example-fleet-health", "example-ground-station", "example-purchase-orders", "example-model-evals", "example-bottega", "example-davinci", "example-surface", "example-davinci-surface",
+    "example-assistant", "example-model-router", "example-agent-runtime", "example-ai-spend", "example-fleet-health", "example-ground-station", "example-purchase-orders", "example-merge-conflicts", "example-model-evals", "example-bottega", "example-davinci", "example-surface", "example-davinci-surface",
   ]),
 ]
 
@@ -246,7 +248,7 @@ function bundle(name: string, description: string, deps: string[]) {
 // Blocks and their example fixtures share names on purpose and resolve fine
 // (they're imported by distinct aliases, never relatively).
 {
-  const allowed = new Set(["ai-spend", "fleet-health", "ground-station", "purchase-orders", "model-evals", "model-router", "agent-runtime"])
+  const allowed = new Set(["ai-spend", "fleet-health", "ground-station", "purchase-orders", "merge-conflicts", "model-evals", "model-router", "agent-runtime"])
   const seen = new Map<string, string>()
   for (const it of ITEMS)
     for (const f of it.files) {

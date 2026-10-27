@@ -6,6 +6,8 @@ import { FileBadge } from "@/components/parts/attachment"
 import { Findings } from "@/components/parts/findings"
 import { Plan } from "@/components/parts/plan"
 import { AiSpend } from "@/components/blocks/ai-spend"
+import { MergeConflicts, type MergeConflictsProps } from "@/components/blocks/merge-conflicts"
+import { useMergeSimulation } from "@/examples/merge-conflicts"
 import { Surface } from "@/components/surface/surface"
 import { surfaceFromMessages } from "@/components/surface/store"
 import { uiaCatalog } from "@/components/catalog"
@@ -175,6 +177,23 @@ export const tools = defineTools<ChatMessage>()({
     ),
   },
 
+  // A whole widget the person acts on: the PR behind its base. Client
+  // tool: resolving and merging happen in the card, and the turn continues
+  // once it is merged. Reopened later, it shows the merged graph.
+  mergePullRequest: {
+    client: true,
+    render: (part, ctx) => {
+      if (part.state !== "input-available" && part.state !== "output-available") return null
+      return (
+        <MergeTool
+          pr={part.input}
+          merged={part.state === "output-available"}
+          onMerged={() => ctx.addOutput({ merged: true })}
+        />
+      )
+    },
+  },
+
   // Reading a file the person attached: trace line, then what it found.
   readFile: {
     phase: "working",
@@ -264,6 +283,29 @@ export const tools = defineTools<ChatMessage>()({
     },
   },
 })
+
+function MergeTool({
+  pr,
+  merged,
+  onMerged,
+}: {
+  pr: Omit<MergeConflictsProps, "state" | "resolved" | "onResolve" | "onMerge" | "size" | "className">
+  merged: boolean
+  onMerged: () => void
+}) {
+  const sim = useMergeSimulation(pr, { from: merged ? "merged" : "conflict", onMerged })
+  return (
+    <MergeConflicts
+      {...pr}
+      size="sm"
+      state={sim.state}
+      commits={sim.commits}
+      resolved={sim.resolved}
+      onResolve={sim.resolve}
+      onMerge={sim.merge}
+    />
+  )
+}
 
 // Data parts: state streamed alongside the reply. The plan updates in place
 // (same id) as each step lands.

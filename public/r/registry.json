@@ -1528,6 +1528,32 @@
       ]
     },
     {
+      "name": "block-merge-conflicts",
+      "type": "registry:component",
+      "title": "Block Merge Conflicts",
+      "description": "MergeConflicts: a pull request behind its base — branches as a commit graph, the files both sides changed side by side, merge the base in and resolve, merge.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react",
+        "motion"
+      ],
+      "registryDependencies": [
+        "collapsible",
+        "franklinjavier/uia/button",
+        "franklinjavier/uia/motion",
+        "franklinjavier/uia/status",
+        "franklinjavier/uia/theme",
+        "franklinjavier/uia/widget"
+      ],
+      "files": [
+        {
+          "path": "registry/blocks/merge-conflicts.tsx",
+          "type": "registry:component",
+          "target": "@components/blocks/merge-conflicts.tsx"
+        }
+      ]
+    },
+    {
       "name": "block-fleet-health",
       "type": "registry:component",
       "title": "Block Fleet Health",
@@ -2039,6 +2065,24 @@
       ]
     },
     {
+      "name": "example-merge-conflicts",
+      "type": "registry:block",
+      "title": "Example Merge Conflicts",
+      "description": "Example: PR #128 behind main after a key rotation, two files resolved one by one, then merged.",
+      "author": "uia",
+      "registryDependencies": [
+        "franklinjavier/uia/block-merge-conflicts",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/examples/merge-conflicts.tsx",
+          "type": "registry:file",
+          "target": "~/src/examples/merge-conflicts.tsx"
+        }
+      ]
+    },
+    {
       "name": "example-fleet-health",
       "type": "registry:block",
       "title": "Example Fleet Health",
@@ -2263,6 +2307,7 @@
         "franklinjavier/uia/attachment",
         "franklinjavier/uia/bar-series",
         "franklinjavier/uia/block-ai-spend",
+        "franklinjavier/uia/block-merge-conflicts",
         "franklinjavier/uia/button",
         "franklinjavier/uia/catalog",
         "franklinjavier/uia/chart-card",
@@ -2276,6 +2321,7 @@
         "franklinjavier/uia/connect-prompt",
         "franklinjavier/uia/draft-card",
         "franklinjavier/uia/example-ai-spend",
+        "franklinjavier/uia/example-merge-conflicts",
         "franklinjavier/uia/findings",
         "franklinjavier/uia/model-icons",
         "franklinjavier/uia/motion",
@@ -2382,6 +2428,7 @@
         "franklinjavier/uia/block-ground-station",
         "franklinjavier/uia/block-purchase-orders",
         "franklinjavier/uia/block-bills-filter",
+        "franklinjavier/uia/block-merge-conflicts",
         "franklinjavier/uia/block-model-evals",
         "franklinjavier/uia/block-model-router",
         "franklinjavier/uia/block-agent-runtime"
@@ -2401,6 +2448,7 @@
         "franklinjavier/uia/example-fleet-health",
         "franklinjavier/uia/example-ground-station",
         "franklinjavier/uia/example-purchase-orders",
+        "franklinjavier/uia/example-merge-conflicts",
         "franklinjavier/uia/example-model-evals",
         "franklinjavier/uia/example-bottega",
         "franklinjavier/uia/example-davinci",

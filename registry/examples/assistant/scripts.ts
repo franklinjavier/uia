@@ -8,6 +8,8 @@ import type { PlanStep } from "@/components/parts/plan"
 import type { BarDatum } from "@/components/ds/bar-series"
 import type { AiSpendModel, AiSpendPeriod } from "@/components/blocks/ai-spend"
 import { BUDGET, MODELS as SPEND_MODELS, PERIODS } from "@/examples/ai-spend"
+import type { MergeConflictsProps } from "@/components/blocks/merge-conflicts"
+import { PULL_REQUEST } from "@/examples/merge-conflicts"
 import type { SurfaceMessage } from "@/components/surface/types"
 import { UIA_CATALOG_ID } from "@/components/catalog"
 
@@ -44,6 +46,10 @@ type Tools = {
   reportSpend: {
     input: { period: string }
     output: { models: AiSpendModel[]; periods: AiSpendPeriod[]; budget: number }
+  }
+  mergePullRequest: {
+    input: Omit<MergeConflictsProps, "state" | "resolved" | "onResolve" | "onMerge" | "size" | "className">
+    output: { merged: boolean }
   }
   readFile: {
     input: { name: string; pages: number }
@@ -386,6 +392,31 @@ const spend = createChat<ChatMessage>()
     )
   })
 
+/* ---- Merge: the base moved on; resolve in the reply, then merge ---- */
+
+const merge = createChat<ChatMessage>()
+  .user("Merge my session refresh PR")
+  .sleep(400)
+  .assistant(({ writer }) => {
+    writer.reasoning(
+      "PR #128 is behind main. Lena's key rotation landed 6 minutes ago and changed the same lines this branch changes in auth.ts and middleware.ts, so it can't merge as is."
+    )
+    writer.sleep(200)
+    writer.text(
+      "PR **#128** is open, but main moved on while we worked: Lena's session key rotation changed the same lines in `auth.ts` and `middleware.ts`. I can merge main in and resolve them."
+    )
+    writer.tool("mergePullRequest", { input: PULL_REQUEST })
+  })
+  .assistant(({ writer, toolCall }) => {
+    const merged = toolCall?.name === "mergePullRequest" && toolCall.output?.merged
+    writer.sleep(300)
+    writer.text(
+      merged
+        ? "Merged **#128** into main. Both changes made it: sessions are verified with Lena's rotated keys and still refresh near expiry."
+        : "Okay, I left #128 as it is. Nothing was pushed."
+    )
+  })
+
 /* ---- Compose: the agent builds a screen for this question (A2UI) ---- */
 
 const REVIEW_UI: SurfaceMessage[] = [
@@ -457,6 +488,7 @@ export const SCENARIOS = {
   deck: { label: "Summarize the risks in a deck", icon: "file", turns: 1, chat: deck },
   spend: { label: "How's our AI spend this month?", icon: "chart", turns: 1, chat: spend },
   compose: { label: "Which model should handle code reviews?", icon: "code", turns: 1, chat: compose },
+  merge: { label: "Merge my session refresh PR", icon: "merge", turns: 1, chat: merge },
 } as const
 
 export type ScenarioKey = keyof typeof SCENARIOS
