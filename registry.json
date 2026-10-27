@@ -421,6 +421,23 @@
       ]
     },
     {
+      "name": "ascii-canvas",
+      "type": "registry:hook",
+      "title": "Ascii Canvas",
+      "description": "useAsciiCanvas: the engine under uia's ASCII animations — a cell grid sized to its box, ink read from CSS, one rAF loop that sleeps off screen, a still frame under reduced motion.",
+      "author": "uia",
+      "dependencies": [
+        "motion"
+      ],
+      "files": [
+        {
+          "path": "registry/hooks/use-ascii-canvas.ts",
+          "type": "registry:hook",
+          "target": "@hooks/use-ascii-canvas.ts"
+        }
+      ]
+    },
+    {
       "name": "widget",
       "type": "registry:component",
       "title": "Widget",
@@ -1528,6 +1545,24 @@
       ]
     },
     {
+      "name": "block-koi-pond",
+      "type": "registry:component",
+      "title": "Block Koi Pond",
+      "description": "KoiPond: koi drawn on a cell grid swimming under the content; click to drop food, ASCII rings spread and the koi turn for it.",
+      "author": "uia",
+      "registryDependencies": [
+        "franklinjavier/uia/ascii-canvas",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/blocks/koi-pond.tsx",
+          "type": "registry:component",
+          "target": "@components/blocks/koi-pond.tsx"
+        }
+      ]
+    },
+    {
       "name": "block-merge-conflicts",
       "type": "registry:component",
       "title": "Block Merge Conflicts",
@@ -2065,6 +2100,24 @@
       ]
     },
     {
+      "name": "example-koi-pond",
+      "type": "registry:block",
+      "title": "Example Koi Pond",
+      "description": "Example: the koi pond as a page backdrop, a typed line over the water and a fed count.",
+      "author": "uia",
+      "registryDependencies": [
+        "franklinjavier/uia/block-koi-pond",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/examples/koi-pond.tsx",
+          "type": "registry:file",
+          "target": "~/src/examples/koi-pond.tsx"
+        }
+      ]
+    },
+    {
       "name": "example-merge-conflicts",
       "type": "registry:block",
       "title": "Example Merge Conflicts",
@@ -2429,6 +2482,7 @@
         "franklinjavier/uia/block-purchase-orders",
         "franklinjavier/uia/block-bills-filter",
         "franklinjavier/uia/block-merge-conflicts",
+        "franklinjavier/uia/block-koi-pond",
         "franklinjavier/uia/block-model-evals",
         "franklinjavier/uia/block-model-router",
         "franklinjavier/uia/block-agent-runtime"
@@ -2449,6 +2503,7 @@
         "franklinjavier/uia/example-ground-station",
         "franklinjavier/uia/example-purchase-orders",
         "franklinjavier/uia/example-merge-conflicts",
+        "franklinjavier/uia/example-koi-pond",
         "franklinjavier/uia/example-model-evals",
         "franklinjavier/uia/example-bottega",
         "franklinjavier/uia/example-davinci",

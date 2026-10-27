@@ -131,6 +131,13 @@ the visual: MeterBar · TickMeter row · flow graph · scene
   looks interactive and isn't, remove the affordance.
 - When an action changes the data (Rebalance, Deploy, Invoke), the visual
   shows the consequence (load evens out, version bumps, a box wakes up).
+- **ASCII animations are backdrops, not widgets.** Build them on
+  `useAsciiCanvas` (one cell grid, ink read from CSS, sleeps off screen, a
+  still frame under reduced motion). They sit behind the content, in the
+  ink plus at most one colour of their own, and never carry data or the
+  only way to do something. The content on top stays readable and keeps
+  its clicks; the backdrop may answer the pointer (food, ripples) but
+  nothing depends on it. One per page.
 
 ## 6. Copy
 

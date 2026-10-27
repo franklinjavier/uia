@@ -12,6 +12,7 @@ import { AiSpendExample as AiSpend } from "@/examples/ai-spend"
 import { FleetHealthExample as FleetHealth } from "@/examples/fleet-health"
 import { GroundStationExample as GroundStation } from "@/examples/ground-station"
 import { MergeConflictsExample as MergeConflicts } from "@/examples/merge-conflicts"
+import { KoiPondExample as KoiPond } from "@/examples/koi-pond"
 import { PurchaseOrdersExample as PurchaseOrders } from "@/examples/purchase-orders"
 import { ModelEvalsExample as ModelEvals } from "@/examples/model-evals"
 import { Bottega } from "@/examples/bottega/bottega"
@@ -55,6 +56,7 @@ const WIDGETS = {
   merge: { label: "Merge conflicts", component: MergeConflicts, full: false },
   orders: { label: "Purchase orders", component: PurchaseOrders, full: false },
   evals: { label: "Evals", component: ModelEvals, full: false },
+  koi: { label: "Koi pond (ASCII)", component: KoiPond, full: true },
   bottega: { label: "Bottega", component: Bottega, full: true },
   davinci: { label: "davinci (one chat)", component: Davinci, full: true },
   davinci2: { label: "davinci (inbox)", component: DavinciInboxPage, full: true },

@@ -286,13 +286,13 @@ Button language:
 Foundation: `theme`, `font-inter`, `font-geist-mono`, `typeset`.
 Primitives: `button`, `select`, `bubble`, `code-block`, `questionnaire`, `spinner`, `message-scroller`.
 System: `widget`, `stat`, `segmented`, `status`, `tick-meter`, `meter-bar`, `sparkline`, `bar-series`, `stepper`, `task-list`, `number-ticker`, `agent-orb`, `model-icons`.
-Blocks (product widgets): `block-ai-spend`, `block-fleet-health`, `block-ground-station`, `block-purchase-orders`, `block-bills-filter`, `block-merge-conflicts`, `block-model-evals`, `block-model-router`, `block-agent-runtime` (bundle: `blocks`).
+Blocks (product widgets): `block-ai-spend`, `block-fleet-health`, `block-ground-station`, `block-purchase-orders`, `block-bills-filter`, `block-merge-conflicts`, `block-koi-pond`, `block-model-evals`, `block-model-router`, `block-agent-runtime` (bundle: `blocks`).
 App shell: `app-nav`, `theme-toggle`, `theme-provider`.
 Surfaces (agent-composed UI, see `surfaces.md`): `surface` (runtime), `catalog`, `catalog-layout`, `catalog-display`, `catalog-data`, `catalog-input`, `catalog-patterns`, `catalog-blocks` (optional product layer) (bundle: `surfaces`).
-Examples (fixtures over the widgets): `example-assistant`, `example-model-router`, `example-agent-runtime`, `example-ai-spend`, `example-fleet-health`, `example-ground-station`, `example-purchase-orders`, `example-merge-conflicts`, `example-model-evals`, `example-bottega`, `example-davinci`, `example-surface` (bundle: `examples`).
+Examples (fixtures over the widgets): `example-assistant`, `example-model-router`, `example-agent-runtime`, `example-ai-spend`, `example-fleet-health`, `example-ground-station`, `example-purchase-orders`, `example-merge-conflicts`, `example-koi-pond`, `example-model-evals`, `example-bottega`, `example-davinci`, `example-surface` (bundle: `examples`).
 Generative UI: `action-card`, `decision-card`, `status-card`, `activity`, `policy`, `diff`, `citation`, `ask-user`, `confirmation`, `preview-approval`, `decision-chip`, `draft-card`, `plan`, `connect-prompt`, `findings`, `chart-card`, `attachment`, `part-transition`, `tool-line`, `reasoning`, `sources`, `search-results`, `markdown`.
 Chat: `agent-chat`, `chat-thread`, `chat-turn`, `turn-actions`, `composer`, `chat-empty`, `chat-status`, `chat-error`, `chat-pill`.
-Lib: `motion`, `ai`, `url`, `highlighter`.
+Lib: `motion`, `ai`, `url`, `highlighter`. Hook: `ascii-canvas` (`useAsciiCanvas({ cell, init, step, draw })` → `{ canvas, scene }`; `draw` gets a grid with `block`, `glyph`, `dot`, `clear` and the `ink`).
 Bundles: `uia` (everything), `chat`, `hitl`, `blocks`, `surfaces`, `examples`.
 Skill: `skill` (this file set).
 
@@ -316,6 +316,7 @@ The `example-*` files are only fixtures: data, simulation timers, and a
 | `FleetHealth` | `block-fleet-health` | `nodes`, `tokens`, `queue`, `powerCap`, `interval`, `clusters`/`cluster`, `mode`, `onRebalance`, `rebalancing`, `live` |
 | `GroundStation` | `block-ground-station` | `stations`/`stationId`, `satellites` (orbit elements + onboard), `selectedId`, `time`, `speed`, `mask`, `horizon`, `onBook`; exports `look` and `passes` so the host computes the same visibility |
 | `PurchaseOrders` | `block-purchase-orders` | `orders` (status, amount, ordered/delivery dates, billed share), `today`, `period`, `onApprove(ids)`, `onMarkBilled(ids)`, `defaultSelected`; the verbs show only with a selection, the list cuts at whole rows and fades while more sit below |
+| `KoiPond` | `block-koi-pond` | `count` (most koi; small ponds hold fewer), `accent` (the koi's own colour), `cell`, `onFeed(fed)`, `children` (the content over the water) |
 | `MergeConflicts` | `block-merge-conflicts` | `number`, `title`, `head`/`base`, `branches` (lane order), `commits` (newest first, `parents`, `pending`), `files` (ours/theirs commit, hunks with `result` lines by origin, `outcome`, `note`), `state` (conflict → resolving → resolved → merging → merged), `resolved`, `onResolve`, `onMerge`, `size` |
 | `BillsFilter` | `block-bills-filter` | `documents`, `defaults`, `onApply(filter, count)`; exports `matches` |
 | `ModelEvals` | `block-model-evals` | `model`, `suites`, `baselines`, `failures`, `target`, `min`, `baseline`, `onRerun`, `running`, `labels`, `locale` |

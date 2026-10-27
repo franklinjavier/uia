@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "example-koi-pond",
+  "title": "Example Koi Pond",
+  "author": "uia",
+  "description": "Example: the koi pond as a page backdrop, a typed line over the water and a fed count.",
+  "registryDependencies": [
+    "franklinjavier/uia/block-koi-pond",
+    "franklinjavier/uia/theme"
+  ],
+  "files": [
+    {
+      "path": "registry/examples/koi-pond.tsx",
+      "content": "import * as React from \"react\"\n\nimport { KoiPond } from \"@/components/blocks/koi-pond\"\n\n// Example: the pond as a page's backdrop. A short line types itself in, the\n// text stays readable over the water, and the corner counts what was eaten.\n\nconst LINE = \"in a pond of patient things, cast a little food\"\n\nexport function KoiPondExample() {\n  const [fed, setFed] = React.useState(0)\n  const [typed, setTyped] = React.useState(0)\n\n  React.useEffect(() => {\n    if (typed >= LINE.length) return\n    const id = window.setTimeout(() => setTyped((n) => n + 1), typed === 0 ? 500 : 38)\n    return () => window.clearTimeout(id)\n  }, [typed])\n\n  return (\n    <KoiPond className=\"h-svh w-full cursor-crosshair\" onFeed={setFed}>\n      <div className=\"pointer-events-none relative mx-auto flex h-full max-w-xl flex-col justify-center gap-6 px-6\">\n        <p className=\"font-mono text-sm text-muted-foreground\">\n          {LINE.slice(0, typed)}\n          <span className=\"ml-0.5 inline-block h-[1.1em] w-[0.55em] translate-y-[0.2em] animate-pulse bg-foreground/70\" />\n        </p>\n        <p className=\"max-w-md text-sm text-foreground\">\n          Click anywhere to drop food. The koi turn for it.\n        </p>\n      </div>\n      <span className=\"pointer-events-none absolute top-5 right-6 eyebrow text-muted-foreground tabular-nums\">\n        {fed} fed\n      </span>\n    </KoiPond>\n  )\n}\n",
+      "type": "registry:file",
+      "target": "~/src/examples/koi-pond.tsx"
+    }
+  ],
+  "type": "registry:block"
+}
