@@ -1,7 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
-import { useAsciiCanvas, type AsciiGrid } from "@/hooks/use-ascii-canvas"
+import { hash, stroke, useAsciiCanvas, type AsciiGrid } from "@/hooks/use-ascii-canvas"
 
 // KoiPond: koi drawn on a cell grid, swimming under whatever sits on top.
 // Bodies are small rounded blocks in the ink with patches in the accent,
@@ -47,12 +47,6 @@ const NODES = 14
 const FOOD_LIFE = 14
 const RING_LIFE = 1.8
 
-/** Deterministic 0–1 noise for a cell and a seed. */
-function hash(a: number, b: number, c: number) {
-  const h = Math.sin(a * 127.1 + b * 311.7 + c * 74.7) * 43758.5453
-  return h - Math.floor(h)
-}
-
 const smooth = (a: number, b: number, x: number) => {
   const t = Math.max(0, Math.min(1, (x - a) / (b - a)))
   return t * t * (3 - 2 * t)
@@ -64,15 +58,6 @@ function half(s: number) {
   if (s < 0.34) return 0.125 + 0.008 * Math.sin(((s - 0.1) / 0.24) * Math.PI)
   if (s < 0.78) return 0.125 - 0.095 * smooth(0.34, 0.78, s)
   return 0.028 + 0.09 * ((s - 0.78) / 0.22)
-}
-
-/** The ASCII stroke for a direction (screen space, y down). */
-function stroke(angle: number) {
-  const a = ((angle % Math.PI) + Math.PI) % Math.PI
-  if (a < Math.PI / 8 || a > (7 * Math.PI) / 8) return "-"
-  if (a < (3 * Math.PI) / 8) return "\\"
-  if (a < (5 * Math.PI) / 8) return "|"
-  return "/"
 }
 
 function spawn(width: number, height: number, i: number, n: number): Koi {

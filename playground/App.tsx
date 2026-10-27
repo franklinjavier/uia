@@ -13,6 +13,7 @@ import { FleetHealthExample as FleetHealth } from "@/examples/fleet-health"
 import { GroundStationExample as GroundStation } from "@/examples/ground-station"
 import { MergeConflictsExample as MergeConflicts } from "@/examples/merge-conflicts"
 import { KoiPondExample as KoiPond } from "@/examples/koi-pond"
+import { OceanExample } from "@/examples/ocean"
 import { PurchaseOrdersExample as PurchaseOrders } from "@/examples/purchase-orders"
 import { ModelEvalsExample as ModelEvals } from "@/examples/model-evals"
 import { Bottega } from "@/examples/bottega/bottega"
@@ -57,6 +58,8 @@ const WIDGETS = {
   orders: { label: "Purchase orders", component: PurchaseOrders, full: false },
   evals: { label: "Evals", component: ModelEvals, full: false },
   koi: { label: "Koi pond (ASCII)", component: KoiPond, full: true },
+  sharks: { label: "Sharks (ASCII)", component: () => <OceanExample predator="shark" />, full: true },
+  piranhas: { label: "Piranhas (ASCII)", component: () => <OceanExample predator="piranha" />, full: true },
   bottega: { label: "Bottega", component: Bottega, full: true },
   davinci: { label: "davinci (one chat)", component: Davinci, full: true },
   davinci2: { label: "davinci (inbox)", component: DavinciInboxPage, full: true },

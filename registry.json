@@ -1563,6 +1563,24 @@
       ]
     },
     {
+      "name": "block-ocean",
+      "type": "registry:component",
+      "title": "Block Ocean",
+      "description": "Ocean: sharks or a piranha pack hunting bait schools in ASCII under the content; glyph-ramp shading, schools scatter, click drops a school.",
+      "author": "uia",
+      "registryDependencies": [
+        "franklinjavier/uia/ascii-canvas",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/blocks/ocean.tsx",
+          "type": "registry:component",
+          "target": "@components/blocks/ocean.tsx"
+        }
+      ]
+    },
+    {
       "name": "block-merge-conflicts",
       "type": "registry:component",
       "title": "Block Merge Conflicts",
@@ -2118,6 +2136,25 @@
       ]
     },
     {
+      "name": "example-ocean",
+      "type": "registry:block",
+      "title": "Example Ocean",
+      "description": "Example: the ocean as a page backdrop, sharks or piranhas, with an eaten count.",
+      "author": "uia",
+      "registryDependencies": [
+        "franklinjavier/uia/block-ocean",
+        "franklinjavier/uia/segmented",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/examples/ocean.tsx",
+          "type": "registry:file",
+          "target": "~/src/examples/ocean.tsx"
+        }
+      ]
+    },
+    {
       "name": "example-merge-conflicts",
       "type": "registry:block",
       "title": "Example Merge Conflicts",
@@ -2483,6 +2520,7 @@
         "franklinjavier/uia/block-bills-filter",
         "franklinjavier/uia/block-merge-conflicts",
         "franklinjavier/uia/block-koi-pond",
+        "franklinjavier/uia/block-ocean",
         "franklinjavier/uia/block-model-evals",
         "franklinjavier/uia/block-model-router",
         "franklinjavier/uia/block-agent-runtime"
@@ -2504,6 +2542,7 @@
         "franklinjavier/uia/example-purchase-orders",
         "franklinjavier/uia/example-merge-conflicts",
         "franklinjavier/uia/example-koi-pond",
+        "franklinjavier/uia/example-ocean",
         "franklinjavier/uia/example-model-evals",
         "franklinjavier/uia/example-bottega",
         "franklinjavier/uia/example-davinci",

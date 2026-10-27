@@ -35,6 +35,21 @@ export type AsciiGrid = {
   clear: (col: number, row: number) => void
 }
 
+/** Deterministic 0–1 noise for a cell (or any three numbers). */
+export function hash(a: number, b: number, c: number) {
+  const h = Math.sin(a * 127.1 + b * 311.7 + c * 74.7) * 43758.5453
+  return h - Math.floor(h)
+}
+
+/** The ASCII stroke that follows a direction (radians, screen space, y down). */
+export function stroke(angle: number) {
+  const a = ((angle % Math.PI) + Math.PI) % Math.PI
+  if (a < Math.PI / 8 || a > (7 * Math.PI) / 8) return "-"
+  if (a < (3 * Math.PI) / 8) return "\\"
+  if (a < (5 * Math.PI) / 8) return "|"
+  return "/"
+}
+
 export function useAsciiCanvas<S>({
   cell = 10,
   init,
@@ -71,7 +86,7 @@ export function useAsciiCanvas<S>({
     let last = 0
     let time = 0
 
-    const font = `${Math.round(cell * 1.05)}px var(--font-mono, ui-monospace), ui-monospace, monospace`
+    const font = `600 ${Math.round(cell * 1.1)}px var(--font-mono, ui-monospace), ui-monospace, monospace`
     const api = {} as Pick<AsciiGrid, "dot" | "clear">
     const grid = (): AsciiGrid => ({
       ...api,
