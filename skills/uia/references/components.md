@@ -292,7 +292,7 @@ Surfaces (agent-composed UI, see `surfaces.md`): `surface` (runtime), `catalog`,
 Examples (fixtures over the widgets): `example-assistant`, `example-model-router`, `example-agent-runtime`, `example-ai-spend`, `example-fleet-health`, `example-ground-station`, `example-purchase-orders`, `example-merge-conflicts`, `example-koi-pond`, `example-ocean`, `example-model-evals`, `example-bottega`, `example-davinci`, `example-surface` (bundle: `examples`).
 Generative UI: `action-card`, `decision-card`, `status-card`, `activity`, `policy`, `diff`, `citation`, `ask-user`, `confirmation`, `preview-approval`, `decision-chip`, `draft-card`, `plan`, `connect-prompt`, `findings`, `chart-card`, `attachment`, `part-transition`, `tool-line`, `reasoning`, `sources`, `search-results`, `markdown`.
 Chat: `agent-chat`, `chat-thread`, `chat-turn`, `turn-actions`, `composer`, `chat-empty`, `chat-status`, `chat-error`, `chat-pill`.
-Lib: `motion`, `ai`, `url`, `highlighter`. Hook: `ascii-canvas` (`useAsciiCanvas({ cell, init, step, draw })` → `{ canvas, scene }`; `draw` gets a grid with `block`, `glyph`, `dot`, `clear` and the `ink`; it also exports `hash` and `stroke`).
+Lib: `motion`, `ai`, `url`, `highlighter`. Hook: `ascii-canvas` (`useAsciiCanvas({ cell, init, step, draw })` → `{ canvas, scene }`; `draw` gets a grid with `block`, `glyph`, `dot`, `clear`, the `ink` and the `paper`; it also exports `hash` and `stroke`).
 Bundles: `uia` (everything), `chat`, `hitl`, `blocks`, `surfaces`, `examples`.
 Skill: `skill` (this file set).
 

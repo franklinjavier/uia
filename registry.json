@@ -2142,6 +2142,7 @@
       "description": "Example: the ocean as a page backdrop, sharks or piranhas, with an eaten count.",
       "author": "uia",
       "registryDependencies": [
+        "franklinjavier/uia/block-koi-pond",
         "franklinjavier/uia/block-ocean",
         "franklinjavier/uia/segmented",
         "franklinjavier/uia/theme"

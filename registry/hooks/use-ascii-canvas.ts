@@ -23,6 +23,8 @@ export type AsciiGrid = {
   rows: number
   /** The canvas's computed `color`: the ink every glyph and cell is drawn in. */
   ink: string
+  /** The page's background, for glyphs cut into a tile. */
+  paper: string
   /** Seconds since start. */
   time: number
   /** Fill one cell as a small rounded square. */
@@ -81,6 +83,7 @@ export function useAsciiCanvas<S>({
     let width = 0
     let height = 0
     let ink = "currentColor"
+    let paper = "transparent"
     let visible = true
     let raf = 0
     let last = 0
@@ -97,6 +100,7 @@ export function useAsciiCanvas<S>({
       cols: Math.ceil(width / cell),
       rows: Math.ceil(height / cell),
       ink,
+      paper,
       time,
       block: (c, r, color, alpha) => {
         if (alpha <= 0.01) return
@@ -139,6 +143,7 @@ export function useAsciiCanvas<S>({
 
     const readInk = () => {
       ink = getComputedStyle(el).color || "currentColor"
+      paper = getComputedStyle(document.documentElement).getPropertyValue("--background").trim() || "transparent"
     }
 
     const resize = () => {

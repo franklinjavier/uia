@@ -222,7 +222,9 @@ function draw(g: AsciiGrid, p: Pond, accent: string) {
     g.dot(c, r, accent, Math.min(1, (FOOD_LIFE - f.age) / 3))
   }
 
-  for (const k of p.koi) {
+  // Rasterise every koi first, so the shadows can all sit under all the bodies.
+  type Cell = { c: number; r: number; s: number; l: number; n: number; w: number }
+  const bodies = p.koi.map((k) => {
     const L = k.length
     let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity
     for (const [x, y] of k.spine) {
@@ -231,30 +233,58 @@ function draw(g: AsciiGrid, p: Pond, accent: string) {
     const pad = L * 0.16
     const [c0, r0] = cellOf(x0 - pad, y0 - pad)
     const [c1, r1] = cellOf(x1 + pad, y1 + pad)
-
+    const cells: Cell[] = []
     for (let r = Math.max(0, r0); r <= Math.min(g.rows, r1); r++)
       for (let c = Math.max(0, c0); c <= Math.min(g.cols, c1); c++) {
         const { s, l } = locate(k, (c + 0.5) * cell, (r + 0.5) * cell)
         const w = half(s) * L
-        const n = hash(c, r, k.seed)
-        if (Math.abs(l) > w + (n - 0.5) * cell * 0.35) continue
-        const edge = Math.abs(l) / Math.max(1, w)
-        if (s > 0.78) {
-          // The tail fan: wispy, fading into the water.
-          const fade = 1 - (s - 0.78) / 0.22
-          if (n < 0.25 + edge * 0.3) continue
-          g.block(c, r, g.ink, 0.12 + fade * 0.3)
-          continue
-        }
-        const patch = k.patches.some((q) => {
-          const ds = (s - q.s) * L
-          const dl = l - q.l * L
-          return Math.hypot(ds, dl) < q.r * L + (n - 0.5) * cell
-        })
-        const shade = 0.5 + n * 0.22 - edge * 0.18 - smooth(0.5, 0.78, s) * 0.2
-        g.block(c, r, patch ? accent : g.ink, patch ? 0.8 + n * 0.2 : shade)
+        // Texture lives in body space, so it travels with the koi.
+        const n = hash(Math.round((s * L) / cell), Math.round(l / cell), k.seed)
+        if (Math.abs(l) > w + (n - 0.5) * cell * 0.3) continue
+        cells.push({ c, r, s, l, n, w })
       }
+    return cells
+  })
 
+  // A soft dotted shadow on the pond floor, down and to the right.
+  const lit = new Set(bodies.flat().map((q) => `${q.c},${q.r}`))
+  for (const q of bodies.flat()) {
+    const key = `${q.c + 1},${q.r + 2}`
+    if (lit.has(key) || q.s > 0.85) continue
+    g.glyph(q.c + 1, q.r + 2, q.n > 0.5 ? ":" : ".", g.ink, 0.22)
+  }
+
+  p.koi.forEach((k, i) => {
+    const L = k.length
+    for (const { c, r, s, l, n, w } of bodies[i]) {
+      const edge = Math.abs(l) / Math.max(1, w)
+      if (s > 0.78) {
+        // The tail fan: dark tiles fading into the water.
+        if (n < 0.12) continue
+        g.block(c, r, g.ink, 0.1 + (1 - (s - 0.78) / 0.22) * 0.18)
+        continue
+      }
+      const patch = k.patches.some((q) => {
+        const ds = (s - q.s) * L
+        const dl = l - q.l * L
+        return Math.hypot(ds, dl) < q.r * L + (n - 0.5) * cell
+      })
+      // Lit along the back, darker at the flanks and towards the tail.
+      const light = 0.72 - edge * edge * 0.38 - smooth(0.45, 0.78, s) * 0.32 + (n - 0.5) * 0.14
+      if (patch) {
+        g.block(c, r, accent, 0.95)
+        // Patches deepen in places, from orange to rust.
+        if (n < 0.3 || edge > 0.8) g.block(c, r, "#000", n < 0.12 ? 0.42 : 0.24)
+      } else {
+        g.block(c, r, g.ink, 0.2 + light * 0.62)
+      }
+      // A glyph cut into each tile, denser where the body is darker.
+      g.glyph(c, r, "XS%8"[Math.floor(n * 4)], g.paper, patch ? 0.4 : 0.22 + (1 - light) * 0.25)
+    }
+  })
+
+  for (const k of p.koi) {
+    const L = k.length
     // Eyes, whiskers, pectoral fins and the trailing tail strokes.
     const head = at(k, 0.06, 0)
     for (const side of [-1, 1]) {
