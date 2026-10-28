@@ -2,7 +2,9 @@
 // network. The page (the same index.html for every route) is answered from
 // the cache at once and refreshed in the background; when a deploy changed
 // it, the open tabs are told so they can pick it up. Built files carry a
-// hash in their name, so once cached they are served from here forever.
+// hash in their name, so once cached they are served from here forever;
+// after each visit the rest of the build is fetched ahead (precache.json),
+// so opening another example doesn't wait on the network either.
 // The registry (/r/*) and anything off this origin pass straight through.
 
 const SHELL = "uia-shell-v1"
@@ -34,14 +36,34 @@ async function refreshPage() {
   return res
 }
 
+// Everything this deploy built, fetched ahead a few at a time; files from
+// older deploys are dropped.
+async function precache() {
+  const res = await fetch("/precache.json", { cache: "no-cache" })
+  if (!res.ok) return
+  const { all, eager } = await res.json()
+  const cache = await caches.open(ASSETS)
+  const have = new Set((await cache.keys()).map((r) => new URL(r.url).pathname))
+  for (const path of have) if (!all.includes(path)) await cache.delete(path)
+  const missing = eager.filter((path) => !have.has(path))
+  const worker = async () => {
+    for (let path = missing.shift(); path; path = missing.shift()) {
+      const r = await fetch(path).catch(() => null)
+      if (r?.ok) await cache.put(path, r)
+    }
+  }
+  await Promise.all(Array.from({ length: 4 }, worker))
+}
+
 self.addEventListener("fetch", (event) => {
   const req = event.request
   const url = new URL(req.url)
   if (req.method !== "GET" || url.origin !== self.location.origin || url.pathname.startsWith("/r/")) return
 
-  if (req.mode === "navigate") {
+  // Only app routes get the page; opening a file (/assets/x.js, /og.png) gets the file.
+  if (req.mode === "navigate" && !/\.[a-z0-9]+$/i.test(url.pathname)) {
     const fresh = refreshPage()
-    event.waitUntil(fresh.catch(() => {}))
+    event.waitUntil(fresh.then(precache).catch(() => {}))
     event.respondWith(
       caches.match(PAGE).then((hit) => hit ?? fresh.catch(() => fetch(req)))
     )
