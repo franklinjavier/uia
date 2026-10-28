@@ -6,18 +6,19 @@ import { Fireflies } from "@/components/blocks/fireflies"
 import { KoiPond } from "@/components/blocks/koi-pond"
 import { Murmuration } from "@/components/blocks/murmuration"
 import { Ocean } from "@/components/blocks/ocean"
+import { SlimeMold } from "@/components/blocks/slime-mold"
 import { Segmented, SegmentedItem } from "@/components/ds/segmented"
 import { Button } from "@/components/ui/button"
 import { useSoundscape } from "@/hooks/use-soundscape"
 
 // Example: the ASCII backdrops behind one switch: koi, sharks, a piranha
-// pack, a starling flock, fireflies, the northern lights. The switch at the top picks the scene,
+// pack, a starling flock, fireflies, the northern lights, a slime mold. The switch at the top picks the scene,
 // a short line sits over it, and the corner counts what happened; switching
 // starts a new count.
 // Sound is on: each scene's loop starts at the first click, with a sound for
 // each click and each catch; the speaker beside the switch turns it off.
 
-type Water = "koi" | "shark" | "piranha" | "starling" | "firefly" | "aurora"
+type Water = "koi" | "shark" | "piranha" | "starling" | "firefly" | "aurora" | "slime"
 
 const WATERS: { value: Water; label: string; line: string; hint: string }[] = [
   { value: "koi", label: "Koi", line: "in a pond of patient things, cast a little food", hint: "Click anywhere to drop food. The koi turn for it." },
@@ -26,6 +27,7 @@ const WATERS: { value: Water; label: string; line: string; hint: string }[] = [
   { value: "starling", label: "Starlings", line: "a thousand birds, one mind, and something watching", hint: "Click anywhere to send a hawk through." },
   { value: "firefly", label: "Fireflies", line: "a field at dusk, every light keeping its own time", hint: "Click anywhere to flash. They lose the beat, then find each other again." },
   { value: "aurora", label: "Aurora", line: "far north, the sun's wind arriving as light", hint: "Click anywhere to set off a substorm. The sky flares and dances, then calms." },
+  { value: "slime", label: "Slime mold", line: "no brain, no plan, and still the shortest way", hint: "Click anywhere to drop food. The network reaches it, links it to the rest, and eats." },
 ]
 
 const SCENE = "h-svh w-full cursor-crosshair"
@@ -109,7 +111,11 @@ export function OceanExample({
         if (!(e.target as HTMLElement).closest("a,button,input,select,textarea,[role=button]")) cue("click")
       }}
     >
-      {water === "aurora" ? (
+      {water === "slime" ? (
+        <SlimeMold key="slime" className={SCENE} onEat={count}>
+          {content}
+        </SlimeMold>
+      ) : water === "aurora" ? (
         <Aurora key="aurora" className={SCENE} onKp={setEaten}>
           {content}
         </Aurora>

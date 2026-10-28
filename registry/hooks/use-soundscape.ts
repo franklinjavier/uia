@@ -3,7 +3,8 @@ import * as React from "react"
 // useSoundscape: a small sound loop for an ASCII backdrop, synthesised with
 // Web Audio (no files): water for the koi, the deep for the sharks, a river
 // for the piranhas, wind and chatter for the starlings, crickets for the
-// fireflies, a cold wind and a slow drone under the aurora. It plays while `on`, behind a toggle the viewer can turn off;
+// fireflies, a cold wind and a slow drone under the aurora, a damp
+// forest floor for the slime mold. It plays while `on`, behind a toggle the viewer can turn off;
 // browsers keep it silent until the first click or key, and it starts then.
 // `cue` adds a sound on top, for a click or an event (a koi fed, a fish
 // taken, a hawk through).
@@ -11,7 +12,7 @@ import * as React from "react"
 //   const cue = useSoundscape("koi", sound)
 //   <KoiPond onFeed={(n) => { setFed(n); cue("event") }} />
 
-export type Soundscape = "koi" | "shark" | "piranha" | "starling" | "firefly" | "aurora"
+export type Soundscape = "koi" | "shark" | "piranha" | "starling" | "firefly" | "aurora" | "slime"
 export type Cue = "click" | "event"
 
 type Kit = {
@@ -209,6 +210,21 @@ const SCAPES: Record<Soundscape, { loop: (k: Kit) => void; click?: (k: Kit) => v
     },
     // The substorm: a shimmer rising.
     click: (k) => [440, 659.3, 880, 1318.5].forEach((f, i) => tone(k, { from: f, to: f * 1.5, dur: 2.4, gain: 0.03, at: i * 0.12, pan: rand(-0.5, 0.5), vibrato: 5 })),
+  },
+  slime: {
+    loop: (k) => {
+      bed(k, "lowpass", 300, 0.04, 0.06, 100)
+      // Drips somewhere in the dark, and a slow wet creak.
+      every(k, 1.5, 5, () => tone(k, { from: rand(900, 1500), to: rand(400, 600), dur: 0.08, gain: 0.04, pan: rand(-0.7, 0.7) }))
+      every(k, 4, 9, () => burst(k, { type: "bandpass", from: 300, to: 180, dur: 0.6, gain: 0.03, q: 4 }))
+    },
+    // A flake of food landing.
+    click: (k) => tone(k, { from: 500, to: 280, dur: 0.1, gain: 0.08 }),
+    // Food taken in: a soft, wet swallow.
+    event: (k) => {
+      burst(k, { type: "lowpass", from: 700, to: 150, dur: 0.35, gain: 0.08 })
+      tone(k, { from: 160, to: 90, dur: 0.3, gain: 0.08 })
+    },
   },
 }
 
