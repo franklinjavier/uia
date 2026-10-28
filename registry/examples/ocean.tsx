@@ -18,7 +18,14 @@ const WATERS: { value: Water; label: string; line: string; hint: string }[] = [
   { value: "starling", label: "Starlings", line: "a thousand birds, one mind, and something watching", hint: "Click anywhere to send a hawk through." },
 ]
 
-export function OceanExample({ predator: initial = "shark" }: { predator?: Water }) {
+export function OceanExample({
+  predator: initial = "shark",
+  onPredatorChange,
+}: {
+  predator?: Water
+  /** Called when the switch changes, e.g. to keep the URL in step. */
+  onPredatorChange?: (water: Water) => void
+}) {
   const [water, setWater] = React.useState<Water>(initial)
   const [eaten, setEaten] = React.useState(0)
   const w = WATERS.find((x) => x.value === water)!
@@ -35,6 +42,7 @@ export function OceanExample({ predator: initial = "shark" }: { predator?: Water
             onValueChange={(v) => {
               setWater(v as Water)
               setEaten(0)
+              onPredatorChange?.(v as Water)
             }}
           >
             {WATERS.map((x) => (
