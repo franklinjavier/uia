@@ -59,6 +59,7 @@ const WIDGETS = {
   koi: { label: "Koi pond (ASCII)", component: () => <OceanExample predator="koi" />, full: true },
   sharks: { label: "Sharks (ASCII)", component: () => <OceanExample predator="shark" />, full: true },
   piranhas: { label: "Piranhas (ASCII)", component: () => <OceanExample predator="piranha" />, full: true },
+  starlings: { label: "Starlings (ASCII)", component: () => <OceanExample predator="starling" />, full: true },
   bottega: { label: "Bottega", component: Bottega, full: true },
   davinci: { label: "davinci (one chat)", component: Davinci, full: true },
   davinci2: { label: "davinci (inbox)", component: DavinciInboxPage, full: true },

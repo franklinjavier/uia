@@ -1,19 +1,21 @@
 import * as React from "react"
 
 import { KoiPond } from "@/components/blocks/koi-pond"
+import { Murmuration } from "@/components/blocks/murmuration"
 import { Ocean } from "@/components/blocks/ocean"
 import { Segmented, SegmentedItem } from "@/components/ds/segmented"
 
-// Example: the ASCII water as a page's backdrop, koi, sharks or a piranha
-// pack. A short line sits over the water, the switch picks what swims, and
-// the corner counts what was eaten; switching starts a new count.
+// Example: the ASCII backdrops behind one switch: koi, sharks, a piranha
+// pack, a starling flock. A short line sits on top, the switch picks the
+// scene, and the corner counts what happened; switching starts a new count.
 
-type Water = "koi" | "shark" | "piranha"
+type Water = "koi" | "shark" | "piranha" | "starling"
 
 const WATERS: { value: Water; label: string; line: string; hint: string }[] = [
   { value: "koi", label: "Koi", line: "in a pond of patient things, cast a little food", hint: "Click anywhere to drop food. The koi turn for it." },
   { value: "shark", label: "Sharks", line: "the quiet ones circle the stragglers", hint: "Click anywhere to drop a school of fish." },
   { value: "piranha", label: "Piranhas", line: "nothing in the river stays whole for long", hint: "Click anywhere to put blood in the water." },
+  { value: "starling", label: "Starlings", line: "a thousand birds, one mind, and something watching", hint: "Click anywhere to send a hawk through." },
 ]
 
 export function OceanExample({ predator: initial = "shark" }: { predator?: Water }) {
@@ -28,7 +30,7 @@ export function OceanExample({ predator: initial = "shark" }: { predator?: Water
         <p className="max-w-md text-sm text-foreground">{w.hint}</p>
         <div className="pointer-events-auto w-fit rounded-full bg-background/85 backdrop-blur-sm">
           <Segmented
-            aria-label="What swims"
+            aria-label="Backdrop"
             value={water}
             onValueChange={(v) => {
               setWater(v as Water)
@@ -44,11 +46,17 @@ export function OceanExample({ predator: initial = "shark" }: { predator?: Water
         </div>
       </div>
       <span className="pointer-events-none absolute top-5 right-6 eyebrow text-muted-foreground tabular-nums">
-        {eaten} {water === "koi" ? "fed" : "eaten"}
+        {eaten} {water === "koi" ? "fed" : water === "starling" ? (eaten === 1 ? "hawk" : "hawks") : "eaten"}
       </span>
     </>
   )
 
+  if (water === "starling")
+    return (
+      <Murmuration key="starling" className="h-svh w-full cursor-crosshair" onHawk={setEaten}>
+        {content}
+      </Murmuration>
+    )
   return water === "koi" ? (
     <KoiPond key="koi" className="h-svh w-full cursor-crosshair" onFeed={setEaten}>
       {content}

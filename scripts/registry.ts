@@ -137,6 +137,7 @@ const ITEMS: Item[] = [
   item("block-bills-filter", "registry:component", "BillsFilter: due-date range, amount range over a histogram, overdue switch, document types with counts, live \"Show N bills\".", ["registry/blocks/bills-filter.tsx"]),
   item("block-ground-station", "registry:component", "GroundStation: drag-to-turn globe with orbits, sky plot of the next pass or live downlink, onboard storage, satellites with their passes, book a pass.", ["registry/blocks/ground-station.tsx"]),
   item("block-koi-pond", "registry:component", "KoiPond: koi drawn on a cell grid swimming under the content; click to drop food, ASCII rings spread and the koi turn for it.", ["registry/blocks/koi-pond.tsx"]),
+  item("block-murmuration", "registry:component", "Murmuration: a starling flock in ASCII under the content, drawn by density; click sends a hawk through and the alarm runs through the flock.", ["registry/blocks/murmuration.tsx"]),
   item("block-ocean", "registry:component", "Ocean: sharks or a piranha pack hunting bait schools in ASCII under the content; glyph-ramp shading, schools scatter, click drops a school.", ["registry/blocks/ocean.tsx"]),
   item("block-merge-conflicts", "registry:component", "MergeConflicts: a pull request behind its base — branches as a commit graph, the files both sides changed side by side, merge the base in and resolve, merge.", ["registry/blocks/merge-conflicts.tsx"]),
   item("block-fleet-health", "registry:component", "FleetHealth: tokens/s with sparkline, fleet meters, GPU heatmap with modes, rebalance.", ["registry/blocks/fleet-health.tsx"]),
@@ -221,7 +222,7 @@ const BUNDLES = [
     "action-card", "ask-user", "confirmation", "draft-card", "preview-approval", "decision-chip", "part-transition", "tool-line", "decision-card", "status-card", "activity", "policy", "diff", "citation", "plan", "connect-prompt", "findings", "chart-card",
   ]),
   bundle("blocks", "Every product block (data-driven widget), ready to feed with your data.", [
-    "block-ai-spend", "block-fleet-health", "block-ground-station", "block-purchase-orders", "block-bills-filter", "block-merge-conflicts", "block-koi-pond", "block-ocean", "block-model-evals", "block-model-router", "block-agent-runtime",
+    "block-ai-spend", "block-fleet-health", "block-ground-station", "block-purchase-orders", "block-bills-filter", "block-merge-conflicts", "block-koi-pond", "block-ocean", "block-murmuration", "block-model-evals", "block-model-router", "block-agent-runtime",
   ]),
   bundle("examples", "Every reference widget, to read, run and adapt.", [
     "example-assistant", "example-model-router", "example-agent-runtime", "example-ai-spend", "example-fleet-health", "example-ground-station", "example-purchase-orders", "example-merge-conflicts", "example-koi-pond", "example-ocean", "example-model-evals", "example-bottega", "example-davinci", "example-surface", "example-davinci-surface",

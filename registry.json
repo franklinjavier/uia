@@ -1563,6 +1563,24 @@
       ]
     },
     {
+      "name": "block-murmuration",
+      "type": "registry:component",
+      "title": "Block Murmuration",
+      "description": "Murmuration: a starling flock in ASCII under the content, drawn by density; click sends a hawk through and the alarm runs through the flock.",
+      "author": "uia",
+      "registryDependencies": [
+        "franklinjavier/uia/ascii-canvas",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/blocks/murmuration.tsx",
+          "type": "registry:component",
+          "target": "@components/blocks/murmuration.tsx"
+        }
+      ]
+    },
+    {
       "name": "block-ocean",
       "type": "registry:component",
       "title": "Block Ocean",
@@ -2143,6 +2161,7 @@
       "author": "uia",
       "registryDependencies": [
         "franklinjavier/uia/block-koi-pond",
+        "franklinjavier/uia/block-murmuration",
         "franklinjavier/uia/block-ocean",
         "franklinjavier/uia/segmented",
         "franklinjavier/uia/theme"
@@ -2522,6 +2541,7 @@
         "franklinjavier/uia/block-merge-conflicts",
         "franklinjavier/uia/block-koi-pond",
         "franklinjavier/uia/block-ocean",
+        "franklinjavier/uia/block-murmuration",
         "franklinjavier/uia/block-model-evals",
         "franklinjavier/uia/block-model-router",
         "franklinjavier/uia/block-agent-runtime"
