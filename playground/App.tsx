@@ -6,23 +6,30 @@ import { useTheme } from "@/components/theme-provider"
 import { PlaygroundDock } from "./playground-dock"
 import { navigate, usePath } from "./router"
 import { Button } from "@/components/ui/button"
-import { Assistant } from "@/examples/assistant/assistant"
-import { AgentRuntimeExample as AgentRuntime } from "@/examples/agent-runtime"
-import { AiSpendExample as AiSpend } from "@/examples/ai-spend"
-import { FleetHealthExample as FleetHealth } from "@/examples/fleet-health"
-import { GroundStationExample as GroundStation } from "@/examples/ground-station"
-import { MergeConflictsExample as MergeConflicts } from "@/examples/merge-conflicts"
-import { OceanExample } from "@/examples/ocean"
-import { PurchaseOrdersExample as PurchaseOrders } from "@/examples/purchase-orders"
-import { ModelEvalsExample as ModelEvals } from "@/examples/model-evals"
-import { Bottega } from "@/examples/bottega/bottega"
-import { Davinci } from "@/examples/davinci/davinci"
-import { DavinciInbox, type View as DavinciView } from "@/examples/davinci2/davinci2"
-import { ModelRouterExample as ModelRouter } from "@/examples/model-router"
-import { SurfaceExample } from "@/examples/surface/surface-demo"
-import { Compare } from "./compare"
-import { Patterns } from "./patterns"
-import { DavinciSurfaceExample } from "@/examples/davinci-surface/davinci-surface"
+import type { View as DavinciView } from "@/examples/davinci2/davinci2"
+
+// Each example loads on its own when it's opened, so the first page only
+// pays for the one on screen.
+function lazy<M, P>(load: () => Promise<M>, pick: (m: M) => React.ComponentType<P>) {
+  return React.lazy(() => load().then((m) => ({ default: pick(m) })))
+}
+const Assistant = lazy(() => import("@/examples/assistant/assistant"), (m) => m.Assistant)
+const AgentRuntime = lazy(() => import("@/examples/agent-runtime"), (m) => m.AgentRuntimeExample)
+const AiSpend = lazy(() => import("@/examples/ai-spend"), (m) => m.AiSpendExample)
+const FleetHealth = lazy(() => import("@/examples/fleet-health"), (m) => m.FleetHealthExample)
+const GroundStation = lazy(() => import("@/examples/ground-station"), (m) => m.GroundStationExample)
+const MergeConflicts = lazy(() => import("@/examples/merge-conflicts"), (m) => m.MergeConflictsExample)
+const OceanExample = lazy(() => import("@/examples/ocean"), (m) => m.OceanExample)
+const PurchaseOrders = lazy(() => import("@/examples/purchase-orders"), (m) => m.PurchaseOrdersExample)
+const ModelEvals = lazy(() => import("@/examples/model-evals"), (m) => m.ModelEvalsExample)
+const Bottega = lazy(() => import("@/examples/bottega/bottega"), (m) => m.Bottega)
+const Davinci = lazy(() => import("@/examples/davinci/davinci"), (m) => m.Davinci)
+const DavinciInbox = lazy(() => import("@/examples/davinci2/davinci2"), (m) => m.DavinciInbox)
+const ModelRouter = lazy(() => import("@/examples/model-router"), (m) => m.ModelRouterExample)
+const SurfaceExample = lazy(() => import("@/examples/surface/surface-demo"), (m) => m.SurfaceExample)
+const Compare = lazy(() => import("./compare"), (m) => m.Compare)
+const Patterns = lazy(() => import("./patterns"), (m) => m.Patterns)
+const DavinciSurfaceExample = lazy(() => import("@/examples/davinci-surface/davinci-surface"), (m) => m.DavinciSurfaceExample)
 
 const scenario =
   new URLSearchParams(window.location.search).get("scenario") ?? undefined
@@ -159,13 +166,15 @@ export function App() {
         </PlaygroundDock>
       )}
 
-      {full ? (
-        <Active />
-      ) : (
-        <main className="relative flex min-h-svh items-center justify-center px-4 pt-16 pb-28">
+      <React.Suspense fallback={null}>
+        {full ? (
           <Active />
-        </main>
-      )}
+        ) : (
+          <main className="relative flex min-h-svh items-center justify-center px-4 pt-16 pb-28">
+            <Active />
+          </main>
+        )}
+      </React.Suspense>
     </div>
   )
 }
