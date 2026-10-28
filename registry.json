@@ -441,7 +441,7 @@
       "name": "soundscape",
       "type": "registry:hook",
       "title": "Soundscape",
-      "description": "useSoundscape: a small Web Audio loop per ASCII backdrop (water, the deep, a river, a flock, crickets), synthesised, off until the viewer turns it on; cue a sound for a click or an event.",
+      "description": "useSoundscape: a small Web Audio loop per ASCII backdrop (water, the deep, a river, a flock, crickets), synthesised, starting at the viewer's first click; cue a sound for a click or an event.",
       "author": "uia",
       "files": [
         {

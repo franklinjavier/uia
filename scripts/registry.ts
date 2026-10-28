@@ -66,7 +66,7 @@ const ITEMS: Item[] = [
     "registry/hooks/use-highlighted-code.ts",
   ]),
   item("ascii-canvas", "registry:hook", "useAsciiCanvas: the engine under uia's ASCII animations — a cell grid sized to its box, ink read from CSS, one rAF loop that sleeps off screen, a still frame under reduced motion.", ["registry/hooks/use-ascii-canvas.ts"]),
-  item("soundscape", "registry:hook", "useSoundscape: a small Web Audio loop per ASCII backdrop (water, the deep, a river, a flock, crickets), synthesised, off until the viewer turns it on; cue a sound for a click or an event.", ["registry/hooks/use-soundscape.ts"]),
+  item("soundscape", "registry:hook", "useSoundscape: a small Web Audio loop per ASCII backdrop (water, the deep, a river, a flock, crickets), synthesised, starting at the viewer's first click; cue a sound for a click or an event.", ["registry/hooks/use-soundscape.ts"]),
 
   // ds
   item("widget", "registry:component", "Card-in-card shell: Widget, header, panels, footer.", ["registry/ds/widget.tsx"]),

@@ -3,9 +3,10 @@ import * as React from "react"
 // useSoundscape: a small sound loop for an ASCII backdrop, synthesised with
 // Web Audio (no files): water for the koi, the deep for the sharks, a river
 // for the piranhas, wind and chatter for the starlings, crickets for the
-// fireflies. It plays only while `on`, which starts false and is the
-// viewer's to turn on; `cue` adds a sound on top, for a click or an event
-// (a koi fed, a fish taken, a hawk through).
+// fireflies. It plays while `on`, behind a toggle the viewer can turn off;
+// browsers keep it silent until the first click or key, and it starts then.
+// `cue` adds a sound on top, for a click or an event (a koi fed, a fish
+// taken, a hawk through).
 //
 //   const cue = useSoundscape("koi", sound)
 //   <KoiPond onFeed={(n) => { setFed(n); cue("event") }} />
@@ -204,7 +205,12 @@ function start(kind: Soundscape) {
   let alive = true
   const kit: Kit = { ctx, out, noise, alive: () => alive }
   const scape = SCAPES[kind]
-  void ctx.resume()
+  // Browsers hold sound until the viewer touches the page; start then.
+  const wake = () => void ctx.resume()
+  if (ctx.state === "suspended") {
+    window.addEventListener("pointerdown", wake, { once: true, capture: true })
+    window.addEventListener("keydown", wake, { once: true, capture: true })
+  }
   scape.loop(kit)
   // Events can come in bursts (a pack feeding): one sound per 80ms is plenty.
   let last = 0
@@ -217,6 +223,8 @@ function start(kind: Soundscape) {
     },
     stop: () => {
       alive = false
+      window.removeEventListener("pointerdown", wake, { capture: true })
+      window.removeEventListener("keydown", wake, { capture: true })
       out.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.08)
       window.setTimeout(() => void ctx.close(), 400)
     },

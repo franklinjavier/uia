@@ -13,8 +13,8 @@ import { useSoundscape } from "@/hooks/use-soundscape"
 // pack, a starling flock, fireflies. The switch at the top picks the scene,
 // a short line sits over it, and the corner counts what happened; switching
 // starts a new count.
-// Sound starts off; the speaker beside the switch plays each scene's loop,
-// with a sound for each click and each catch.
+// Sound is on: each scene's loop starts at the first click, with a sound for
+// each click and each catch; the speaker beside the switch turns it off.
 
 type Water = "koi" | "shark" | "piranha" | "starling" | "firefly"
 
@@ -38,7 +38,7 @@ export function OceanExample({
 }) {
   const [water, setWater] = React.useState<Water>(initial)
   const [eaten, setEaten] = React.useState(0)
-  const [sound, setSound] = React.useState(false)
+  const [sound, setSound] = React.useState(true)
   const cue = useSoundscape(water, sound)
   const w = WATERS.find((x) => x.value === water)!
   const strip = React.useRef<HTMLDivElement>(null)
