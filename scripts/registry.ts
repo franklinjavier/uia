@@ -66,6 +66,7 @@ const ITEMS: Item[] = [
     "registry/hooks/use-highlighted-code.ts",
   ]),
   item("ascii-canvas", "registry:hook", "useAsciiCanvas: the engine under uia's ASCII animations — a cell grid sized to its box, ink read from CSS, one rAF loop that sleeps off screen, a still frame under reduced motion.", ["registry/hooks/use-ascii-canvas.ts"]),
+  item("soundscape", "registry:hook", "useSoundscape: a small Web Audio loop per ASCII backdrop (water, the deep, a river, a flock, crickets), synthesised, off until the viewer turns it on; cue a sound for a click or an event.", ["registry/hooks/use-soundscape.ts"]),
 
   // ds
   item("widget", "registry:component", "Card-in-card shell: Widget, header, panels, footer.", ["registry/ds/widget.tsx"]),
@@ -138,6 +139,7 @@ const ITEMS: Item[] = [
   item("block-ground-station", "registry:component", "GroundStation: drag-to-turn globe with orbits, sky plot of the next pass or live downlink, onboard storage, satellites with their passes, book a pass.", ["registry/blocks/ground-station.tsx"]),
   item("block-koi-pond", "registry:component", "KoiPond: koi drawn on a cell grid swimming under the content; click to drop food, ASCII rings spread and the koi turn for it.", ["registry/blocks/koi-pond.tsx"]),
   item("block-murmuration", "registry:component", "Murmuration: a starling flock in ASCII under the content, drawn by density; click sends a hawk through and the alarm runs through the flock.", ["registry/blocks/murmuration.tsx"]),
+  item("block-fireflies", "registry:component", "Fireflies: a field at dusk in ASCII under the content; each keeps its own beat and a flash pulls the neighbours in, so the field falls into step in waves; click breaks the beat.", ["registry/blocks/fireflies.tsx"]),
   item("block-ocean", "registry:component", "Ocean: sharks or a piranha pack hunting bait schools in ASCII under the content; glyph-ramp shading, schools scatter, click drops a school.", ["registry/blocks/ocean.tsx"]),
   item("block-merge-conflicts", "registry:component", "MergeConflicts: a pull request behind its base — branches as a commit graph, the files both sides changed side by side, merge the base in and resolve, merge.", ["registry/blocks/merge-conflicts.tsx"]),
   item("block-fleet-health", "registry:component", "FleetHealth: tokens/s with sparkline, fleet meters, GPU heatmap with modes, rebalance.", ["registry/blocks/fleet-health.tsx"]),
@@ -178,7 +180,7 @@ const ITEMS: Item[] = [
   item("example-purchase-orders", "registry:block", "Example: September's purchase orders and the bills filter over seeded data.", ["registry/examples/purchase-orders.tsx"]),
   item("example-ground-station", "registry:block", "Example: three stations, three satellites on real orbits at ×60, onboard data and Book.", ["registry/examples/ground-station.tsx"]),
   item("example-koi-pond", "registry:block", "Example: the koi pond as a page backdrop, a typed line over the water and a fed count.", ["registry/examples/koi-pond.tsx"]),
-  item("example-ocean", "registry:block", "Example: the ocean as a page backdrop, sharks or piranhas, with an eaten count.", ["registry/examples/ocean.tsx"]),
+  item("example-ocean", "registry:block", "Example: the ASCII backdrops behind one switch (koi, sharks, piranhas, starlings, fireflies), with a count in the corner.", ["registry/examples/ocean.tsx"]),
   item("example-merge-conflicts", "registry:block", "Example: PR #128 behind main after a key rotation, two files resolved one by one, then merged.", ["registry/examples/merge-conflicts.tsx"]),
   item("example-fleet-health", "registry:block", "Example: tokens/s with sparkline, fleet meters and a GPU heatmap.", ["registry/examples/fleet-health.tsx"]),
   item("example-bottega", "registry:block", "Example page (pt-BR): an agent workshop — decisions strip, projects by stage, production, activity and the one conversation with decision cards.", [
@@ -222,7 +224,7 @@ const BUNDLES = [
     "action-card", "ask-user", "confirmation", "draft-card", "preview-approval", "decision-chip", "part-transition", "tool-line", "decision-card", "status-card", "activity", "policy", "diff", "citation", "plan", "connect-prompt", "findings", "chart-card",
   ]),
   bundle("blocks", "Every product block (data-driven widget), ready to feed with your data.", [
-    "block-ai-spend", "block-fleet-health", "block-ground-station", "block-purchase-orders", "block-bills-filter", "block-merge-conflicts", "block-koi-pond", "block-ocean", "block-murmuration", "block-model-evals", "block-model-router", "block-agent-runtime",
+    "block-ai-spend", "block-fleet-health", "block-ground-station", "block-purchase-orders", "block-bills-filter", "block-merge-conflicts", "block-koi-pond", "block-ocean", "block-murmuration", "block-fireflies", "block-model-evals", "block-model-router", "block-agent-runtime",
   ]),
   bundle("examples", "Every reference widget, to read, run and adapt.", [
     "example-assistant", "example-model-router", "example-agent-runtime", "example-ai-spend", "example-fleet-health", "example-ground-station", "example-purchase-orders", "example-merge-conflicts", "example-koi-pond", "example-ocean", "example-model-evals", "example-bottega", "example-davinci", "example-surface", "example-davinci-surface",

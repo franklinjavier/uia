@@ -438,6 +438,20 @@
       ]
     },
     {
+      "name": "soundscape",
+      "type": "registry:hook",
+      "title": "Soundscape",
+      "description": "useSoundscape: a small Web Audio loop per ASCII backdrop (water, the deep, a river, a flock, crickets), synthesised, off until the viewer turns it on; cue a sound for a click or an event.",
+      "author": "uia",
+      "files": [
+        {
+          "path": "registry/hooks/use-soundscape.ts",
+          "type": "registry:hook",
+          "target": "@hooks/use-soundscape.ts"
+        }
+      ]
+    },
+    {
       "name": "widget",
       "type": "registry:component",
       "title": "Widget",
@@ -1581,6 +1595,24 @@
       ]
     },
     {
+      "name": "block-fireflies",
+      "type": "registry:component",
+      "title": "Block Fireflies",
+      "description": "Fireflies: a field at dusk in ASCII under the content; each keeps its own beat and a flash pulls the neighbours in, so the field falls into step in waves; click breaks the beat.",
+      "author": "uia",
+      "registryDependencies": [
+        "franklinjavier/uia/ascii-canvas",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/blocks/fireflies.tsx",
+          "type": "registry:component",
+          "target": "@components/blocks/fireflies.tsx"
+        }
+      ]
+    },
+    {
       "name": "block-ocean",
       "type": "registry:component",
       "title": "Block Ocean",
@@ -2157,13 +2189,19 @@
       "name": "example-ocean",
       "type": "registry:block",
       "title": "Example Ocean",
-      "description": "Example: the ocean as a page backdrop, sharks or piranhas, with an eaten count.",
+      "description": "Example: the ASCII backdrops behind one switch (koi, sharks, piranhas, starlings, fireflies), with a count in the corner.",
       "author": "uia",
+      "dependencies": [
+        "lucide-react"
+      ],
       "registryDependencies": [
+        "franklinjavier/uia/block-fireflies",
         "franklinjavier/uia/block-koi-pond",
         "franklinjavier/uia/block-murmuration",
         "franklinjavier/uia/block-ocean",
+        "franklinjavier/uia/button",
         "franklinjavier/uia/segmented",
+        "franklinjavier/uia/soundscape",
         "franklinjavier/uia/theme"
       ],
       "files": [
@@ -2542,6 +2580,7 @@
         "franklinjavier/uia/block-koi-pond",
         "franklinjavier/uia/block-ocean",
         "franklinjavier/uia/block-murmuration",
+        "franklinjavier/uia/block-fireflies",
         "franklinjavier/uia/block-model-evals",
         "franklinjavier/uia/block-model-router",
         "franklinjavier/uia/block-agent-runtime"

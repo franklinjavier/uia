@@ -46,9 +46,13 @@ function DavinciInboxPage() {
   )
 }
 
-// The ASCII backdrops share one example; its switch moves the URL too.
-const BACKDROP_PATHS = { koi: "/koi", shark: "/sharks", piranha: "/piranhas", starling: "/starlings" } as const
-function Backdrop({ of }: { of: keyof typeof BACKDROP_PATHS }) {
+// The ASCII backdrops share one example; its switch moves the URL too. One
+// component for every path, so switching doesn't remount it (the sound stays on).
+const BACKDROP_PATHS = { koi: "/koi", shark: "/sharks", piranha: "/piranhas", starling: "/starlings", firefly: "/fireflies" } as const
+type Water = keyof typeof BACKDROP_PATHS
+function Backdrop() {
+  const [first] = usePath()
+  const of = (Object.keys(BACKDROP_PATHS) as Water[]).find((w) => BACKDROP_PATHS[w] === `/${first}`) ?? "koi"
   return <OceanExample predator={of} onPredatorChange={(v) => navigate(BACKDROP_PATHS[v], { replace: true })} />
 }
 
@@ -62,10 +66,12 @@ const WIDGETS = {
   merge: { label: "Merge conflicts", component: MergeConflicts, full: false },
   orders: { label: "Purchase orders", component: PurchaseOrders, full: false },
   evals: { label: "Evals", component: ModelEvals, full: false },
-  koi: { label: "Koi pond (ASCII)", component: () => <Backdrop of="koi" />, full: true },
-  sharks: { label: "Sharks (ASCII)", component: () => <Backdrop of="shark" />, full: true },
-  piranhas: { label: "Piranhas (ASCII)", component: () => <Backdrop of="piranha" />, full: true },
-  starlings: { label: "Starlings (ASCII)", component: () => <Backdrop of="starling" />, full: true },
+  // One entry in the menu; the backdrop's own switch picks the scene.
+  koi: { label: "ASCII animations", component: Backdrop, full: true },
+  sharks: { label: "ASCII animations", component: Backdrop, full: true, hidden: true },
+  piranhas: { label: "ASCII animations", component: Backdrop, full: true, hidden: true },
+  starlings: { label: "ASCII animations", component: Backdrop, full: true, hidden: true },
+  fireflies: { label: "ASCII animations", component: Backdrop, full: true, hidden: true },
   bottega: { label: "Bottega", component: Bottega, full: true },
   davinci: { label: "davinci (one chat)", component: Davinci, full: true },
   davinci2: { label: "davinci (inbox)", component: DavinciInboxPage, full: true },
@@ -113,11 +119,11 @@ export function App() {
           onOpenChange={setPickerOpen}
           menu={
             <nav aria-label="Examples" className="flex max-h-[min(70svh,32rem)] flex-col overflow-y-auto pb-1">
-              {Object.entries(WIDGETS).map(([key, w], i) => (
+              {Object.entries(WIDGETS).filter(([, w]) => !("hidden" in w)).map(([key, w], i) => (
                 <motion.button
                   key={key}
                   type="button"
-                  aria-current={key === active ? "page" : undefined}
+                  aria-current={w.label === WIDGETS[active].label ? "page" : undefined}
                   initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0, transition: { duration: 0.2, delay: 0.14 + i * 0.018 } }}
                   onClick={() => {

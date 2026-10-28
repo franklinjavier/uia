@@ -139,7 +139,9 @@ the visual: MeterBar · TickMeter row · flow graph · scene
   UI, and never carry data or the
   only way to do something. The content on top stays readable and keeps
   its clicks; the backdrop may answer the pointer (food, ripples) but
-  nothing depends on it. One per page.
+  nothing depends on it. One per page. Sound, if any, is `useSoundscape`:
+  off until the viewer turns it on (a speaker toggle beside the backdrop's
+  controls, never autoplay), quiet, and never the only sign of anything.
 
 ## 6. Copy
 
