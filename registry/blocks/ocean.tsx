@@ -39,6 +39,8 @@ type Hunter = {
   phase: number
   /** The muted hues scattered over a shark's tiles. */
   tints: string[]
+  /** 1 near the surface → 0.55 deep: deeper sharks are smaller and dimmer, and pass under. */
+  depth: number
 }
 type Splash = { x: number; y: number; age: number; seed: number }
 /** A cloud of blood, for the piranhas. */
@@ -51,6 +53,10 @@ type Water = {
   hunters: Hunter[]
   splashes: Splash[]
   blood: Blood[]
+  /** Disturbed water behind the swimmers, per cell, fading. */
+  wake: Map<number, number>
+  cell: number
+  cols: number
   eaten: number
   onEat?: (eaten: number) => void
 }
@@ -139,7 +145,8 @@ const HAMMER: Profile = {
 }
 
 /** Is (s, a) inside a fin triangle whose base sits on the spine? */
-function inFin([s0, s1, tip, reach]: Fin, body: (s: number) => number, s: number, a: number) {
+function inFin([s0, s1, tip, reach]: Fin, body: (s: number) => number, s: number, a: number, bank = 1) {
+  reach *= bank
   const ax = s0, ay = 0
   const bx = s1, by = 0
   const cx = tip, cy = body(Math.min(1, tip)) + reach
@@ -154,7 +161,7 @@ function spawnHunter(kind: Kind, width: number, height: number, i: number, n: nu
   const unit = Math.sqrt(width * height)
   const length =
     kind === "shark"
-      ? Math.max(180, Math.min(420, unit * 0.48)) * (0.7 + r(1) * 0.3)
+      ? Math.max(180, Math.min(420, unit * 0.48)) * (1 - (i % 3) * 0.14)
       : Math.max(100, Math.min(160, unit * 0.16)) * (0.8 + r(1) * 0.3)
   const heading = r(2) * Math.PI * 2
   const x = width * (0.15 + r(3) * 0.7)
@@ -173,6 +180,7 @@ function spawnHunter(kind: Kind, width: number, height: number, i: number, n: nu
     hammer: kind === "shark" && i % 2 === 1,
     body: [],
     phase: r(8) * 10,
+    depth: kind === "shark" ? 1 - (i % 3) * 0.2 : 1,
     tints: [0, 1, 2].map((k) => `oklch(0.72 0.1 ${HUES[Math.floor(r(20 + k) * HUES.length)]})`),
     target: null,
     full: r(7) * 3,
@@ -196,6 +204,11 @@ const wrapAngle = (a: number) => Math.atan2(Math.sin(a), Math.cos(a))
 
 function step(kind: Kind, w: Water, dt: number, time: number) {
   const P = PROFILES[kind]
+  for (const [k, v] of w.wake) {
+    const next = v * Math.exp(-dt * 0.9)
+    if (next < 0.04) w.wake.delete(k)
+    else w.wake.set(k, next)
+  }
   for (const s of w.splashes) s.age += dt
   w.splashes = w.splashes.filter((s) => s.age < SPLASH_LIFE)
   for (const b of w.blood) b.age += dt
@@ -308,8 +321,11 @@ function step(kind: Kind, w: Water, dt: number, time: number) {
       want = towards(cloud.x + Math.cos(spin) * rad, cloud.y + Math.sin(spin) * rad) * 1.6
       speed = P.frenzy
     } else if (h.target) {
-      want = towards(h.target.x, h.target.y)
-      speed = P.chase
+      // Aim where the fish will be, not where it is; close in, then a short burst.
+      const gap = Math.hypot(h.target.x - hx, h.target.y - hy)
+      const lead = Math.min(1.2, gap / P.chase)
+      want = towards(h.target.x + h.target.vx * lead, h.target.y + h.target.vy * lead)
+      speed = gap < h.length * 0.45 ? P.chase * 1.6 : P.chase
       if (Math.hypot(h.target.x - hx, h.target.y - hy) < Math.max(10, h.length * P.reach * 0.5)) {
         h.target.alive = false
         h.target.back = 4 + hash(h.seed, time, 9) * 4
@@ -353,6 +369,13 @@ function step(kind: Kind, w: Water, dt: number, time: number) {
       const [bx, by] = h.spine[i]
       const d = Math.hypot(ax - bx, ay - by) || 1
       h.spine[i] = [ax - ((ax - bx) / d) * seg, ay - ((ay - by) / d) * seg]
+    }
+
+    // Leave a wake: the water behind the body stirs, then settles.
+    for (let i = Math.floor(NODES * 0.55); i < NODES; i += 2) {
+      const [x, y] = h.spine[i]
+      const key = Math.floor(y / w.cell) * w.cols + Math.floor(x / w.cell)
+      w.wake.set(key, Math.min(1, (w.wake.get(key) ?? 0) + dt * (h.speed / 40) * h.depth))
     }
 
     // The swim: a wave runs head to tail, small at the head and wide at the
@@ -408,6 +431,12 @@ function draw(kind: Kind, g: AsciiGrid, w: Water, accent: string) {
   const { cell } = g
   const cellOf = (x: number, y: number): Vec => [Math.floor(x / cell), Math.floor(y / cell)]
 
+  for (const [k, v] of w.wake) {
+    const c = k % w.cols
+    const r = Math.floor(k / w.cols)
+    g.glyph(c, r, v > 0.5 ? "~" : hash(c, r, 3) > 0.5 ? "·" : "-", g.ink, Math.min(0.32, v * 0.4))
+  }
+
   for (const b of w.bait) {
     if (!b.alive) continue
     const [c, r] = cellOf(b.x, b.y)
@@ -430,9 +459,10 @@ function draw(kind: Kind, g: AsciiGrid, w: Water, accent: string) {
     }
   }
 
-  for (const h of w.hunters) {
+  for (const h of [...w.hunters].sort((a, b) => a.depth - b.depth)) {
     const P = h.hammer ? HAMMER : PROFILES[kind]
     const L = h.length
+    const fade = 0.4 + 0.6 * h.depth
     let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity
     const spine = h.body.length ? h.body : h.spine
     for (const [x, y] of spine) {
@@ -458,7 +488,7 @@ function draw(kind: Kind, g: AsciiGrid, w: Water, accent: string) {
           // Light from one side: bright flank sparse, far flank dense.
           const u = l / Math.max(1, body)
           const light = Math.max(0, Math.min(1, 0.62 - u * 0.32 - Math.abs(u) * Math.abs(u) * 0.3 + (n - 0.5) * 0.18))
-          const char = RAMP[Math.min(RAMP.length - 1, Math.floor((1 - light) * RAMP.length))]
+          const char = RAMP[Math.min(RAMP.length - 1, Math.max(2, Math.floor((1 - light) * RAMP.length)))]
           const tail = smooth(0.6, 1, s)
           // The dorsal fin, seen from above: a bright dense line down the back.
           const ridge = P.ridge && s > P.ridge[0] && s < P.ridge[1] && Math.abs(u) < 0.12
@@ -468,17 +498,19 @@ function draw(kind: Kind, g: AsciiGrid, w: Water, accent: string) {
             // slowly, like light through water.
             const t = hash(bi, bj, h.seed + Math.floor(g.time * 0.7 + n * 3))
             const tint = t < 0.16 ? h.tints[Math.floor(t * 100) % h.tints.length] : null
-            g.block(c, r, tint ?? g.ink, (tint ? 0.42 : 0.1 + (1 - light) * 0.28) * (1 - tail * 0.5) * cover)
+            g.block(c, r, tint ?? g.ink, (tint ? 0.42 : 0.17 + (1 - light) * 0.3) * (1 - tail * 0.4) * cover * fade)
           }
-          g.glyph(c, r, ridge ? "8" : char, g.ink, (ridge ? 0.9 : 0.95 - tail * 0.3) * cover)
+          g.glyph(c, r, ridge ? "8" : char, g.ink, (ridge ? 0.9 : 0.95 - tail * 0.3) * cover * fade)
           continue
         }
-        if (P.fins.some((f) => inFin(f, P.body, s, a / L))) {
+        // Into a turn the inner fin tucks and the outer one spreads (l < 0 is the fish's right).
+        const lean = Math.max(-1, Math.min(1, h.turn / P.agility)) * 0.55
+        if (P.fins.some((f, i) => inFin(f, P.body, s, a / L, i === 0 ? 1 + lean * Math.sign(l) : 1))) {
           const char = FIN[Math.floor(n * FIN.length)]
 
           // Piranhas wear their colour on the fins.
           // Fins stay lighter than the body, so the silhouette reads.
-          g.glyph(c, r, kind === "piranha" ? char : ":;.'"[Math.floor(n * 4)], kind === "piranha" ? accent : g.ink, kind === "piranha" ? 0.9 : 0.5)
+          g.glyph(c, r, kind === "piranha" ? char : ":;.'"[Math.floor(n * 4)], kind === "piranha" ? accent : g.ink, (kind === "piranha" ? 0.9 : 0.5) * fade)
         }
       }
 
@@ -491,8 +523,9 @@ function draw(kind: Kind, g: AsciiGrid, w: Water, accent: string) {
           for (const f of [0.55, 0.85]) {
             const q = point(spine, gs, side * P.body(gs) * L * f)
             const [qc, qr] = cellOf(q.x, q.y)
-            g.clear(qc, qr)
-            g.glyph(qc, qr, stroke(q.dir + Math.PI / 2), g.ink, 0.85)
+            // Drawn over the tile, never through it: a punched cell reads as a hole.
+            g.block(qc, qr, g.ink, 0.22 * fade)
+            g.glyph(qc, qr, stroke(q.dir + Math.PI / 2), g.ink, 0.85 * fade)
           }
       }
     }
@@ -553,7 +586,8 @@ export function Ocean({
     init: ({ width, height }, prev) => {
       const area = width * height
       const n = Math.max(predator === "shark" ? 1 : 3, Math.min(want, Math.round(area / (predator === "shark" ? 200000 : 60000))))
-      if (prev && prev.kind === predator && prev.hunters.length === n) return { ...prev, width, height }
+      if (prev && prev.kind === predator && prev.hunters.length === n)
+        return { ...prev, width, height, cols: Math.ceil(width / cell), wake: new Map() }
       const schools = Math.max(2, Math.round(area / 160000))
       return {
         kind: predator,
@@ -565,6 +599,9 @@ export function Ocean({
         ).flat(),
         splashes: [],
         blood: [],
+        wake: new Map(),
+        cell,
+        cols: Math.ceil(width / cell),
         eaten: prev?.eaten ?? 0,
         onEat: (k) => eat.current?.(k),
       }
