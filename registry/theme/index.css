@@ -205,9 +205,10 @@
     }
   /* iOS zooms into any field under 16px on focus. On touch screens every
      field is 16px, whatever its utility says (important beats the
-     utilities layer); desktop keeps the compact sizes. */
+     utilities layer); desktop keeps the compact sizes. Fields set larger
+     than that (an amount in text-3xl) keep their size. */
   @media (pointer: coarse) {
-    input, textarea, select {
+    :is(input, textarea, select):not([class*="text-2xl"], [class*="text-3xl"], [class*="text-4xl"]) {
       font-size: 16px !important;
     }
   }

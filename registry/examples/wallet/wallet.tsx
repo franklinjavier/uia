@@ -92,6 +92,7 @@ export function Wallet({ view: viewIn, onViewChange }: { view?: View; onViewChan
       symbol: h.symbol,
       name: h.name,
       price: h.price ?? 0,
+      image: h.image,
       balance: units(h),
       network: [...h.networks].sort((a, b) => b.amount - a.amount)[0].name,
     }))

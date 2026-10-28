@@ -1,15 +1,15 @@
 import * as React from "react"
-import { Area, AreaChart, XAxis, YAxis } from "recharts"
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { ChevronRightIcon, EyeIcon, EyeOffIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarBadge, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { ChartContainer, ChartTooltip, type ChartConfig } from "@/components/ui/chart"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Toggle } from "@/components/ui/toggle"
 import { Segmented, SegmentedItem } from "@/components/ds/segmented"
-import { StatusBadge, StatusDot } from "@/components/ds/status"
+import { StatusDot } from "@/components/ds/status"
 import { Stat, StatLabel, StatMeta, StatValue } from "@/components/ds/stat"
 import {
   Widget,
@@ -25,9 +25,10 @@ import {
 // Portfolio: what a wallet holds, worth how much, and how that moved.
 //
 //   PORTFOLIO VALUE 👁                         1D 1W 1M 1Y ALL
-//   $24,615.62   [▲ $238.34 · 1.0%]
-//   YESTERDAY 10:00 → NOW
-//   ╱╲__╱‾‾╲_╱‾‾‾    (hover: the number follows the line)
+//   $24,615.62
+//   ▲ +$238.34 · 1.0% · 1D        (hover: the number and its time follow the line)
+//   ╱╲__╱‾‾╲_╱‾‾‾          $24,700   a value axis on round steps
+//   24 H AGO           NOW
 //   [actions slot: Send · Receive · Swap]
 //   ──────────────────────────────────────────────────────
 //   Assets  6 assets · 3 networks
@@ -39,7 +40,7 @@ import {
 // the range controlled). The eye hides every amount, for screen sharing.
 // Built on shadcn: Chart (recharts), Table, Avatar, Toggle, Button.
 
-export type PortfolioNetwork = { id: string; name: string; amount: number }
+export type PortfolioNetwork = { id: string; name: string; amount: number; image?: string }
 
 export type PortfolioHolding = {
   id: string
@@ -90,13 +91,29 @@ const chartConfig = { v: { label: "Value", color: "var(--foreground)" } } satisf
 const WIDE = "max-md:hidden"
 const SHARE = "max-sm:hidden"
 
-function TokenAvatar({ symbol, image }: { symbol: string; image?: string }) {
+/** The token's logo (its symbol until one loads), the network's in the corner. */
+function TokenAvatar({ symbol, image, network }: { symbol: string; image?: string; network?: string }) {
   return (
-    <Avatar size="sm">
-      {image && <img src={image} alt="" className="size-full rounded-full" />}
-      <AvatarFallback className="font-mono tracking-tight group-data-[size=sm]/avatar:text-[8px]">{symbol.slice(0, 3)}</AvatarFallback>
+    <Avatar>
+      {image && <AvatarImage src={image} alt="" />}
+      <AvatarFallback className="font-mono text-[9px] tracking-tight">{symbol.slice(0, 3)}</AvatarFallback>
+      {network && (
+        <AvatarBadge className="-right-0.5 -bottom-0.5 overflow-hidden bg-card ring-card group-data-[size=default]/avatar:size-3.5">
+          <img src={network} alt="" className="size-full rounded-full" />
+        </AvatarBadge>
+      )}
     </Avatar>
   )
+}
+
+/** Round steps for the value axis: three lines at most, on round numbers. */
+function scale(lo: number, hi: number) {
+  const raw = (hi - lo) / 2 || 1
+  const mag = 10 ** Math.floor(Math.log10(raw))
+  const step = [1, 2, 2.5, 5, 10].map((k) => k * mag).find((k) => k >= raw) ?? raw
+  const ticks: number[] = []
+  for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) ticks.push(v)
+  return ticks
 }
 
 export function Portfolio({
@@ -141,6 +158,11 @@ export function Portfolio({
   const points = series.points
   const shown = hover === null ? total : points[hover].v
   const first = points[0]?.v ?? total
+  const vs = points.map((p) => p.v)
+  const pad = (Math.max(...vs) - Math.min(...vs)) * 0.08
+  const lo = Math.min(...vs) - pad
+  const hi = Math.max(...vs) + pad
+  const ticks = scale(lo, hi)
   const delta = shown - first
   // The cents step back, so the dollars read first.
   const [whole, cents] = money(shown).split(/(?=[.,]\d{2}$)/)
@@ -168,18 +190,22 @@ export function Portfolio({
                 {hidden ? <EyeOffIcon /> : <EyeIcon />}
               </Toggle>
             </StatLabel>
-            <StatValue className="flex-wrap gap-x-3 gap-y-1">
+            <StatValue>
               <span>
                 {whole}
                 {cents && <span className="text-muted-foreground">{cents}</span>}
               </span>
-              {!hidden && (
-                <StatusBadge tone={delta >= 0 ? "success" : "neutral"} dot={false} className="self-center">
-                  {delta >= 0 ? "▲" : "▼"} {money(Math.abs(delta))} · {pct(Math.abs(delta) / (first || 1))}
-                </StatusBadge>
-              )}
             </StatValue>
-            <StatMeta>{hover === null ? `${series.since} → now` : time(points[hover].t)}</StatMeta>
+            <StatMeta>
+              {!hidden && (
+                <>
+                  <span className={delta >= 0 ? "text-success" : undefined}>{delta >= 0 ? "▲" : "▼"}</span>{" "}
+                  {delta >= 0 ? "+" : "−"}
+                  {money(Math.abs(delta))} · {pct(Math.abs(delta) / (first || 1))} ·{" "}
+                </>
+              )}
+              {hover === null ? series.label : time(points[hover].t)}
+            </StatMeta>
           </Stat>
           <Segmented
             aria-label="Range"
@@ -198,34 +224,50 @@ export function Portfolio({
           </Segmented>
         </div>
 
-        <ChartContainer config={chartConfig} className="aspect-auto h-40 w-full cursor-crosshair">
-          <AreaChart
-            data={points}
-            margin={{ top: 6, right: 4, bottom: 6, left: 4 }}
-            onMouseMove={(s) => setHover(s.activeTooltipIndex == null ? null : Number(s.activeTooltipIndex))}
-            onMouseLeave={() => setHover(null)}
-          >
-            <defs>
-              <linearGradient id="portfolio-fill" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0" stopColor="var(--color-v)" stopOpacity={0.08} />
-                <stop offset="1" stopColor="var(--color-v)" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <XAxis dataKey="t" hide />
-            <YAxis domain={["dataMin", "dataMax"]} hide />
-            {/* The number above is the tooltip: only the cursor shows here. */}
-            <ChartTooltip cursor={{ strokeDasharray: "2 3" }} content={() => null} />
-            <Area
-              dataKey="v"
-              type="monotone"
-              stroke="var(--color-v)"
-              strokeWidth={1.5}
-              fill="url(#portfolio-fill)"
-              isAnimationActive={false}
-              activeDot={{ r: 3.5, fill: "var(--color-v)", stroke: "var(--card)", strokeWidth: 3 }}
-            />
-          </AreaChart>
-        </ChartContainer>
+        <div className="flex flex-col gap-2">
+          <ChartContainer config={chartConfig} className="aspect-auto h-44 w-full cursor-crosshair">
+            <AreaChart
+              data={points}
+              margin={{ top: 6, right: 0, bottom: 6, left: 0 }}
+              onMouseMove={(s) => setHover(s.activeTooltipIndex == null ? null : Number(s.activeTooltipIndex))}
+              onMouseLeave={() => setHover(null)}
+            >
+              <defs>
+                <linearGradient id="portfolio-fill" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0" stopColor="var(--color-v)" stopOpacity={0.08} />
+                  <stop offset="1" stopColor="var(--color-v)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid vertical={false} strokeDasharray="2 3" />
+              <XAxis dataKey="t" hide />
+              <YAxis
+                orientation="right"
+                domain={[lo, hi]}
+                ticks={ticks}
+                axisLine={false}
+                tickLine={false}
+                width={hidden ? 0 : 64}
+                tick={hidden ? false : { fontSize: 11 }}
+                tickFormatter={(v: number) => v.toLocaleString(locale, { style: "currency", currency, maximumFractionDigits: 0 })}
+              />
+              {/* The number above is the tooltip: only the cursor shows here. */}
+              <ChartTooltip cursor={{ strokeDasharray: "2 3" }} content={() => null} />
+              <Area
+                dataKey="v"
+                type="monotone"
+                stroke="var(--color-v)"
+                strokeWidth={1.5}
+                fill="url(#portfolio-fill)"
+                isAnimationActive={false}
+                activeDot={{ r: 3.5, fill: "var(--color-v)", stroke: "var(--card)", strokeWidth: 3 }}
+              />
+            </AreaChart>
+          </ChartContainer>
+          <div className={cn("flex justify-between eyebrow text-faint-foreground", !hidden && "pr-16")}>
+            <span>{series.since}</span>
+            <span>Now</span>
+          </div>
+        </div>
 
         {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
       </WidgetPanel>
@@ -261,7 +303,7 @@ export function Portfolio({
                   >
                     <TableCell className="w-full max-w-0 py-2.5 md:min-w-40">
                       <span className="flex min-w-0 items-center gap-2.5">
-                        <TokenAvatar symbol={h.symbol} image={h.image} />
+                        <TokenAvatar symbol={h.symbol} image={h.image} network={many ? undefined : h.networks[0]?.image} />
                         <span className="flex min-w-0 flex-col">
                           <span className="truncate">{h.name}</span>
                           <span className="truncate eyebrow text-muted-foreground">
@@ -301,9 +343,13 @@ export function Portfolio({
                         key={n.id}
                         className={cn("hover:bg-transparent", i < h.networks.length - 1 ? "border-transparent" : "border-border/70")}
                       >
-                        <TableCell className="py-1.5 pl-10">
+                        <TableCell className="py-1.5 pl-12">
                           <span className="flex items-center gap-2 text-muted-foreground">
-                            <span className="size-1.5 rounded-full bg-faint-foreground" />
+                            {n.image ? (
+                              <img src={n.image} alt="" className="size-4 rounded-full" />
+                            ) : (
+                              <span className="size-1.5 rounded-full bg-faint-foreground" />
+                            )}
                             {n.name}
                           </span>
                         </TableCell>
@@ -324,7 +370,7 @@ export function Portfolio({
                 <TableRow key={h.id} className="border-border/70 opacity-60 hover:bg-transparent">
                   <TableCell className="w-full max-w-0 py-2.5 md:min-w-40">
                     <span className="flex min-w-0 items-center gap-2.5">
-                      <TokenAvatar symbol={h.symbol} image={h.image} />
+                      <TokenAvatar symbol={h.symbol} image={h.image} network={h.networks[0]?.image} />
                       <span className="flex min-w-0 flex-col">
                         <span className="truncate">{h.name}</span>
                         <span className="truncate eyebrow text-muted-foreground">

@@ -1,22 +1,14 @@
 import * as React from "react"
-import { ArrowDownIcon, CheckIcon } from "lucide-react"
+import { ArrowDownIcon, ArrowRightIcon, CheckIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Spinner } from "@/components/ui/spinner"
-import {
-  Widget,
-  WidgetFooter,
-  WidgetHeader,
-  WidgetMeta,
-  WidgetPanel,
-  WidgetTitle,
-  type WidgetSize,
-} from "@/components/ds/widget"
+import { Widget, WidgetHeader, WidgetPanel, WidgetTitle, type WidgetSize } from "@/components/ds/widget"
 
 // Swap: trade one token for another, with the cost said before you commit.
 //
@@ -27,12 +19,12 @@ import {
 //   YOU RECEIVE · BASE
 //   4,056.20                                             [USDC ▾]
 //   ≈ $4,056.20                                 BALANCE 5,210.4 USDC
-//   ─────────────────────────────────────────────────────────────
-//   Rate · Network cost · Price impact · Max slippage · At least · Route
-//   QUOTE REFRESHES IN 12 S                          [Review swap]
+//   1 ETH = 3,246.2 USDC                          REFRESHES IN 12 S
+//   Network cost · Fee · Price impact · Max slippage · At least · Route
+//   [               Review swap →                ]   (all in one card)
 //
-// One verb at a time in the footer: Review swap → (the quote freezes)
-// Edit · Swap 1.25 ETH → Swapping… → Swapped. A pure view: tokens and
+// One verb at a time, full width: Review swap → (the quote freezes, the
+// costs stand out) Edit · Swap 1.25 ETH for 4,053 USDC → Swapping… → Swapped. A pure view: tokens and
 // costs in, `onSwap` out (return a promise; the button waits on it).
 
 export type SwapToken = {
@@ -42,6 +34,7 @@ export type SwapToken = {
   price: number
   balance: number
   network: string
+  /** The token's logo; its symbol stands in without one. */
   image?: string
 }
 
@@ -69,6 +62,15 @@ export type SwapProps = {
   className?: string
 }
 
+function Mark({ token, symbol }: { token?: SwapToken; symbol: string }) {
+  return (
+    <Avatar size="sm" className="size-5">
+      {token?.image && <AvatarImage src={token.image} alt="" />}
+      <AvatarFallback className="font-mono group-data-[size=sm]/avatar:text-[7px]">{symbol.slice(0, 3)}</AvatarFallback>
+    </Avatar>
+  )
+}
+
 function TokenSelect({
   tokens,
   value,
@@ -88,9 +90,7 @@ function TokenSelect({
         <SelectValue>
           {(v: string) => (
             <>
-              <Avatar size="sm" className="size-5">
-                <AvatarFallback className="font-mono group-data-[size=sm]/avatar:text-[7px]">{v.slice(0, 3)}</AvatarFallback>
-              </Avatar>
+              <Mark token={tokens.find((t) => t.symbol === v)} symbol={v} />
               {v}
             </>
           )}
@@ -99,6 +99,7 @@ function TokenSelect({
       <SelectContent align="end" alignItemWithTrigger={false}>
         {tokens.map((t) => (
           <SelectItem key={t.symbol} value={t.symbol}>
+            <Mark token={t} symbol={t.symbol} />
             {t.symbol}
             <span className="eyebrow text-muted-foreground">{t.name}</span>
           </SelectItem>
@@ -176,7 +177,6 @@ export function Swap({
   }
 
   const details: [string, React.ReactNode][] = [
-    ["Rate", `1 ${from.symbol} = ${num(from.price / to.price)} ${to.symbol}`],
     ["Network cost", `${money(networkCost)} · paid in ${from.symbol}`],
     ["Fee", fee ? pct(fee) : "None"],
     ["Price impact", impact ? `−${pct(impact)}` : "—"],
@@ -262,10 +262,21 @@ export function Swap({
             </span>
           </InputGroupAddon>
         </InputGroup>
-      </WidgetPanel>
 
-      <WidgetPanel className={cn("transition-colors", step === "review" && "ring-foreground/30 dark:ring-foreground/30")}>
-        <dl className="flex flex-col gap-2 text-sm">
+        {/* The rate, and how fresh it is; it holds still while you review. */}
+        <div className="flex items-center justify-between gap-3 px-1 pt-2 eyebrow text-muted-foreground tabular-nums">
+          <span>
+            1 {from.symbol} = {num(from.price / to.price)} {to.symbol}
+          </span>
+          <span className="text-faint-foreground">{locked ? "Quote held" : `Refreshes in ${left} s`}</span>
+        </div>
+
+        <dl
+          className={cn(
+            "mt-2 flex flex-col gap-1.5 rounded-xl px-1 py-2 text-xs transition-colors",
+            step === "review" && "bg-muted/60 px-3"
+          )}
+        >
           {details.map(([k, v], i) => (
             <React.Fragment key={k}>
               {k === "Receive at least" && <Separator className="my-1 bg-border/70" />}
@@ -276,22 +287,20 @@ export function Swap({
             </React.Fragment>
           ))}
         </dl>
-      </WidgetPanel>
 
-      <WidgetFooter>
-        <WidgetMeta className="tabular-nums">{locked ? "Quote held" : `Quote refreshes in ${left} s`}</WidgetMeta>
-        <span className="ml-auto flex items-center gap-2">
+        <div className="mt-3 flex gap-2">
           {step === "review" && (
-            <Button variant="secondary" onClick={() => setStep("edit")}>
+            <Button variant="secondary" size="lg" onClick={() => setStep("edit")}>
               Edit
             </Button>
           )}
           {step === "edit" ? (
-            <Button variant="brand" className="min-w-32" disabled={!amount || over} onClick={() => setStep("review")}>
-              {amount ? "Review swap" : "Enter an amount"}
+            <Button variant="brand" size="lg" className="flex-1" disabled={!amount || over} onClick={() => setStep("review")}>
+              {over ? "Not enough " + from.symbol : amount ? "Review swap" : "Enter an amount"}
+              {amount > 0 && !over && <ArrowRightIcon data-icon="inline-end" />}
             </Button>
           ) : (
-            <Button variant="brand" className="min-w-32" disabled={step !== "review"} onClick={confirm}>
+            <Button variant="brand" size="lg" className="flex-1" disabled={step !== "review"} onClick={confirm}>
               {step === "swapping" ? (
                 <>
                   <Spinner /> Swapping…
@@ -301,12 +310,12 @@ export function Swap({
                   <CheckIcon /> Swapped
                 </>
               ) : (
-                `Swap ${num(amount)} ${from.symbol}`
+                `Swap ${num(amount)} ${from.symbol} for ${num(out)} ${to.symbol}`
               )}
             </Button>
           )}
-        </span>
-      </WidgetFooter>
+        </div>
+      </WidgetPanel>
     </Widget>
   )
 }

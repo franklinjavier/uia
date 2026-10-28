@@ -3,6 +3,11 @@ import type { PortfolioHolding, PortfolioRange } from "@/components/blocks/portf
 // Fixtures for the wallet example: what it holds, how the total moved, what
 // happened lately and what waits on the person. Replace with your API.
 
+// Logos: token icons from spothq/cryptocurrency-icons, chain icons from DefiLlama.
+const TOKEN = (s: string) => `https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@0.18.1/svg/color/${s}.svg`
+const CHAIN = (c: string) => `https://icons.llamao.fi/icons/chains/rsz_${c}.jpg`
+export const CHAINS = { Base: CHAIN("base"), Ethereum: CHAIN("ethereum"), Solana: CHAIN("solana"), Arbitrum: CHAIN("arbitrum") }
+
 export const ACCOUNT = { name: "Main wallet", address: "0x7a3f9c41e2b8d05a6f13c9e7b2d4a8f61c0e3d0c" }
 
 export const HOLDINGS: PortfolioHolding[] = [
@@ -12,20 +17,21 @@ export const HOLDINGS: PortfolioHolding[] = [
     symbol: "ETH",
     price: 3246.2,
     change: 0.0214,
+    image: TOKEN("eth"),
     networks: [
-      { id: "eth-base", name: "Base", amount: 2.1 },
-      { id: "eth-mainnet", name: "Ethereum", amount: 1.742 },
+      { id: "eth-base", name: "Base", amount: 2.1, image: CHAINS.Base },
+      { id: "eth-mainnet", name: "Ethereum", amount: 1.742, image: CHAINS.Ethereum },
     ],
   },
-  { id: "usdc", name: "USD Coin", symbol: "USDC", price: 1, change: 0, networks: [{ id: "usdc-base", name: "Base", amount: 5210.4 }] },
-  { id: "sol", name: "Solana", symbol: "SOL", price: 182.4, change: -0.013, networks: [{ id: "sol", name: "Solana", amount: 18.25 }] },
-  { id: "link", name: "Chainlink", symbol: "LINK", price: 17.86, change: 0.0062, networks: [{ id: "link", name: "Ethereum", amount: 142.6 }] },
-  { id: "usdt", name: "Tether", symbol: "USDT", price: 1, change: 0, networks: [{ id: "usdt", name: "Arbitrum", amount: 1050 }] },
+  { id: "usdc", name: "USD Coin", symbol: "USDC", price: 1, change: 0, image: TOKEN("usdc"), networks: [{ id: "usdc-base", name: "Base", amount: 5210.4, image: CHAINS.Base }] },
+  { id: "sol", name: "Solana", symbol: "SOL", price: 182.4, change: -0.013, image: TOKEN("sol"), networks: [{ id: "sol", name: "Solana", amount: 18.25, image: CHAINS.Solana }] },
+  { id: "link", name: "Chainlink", symbol: "LINK", price: 17.86, change: 0.0062, image: TOKEN("link"), networks: [{ id: "link", name: "Ethereum", amount: 142.6, image: CHAINS.Ethereum }] },
+  { id: "usdt", name: "Tether", symbol: "USDT", price: 1, change: 0, image: TOKEN("usdt"), networks: [{ id: "usdt", name: "Arbitrum", amount: 1050, image: CHAINS.Arbitrum }] },
   // No market prices these: listed on request, never counted.
-  { id: "qp", name: "Quest Points", symbol: "QP", price: null, networks: [{ id: "qp", name: "Base", amount: 1200 }] },
-  { id: "mpass", name: "Mint Pass", symbol: "MPASS", price: null, networks: [{ id: "mpass", name: "Ethereum", amount: 1 }] },
-  { id: "dcat", name: "Degen Cat", symbol: "DCAT", price: null, networks: [{ id: "dcat", name: "Base", amount: 420000 }] },
-  { id: "busdc", name: "Bridge Receipt", symbol: "bUSDC", price: null, networks: [{ id: "busdc", name: "Arbitrum", amount: 12.5 }] },
+  { id: "qp", name: "Quest Points", symbol: "QP", price: null, networks: [{ id: "qp", name: "Base", amount: 1200, image: CHAINS.Base }] },
+  { id: "mpass", name: "Mint Pass", symbol: "MPASS", price: null, networks: [{ id: "mpass", name: "Ethereum", amount: 1, image: CHAINS.Ethereum }] },
+  { id: "dcat", name: "Degen Cat", symbol: "DCAT", price: null, networks: [{ id: "dcat", name: "Base", amount: 420000, image: CHAINS.Base }] },
+  { id: "busdc", name: "Bridge Receipt", symbol: "bUSDC", price: null, networks: [{ id: "busdc", name: "Arbitrum", amount: 12.5, image: CHAINS.Arbitrum }] },
 ]
 
 /** Small deterministic PRNG so the fixture is the same on every load. */
@@ -39,12 +45,21 @@ function rng(seed: number) {
 const NOW = Date.UTC(2026, 9, 28, 13, 42)
 const HOUR = 3_600_000
 
-/** A walk that ends at `total`: the history is drawn backwards from now. */
+/**
+ * A walk that ends at `total`, drawn backwards from now, then smoothed so
+ * the line reads as a trend rather than tick noise.
+ */
 function walk(seed: number, n: number, step: number, drift: number, vol: number, total: number) {
   const r = rng(seed)
-  const vs = [total]
+  let vs = [total]
   for (let i = 1; i < n; i++) vs.unshift(vs[0] * (1 - drift - (r() - 0.5) * vol))
-  return vs.map((v, i) => ({ t: NOW - (n - 1 - i) * step, v }))
+  for (let pass = 0; pass < 3; pass++)
+    vs = vs.map((_, i) => {
+      const w = vs.slice(Math.max(0, i - 2), i + 3)
+      return w.reduce((a, b) => a + b, 0) / w.length
+    })
+  const k = total / vs[vs.length - 1]
+  return vs.map((v, i) => ({ t: NOW - (n - 1 - i) * step, v: v * k }))
 }
 
 export function ranges(total: number): PortfolioRange[] {
