@@ -286,13 +286,13 @@ Button language:
 Foundation: `theme`, `font-inter`, `font-geist-mono`, `typeset`.
 Primitives: `button`, `select`, `bubble`, `code-block`, `questionnaire`, `spinner`, `message-scroller`.
 System: `widget`, `stat`, `segmented`, `status`, `tick-meter`, `meter-bar`, `sparkline`, `bar-series`, `stepper`, `task-list`, `number-ticker`, `agent-orb`, `model-icons`.
-Blocks (product widgets): `block-ai-spend`, `block-fleet-health`, `block-ground-station`, `block-purchase-orders`, `block-bills-filter`, `block-merge-conflicts`, `block-koi-pond`, `block-ocean`, `block-murmuration`, `block-fireflies`, `block-model-evals`, `block-model-router`, `block-agent-runtime` (bundle: `blocks`).
+Blocks (product widgets): `block-ai-spend`, `block-fleet-health`, `block-ground-station`, `block-purchase-orders`, `block-bills-filter`, `block-merge-conflicts`, `block-koi-pond`, `block-ocean`, `block-murmuration`, `block-fireflies`, `block-aurora`, `block-model-evals`, `block-model-router`, `block-agent-runtime` (bundle: `blocks`).
 App shell: `app-nav`, `theme-toggle`, `theme-provider`.
 Surfaces (agent-composed UI, see `surfaces.md`): `surface` (runtime), `catalog`, `catalog-layout`, `catalog-display`, `catalog-data`, `catalog-input`, `catalog-patterns`, `catalog-blocks` (optional product layer) (bundle: `surfaces`).
 Examples (fixtures over the widgets): `example-assistant`, `example-model-router`, `example-agent-runtime`, `example-ai-spend`, `example-fleet-health`, `example-ground-station`, `example-purchase-orders`, `example-merge-conflicts`, `example-koi-pond`, `example-ocean`, `example-model-evals`, `example-bottega`, `example-davinci`, `example-surface` (bundle: `examples`).
 Generative UI: `action-card`, `decision-card`, `status-card`, `activity`, `policy`, `diff`, `citation`, `ask-user`, `confirmation`, `preview-approval`, `decision-chip`, `draft-card`, `plan`, `connect-prompt`, `findings`, `chart-card`, `attachment`, `part-transition`, `tool-line`, `reasoning`, `sources`, `search-results`, `markdown`.
 Chat: `agent-chat`, `chat-thread`, `chat-turn`, `turn-actions`, `composer`, `chat-empty`, `chat-status`, `chat-error`, `chat-pill`.
-Lib: `motion`, `ai`, `url`, `highlighter`. Hook: `ascii-canvas` (`useAsciiCanvas({ cell, init, step, draw })` → `{ canvas, scene }`; `draw` gets a grid with `block`, `glyph`, `dot`, `clear`, the `ink` and the `paper`; it also exports `hash` and `stroke`), `soundscape` (`useSoundscape(kind, on)` → `cue("click" | "event")`; kinds `koi`, `shark`, `piranha`, `starling`, `firefly`; synthesised with Web Audio, plays while `on`, from the viewer's first click or key).
+Lib: `motion`, `ai`, `url`, `highlighter`. Hook: `ascii-canvas` (`useAsciiCanvas({ cell, init, step, draw })` → `{ canvas, scene }`; `draw` gets a grid with `block`, `glyph`, `dot`, `clear`, the `ink` and the `paper`; it also exports `hash` and `stroke`), `soundscape` (`useSoundscape(kind, on)` → `cue("click" | "event")`; kinds `koi`, `shark`, `piranha`, `starling`, `firefly`, `aurora`; synthesised with Web Audio, plays while `on`, from the viewer's first click or key).
 Bundles: `uia` (everything), `chat`, `hitl`, `blocks`, `surfaces`, `examples`.
 Skill: `skill` (this file set).
 
@@ -319,6 +319,7 @@ The `example-*` files are only fixtures: data, simulation timers, and a
 | `KoiPond` | `block-koi-pond` | `count` (most koi; small ponds hold fewer), `accent` (the koi's own colour), `cell`, `onFeed(fed)`, `children` (the content over the water) |
 | `Murmuration` | `block-murmuration` | `count` (up to 1,600, fewer in a small sky), `accent` (the hawk; the flock stays in the ink), `cell`, `onHawk(passes)`, `children` |
 | `Fireflies` | `block-fireflies` | `count` (up to 220, fewer in a small field), `accent` (the light; dark fireflies stay in the ink), `cell`, `onSync(percent)` (how in step the field is), `children` |
+| `Aurora` | `block-aurora` | `accent` (the light; stars and trees stay in the ink), `cell`, `onKp(kp)` (how stirred the sky is, 0–9), `children` |
 | `Ocean` | `block-ocean` | `predator` (`shark` \| `piranha`), `count` (fewer in a small ocean), `accent` (piranha fins, splashes and blood; sharks stay in the ink; every second shark is a hammerhead), `cell`, `onEat(eaten)`, `children` |
 | `MergeConflicts` | `block-merge-conflicts` | `number`, `title`, `head`/`base`, `branches` (lane order), `commits` (newest first, `parents`, `pending`), `files` (ours/theirs commit, hunks with `result` lines by origin, `outcome`, `note`), `state` (conflict → resolving → resolved → merging → merged), `resolved`, `onResolve`, `onMerge`, `size` |
 | `BillsFilter` | `block-bills-filter` | `documents`, `defaults`, `onApply(filter, count)`; exports `matches` |

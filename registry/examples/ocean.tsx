@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Volume2Icon, VolumeXIcon } from "lucide-react"
 
+import { Aurora } from "@/components/blocks/aurora"
 import { Fireflies } from "@/components/blocks/fireflies"
 import { KoiPond } from "@/components/blocks/koi-pond"
 import { Murmuration } from "@/components/blocks/murmuration"
@@ -10,13 +11,13 @@ import { Button } from "@/components/ui/button"
 import { useSoundscape } from "@/hooks/use-soundscape"
 
 // Example: the ASCII backdrops behind one switch: koi, sharks, a piranha
-// pack, a starling flock, fireflies. The switch at the top picks the scene,
+// pack, a starling flock, fireflies, the northern lights. The switch at the top picks the scene,
 // a short line sits over it, and the corner counts what happened; switching
 // starts a new count.
 // Sound is on: each scene's loop starts at the first click, with a sound for
 // each click and each catch; the speaker beside the switch turns it off.
 
-type Water = "koi" | "shark" | "piranha" | "starling" | "firefly"
+type Water = "koi" | "shark" | "piranha" | "starling" | "firefly" | "aurora"
 
 const WATERS: { value: Water; label: string; line: string; hint: string }[] = [
   { value: "koi", label: "Koi", line: "in a pond of patient things, cast a little food", hint: "Click anywhere to drop food. The koi turn for it." },
@@ -24,6 +25,7 @@ const WATERS: { value: Water; label: string; line: string; hint: string }[] = [
   { value: "piranha", label: "Piranhas", line: "nothing in the river stays whole for long", hint: "Click anywhere to put blood in the water." },
   { value: "starling", label: "Starlings", line: "a thousand birds, one mind, and something watching", hint: "Click anywhere to send a hawk through." },
   { value: "firefly", label: "Fireflies", line: "a field at dusk, every light keeping its own time", hint: "Click anywhere to flash. They lose the beat, then find each other again." },
+  { value: "aurora", label: "Aurora", line: "far north, the sun's wind arriving as light", hint: "Click anywhere to set off a substorm. The sky flares and dances, then calms." },
 ]
 
 const SCENE = "h-svh w-full cursor-crosshair"
@@ -87,6 +89,8 @@ export function OceanExample({
         <span className="eyebrow text-muted-foreground tabular-nums">
           {water === "firefly"
             ? `${eaten}% in step`
+            : water === "aurora"
+            ? `Kp ${eaten}`
             : `${eaten} ${water === "koi" ? "fed" : water === "starling" ? (eaten === 1 ? "hawk" : "hawks") : "eaten"}`}
         </span>
       </div>
@@ -105,7 +109,11 @@ export function OceanExample({
         if (!(e.target as HTMLElement).closest("a,button,input,select,textarea,[role=button]")) cue("click")
       }}
     >
-      {water === "firefly" ? (
+      {water === "aurora" ? (
+        <Aurora key="aurora" className={SCENE} onKp={setEaten}>
+          {content}
+        </Aurora>
+      ) : water === "firefly" ? (
         <Fireflies key="firefly" className={SCENE} onSync={setEaten}>
           {content}
         </Fireflies>

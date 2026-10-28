@@ -55,7 +55,7 @@ function DavinciInboxPage() {
 
 // The ASCII backdrops share one example; its switch moves the URL too. One
 // component for every path, so switching doesn't remount it (the sound stays on).
-const BACKDROP_PATHS = { koi: "/koi", shark: "/sharks", piranha: "/piranhas", starling: "/starlings", firefly: "/fireflies" } as const
+const BACKDROP_PATHS = { koi: "/koi", shark: "/sharks", piranha: "/piranhas", starling: "/starlings", firefly: "/fireflies", aurora: "/aurora" } as const
 type Water = keyof typeof BACKDROP_PATHS
 function Backdrop() {
   const [first] = usePath()
@@ -79,6 +79,7 @@ const WIDGETS = {
   piranhas: { label: "ASCII animations", component: Backdrop, full: true, hidden: true },
   starlings: { label: "ASCII animations", component: Backdrop, full: true, hidden: true },
   fireflies: { label: "ASCII animations", component: Backdrop, full: true, hidden: true },
+  aurora: { label: "ASCII animations", component: Backdrop, full: true, hidden: true },
   bottega: { label: "Bottega", component: Bottega, full: true },
   davinci: { label: "davinci (one chat)", component: Davinci, full: true },
   davinci2: { label: "davinci (inbox)", component: DavinciInboxPage, full: true },

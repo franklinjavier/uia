@@ -1613,6 +1613,24 @@
       ]
     },
     {
+      "name": "block-aurora",
+      "type": "registry:component",
+      "title": "Block Aurora",
+      "description": "Aurora: the northern lights in ASCII under the content; three curtains with rays rising off a folding edge, drawn as halftone bars over a treeline; click sets off a substorm that flares and runs along the curtains.",
+      "author": "uia",
+      "registryDependencies": [
+        "franklinjavier/uia/ascii-canvas",
+        "franklinjavier/uia/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/blocks/aurora.tsx",
+          "type": "registry:component",
+          "target": "@components/blocks/aurora.tsx"
+        }
+      ]
+    },
+    {
       "name": "block-ocean",
       "type": "registry:component",
       "title": "Block Ocean",
@@ -2189,12 +2207,13 @@
       "name": "example-ocean",
       "type": "registry:block",
       "title": "Example Ocean",
-      "description": "Example: the ASCII backdrops behind one switch (koi, sharks, piranhas, starlings, fireflies), with a count in the corner.",
+      "description": "Example: the ASCII backdrops behind one switch (koi, sharks, piranhas, starlings, fireflies, aurora), with a count in the corner.",
       "author": "uia",
       "dependencies": [
         "lucide-react"
       ],
       "registryDependencies": [
+        "franklinjavier/uia/block-aurora",
         "franklinjavier/uia/block-fireflies",
         "franklinjavier/uia/block-koi-pond",
         "franklinjavier/uia/block-murmuration",
@@ -2581,6 +2600,7 @@
         "franklinjavier/uia/block-ocean",
         "franklinjavier/uia/block-murmuration",
         "franklinjavier/uia/block-fireflies",
+        "franklinjavier/uia/block-aurora",
         "franklinjavier/uia/block-model-evals",
         "franklinjavier/uia/block-model-router",
         "franklinjavier/uia/block-agent-runtime"

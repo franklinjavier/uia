@@ -3,7 +3,7 @@ import * as React from "react"
 // useSoundscape: a small sound loop for an ASCII backdrop, synthesised with
 // Web Audio (no files): water for the koi, the deep for the sharks, a river
 // for the piranhas, wind and chatter for the starlings, crickets for the
-// fireflies. It plays while `on`, behind a toggle the viewer can turn off;
+// fireflies, a cold wind and a slow drone under the aurora. It plays while `on`, behind a toggle the viewer can turn off;
 // browsers keep it silent until the first click or key, and it starts then.
 // `cue` adds a sound on top, for a click or an event (a koi fed, a fish
 // taken, a hawk through).
@@ -11,7 +11,7 @@ import * as React from "react"
 //   const cue = useSoundscape("koi", sound)
 //   <KoiPond onFeed={(n) => { setFed(n); cue("event") }} />
 
-export type Soundscape = "koi" | "shark" | "piranha" | "starling" | "firefly"
+export type Soundscape = "koi" | "shark" | "piranha" | "starling" | "firefly" | "aurora"
 export type Cue = "click" | "event"
 
 type Kit = {
@@ -190,6 +190,24 @@ const SCAPES: Record<Soundscape, { loop: (k: Kit) => void; click?: (k: Kit) => v
     },
     // A soft chime with the flash.
     click: (k) => [880, 1318.5, 1760].forEach((f, i) => tone(k, { from: f, dur: 1.6, gain: 0.05, at: i * 0.03 })),
+  },
+  aurora: {
+    loop: (k) => {
+      bed(k, "bandpass", 700, 0.04, 0.05, 300, 0.5)
+      // A low drone, two voices beating slowly against each other.
+      for (const f of [110, 110.6, 164.8]) {
+        const osc = k.ctx.createOscillator()
+        osc.frequency.value = f
+        const level = k.ctx.createGain()
+        level.gain.value = 0.018
+        osc.connect(level).connect(k.out)
+        osc.start()
+      }
+      // Now and then a faint falling whistle, high up.
+      every(k, 5, 12, () => tone(k, { from: rand(3000, 4500), to: rand(900, 1400), dur: rand(1.2, 2), gain: 0.012, pan: rand(-0.6, 0.6) }))
+    },
+    // The substorm: a shimmer rising.
+    click: (k) => [440, 659.3, 880, 1318.5].forEach((f, i) => tone(k, { from: f, to: f * 1.5, dur: 2.4, gain: 0.03, at: i * 0.12, pan: rand(-0.5, 0.5), vibrato: 5 })),
   },
 }
 
