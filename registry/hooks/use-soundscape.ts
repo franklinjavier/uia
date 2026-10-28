@@ -193,7 +193,8 @@ const SCAPES: Record<Soundscape, { loop: (k: Kit) => void; click?: (k: Kit) => v
   },
   aurora: {
     loop: (k) => {
-      bed(k, "bandpass", 700, 0.04, 0.05, 300, 0.5)
+      // Wind far off, muffled, swelling slowly.
+      bed(k, "lowpass", 220, 0.05, 0.04, 80)
       // A low drone, two voices beating slowly against each other.
       for (const f of [110, 110.6, 164.8]) {
         const osc = k.ctx.createOscillator()
@@ -211,7 +212,11 @@ const SCAPES: Record<Soundscape, { loop: (k: Kit) => void; click?: (k: Kit) => v
   },
 }
 
+/** The one soundscape playing on the page; a new one stops it, so scenes never mix. */
+let playing: { stop: () => void } | null = null
+
 function start(kind: Soundscape) {
+  playing?.stop()
   const ctx = new AudioContext()
   const noise = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate)
   const data = noise.getChannelData(0)
@@ -232,21 +237,26 @@ function start(kind: Soundscape) {
   scape.loop(kit)
   // Events can come in bursts (a pack feeding): one sound per 80ms is plenty.
   let last = 0
-  return {
+  const self = {
     cue: (c: Cue) => {
+      if (!alive) return
       const now = performance.now()
       if (c === "event" && now - last < 80) return
       if (c === "event") last = now
       scape[c]?.(kit)
     },
     stop: () => {
+      if (!alive) return
       alive = false
+      if (playing === self) playing = null
       window.removeEventListener("pointerdown", wake, { capture: true })
       window.removeEventListener("keydown", wake, { capture: true })
       out.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.08)
       window.setTimeout(() => void ctx.close(), 400)
     },
   }
+  playing = self
+  return self
 }
 
 export function useSoundscape(kind: Soundscape, on: boolean) {
