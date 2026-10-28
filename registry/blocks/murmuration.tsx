@@ -5,9 +5,9 @@ import { hash, stroke, useAsciiCanvas, type AsciiGrid } from "@/hooks/use-ascii-
 
 // Murmuration: a starling flock as ASCII, behind the content. Each bird
 // follows its seven nearest neighbours (as real starlings do), drifts about
-// a slowly wandering roost, and the cloud is drawn by density: one bird is a
-// stroke along its heading, a crowd is a denser glyph, so the flock reads
-// like smoke folding over itself. Click and a hawk dives in from there:
+// a slowly wandering roost, and the cloud is drawn as halftone: a dot per
+// cell that grows with the birds in it, so the flock reads as one cloud
+// folding over itself. Click and a hawk dives in from there:
 // birds near it bolt, the alarm runs through the flock in a wave, and the
 // cloud splits and pours back together. Now and then a hawk comes anyway.
 //
@@ -34,10 +34,9 @@ type Sky = {
   onHawk?: (passes: number) => void
 }
 
-const RAMP = ".:-=+*#%@"
 const NEIGHBOURS = 7
 const SEE = 30
-const PERSONAL = 16
+const PERSONAL = 14
 const BIN = 30
 
 function hawkFrom(sky: Sky, x: number, y: number): Hawk {
@@ -117,9 +116,9 @@ function step(sky: Sky, dt: number, time: number) {
 
     let fx = 0, fy = 0, fz = 0
     if (seen) {
-      fx += (ax / seen - vx[i]) * 1.5 + (cx / seen) * 0.35 + sx * 520
-      fy += (ay / seen - vy[i]) * 1.5 + (cy / seen) * 0.35 + sy * 520
-      fz += (az / seen - vz[i]) * 1.5 + (cz / seen) * 0.35 + sz * 520
+      fx += (ax / seen - vx[i]) * 1.5 + (cx / seen) * 0.5 + sx * 480
+      fy += (ay / seen - vy[i]) * 1.5 + (cy / seen) * 0.5 + sy * 480
+      fz += (az / seen - vz[i]) * 1.5 + (cz / seen) * 0.5 + sz * 480
     }
     // The roost holds the cloud loosely: free inside, pulled back from out past it.
     const reach = Math.min(width, height) * 0.38
@@ -174,7 +173,6 @@ function step(sky: Sky, dt: number, time: number) {
 function draw(g: AsciiGrid, sky: Sky, accent: string) {
   const { cell, cols, rows } = g
   const count = new Uint16Array(cols * rows)
-  const dir = new Float32Array(cols * rows)
   const scared = new Float32Array(cols * rows)
   for (let i = 0; i < sky.n; i++) {
     const c = Math.floor(sky.x[i] / cell)
@@ -182,7 +180,6 @@ function draw(g: AsciiGrid, sky: Sky, accent: string) {
     if (c < 0 || r < 0 || c >= cols || r >= rows) continue
     const k = r * cols + c
     count[k]++
-    dir[k] = Math.atan2(sky.vy[i], sky.vx[i])
     scared[k] = Math.max(scared[k], sky.alarm[i])
   }
   for (let k = 0; k < count.length; k++) {
@@ -190,9 +187,14 @@ function draw(g: AsciiGrid, sky: Sky, accent: string) {
     if (!m) continue
     const c = k % cols
     const r = Math.floor(k / cols)
-    // One bird is a stroke along its heading; a crowd is a denser glyph.
-    const char = m === 1 ? stroke(dir[k]) : RAMP[Math.min(RAMP.length - 1, Math.floor(Math.log2(m) * 2))]
-    g.glyph(c, r, char, g.ink, Math.min(1, 0.3 + m * 0.1 + scared[k] * 0.2))
+    // Halftone: a dot per cell that grows with the birds in it, so the flock
+    // reads as one dark cloud with soft folds, not as a rain of strokes.
+    const size = cell * (0.16 + 0.34 * Math.min(1, Math.sqrt(m / 20)))
+    g.ctx.globalAlpha = Math.min(1, 0.3 + m * 0.05 + scared[k] * 0.15)
+    g.ctx.fillStyle = g.ink
+    g.ctx.beginPath()
+    g.ctx.arc(c * cell + cell / 2, r * cell + cell / 2, size, 0, Math.PI * 2)
+    g.ctx.fill()
   }
 
   for (const h of sky.hawks) {
@@ -219,7 +221,7 @@ export function Murmuration({
   children,
   className,
 }: {
-  /** How many starlings; defaults to as many as the sky holds, up to 1,600. */
+  /** How many starlings; defaults to as many as the sky holds, up to 2,600. */
   count?: number
   /** The hawk's colour; the flock stays in the ink. */
   accent?: string
@@ -237,7 +239,7 @@ export function Murmuration({
   const { canvas, scene } = useAsciiCanvas<Sky>({
     cell,
     init: ({ width, height }, prev) => {
-      const n = count ?? Math.max(400, Math.min(1600, Math.round((width * height) / 900)))
+      const n = count ?? Math.max(700, Math.min(2600, Math.round((width * height) / 520)))
       if (prev && prev.n === n) return { ...prev, width, height }
       const sky: Sky = {
         width,
