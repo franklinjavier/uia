@@ -7,6 +7,7 @@ import { PlaygroundDock } from "./playground-dock"
 import { navigate, usePath } from "./router"
 import { Button } from "@/components/ui/button"
 import type { View as DavinciView } from "@/examples/davinci2/davinci2"
+import type { View as WalletView } from "@/examples/wallet/wallet"
 
 // Each example loads on its own when it's opened, so the first page only
 // pays for the one on screen.
@@ -25,6 +26,7 @@ const ModelEvals = lazy(() => import("@/examples/model-evals"), (m) => m.ModelEv
 const Bottega = lazy(() => import("@/examples/bottega/bottega"), (m) => m.Bottega)
 const Davinci = lazy(() => import("@/examples/davinci/davinci"), (m) => m.Davinci)
 const DavinciInbox = lazy(() => import("@/examples/davinci2/davinci2"), (m) => m.DavinciInbox)
+const Wallet = lazy(() => import("@/examples/wallet/wallet"), (m) => m.Wallet)
 const ModelRouter = lazy(() => import("@/examples/model-router"), (m) => m.ModelRouterExample)
 const SurfaceExample = lazy(() => import("@/examples/surface/surface-demo"), (m) => m.SurfaceExample)
 const Compare = lazy(() => import("./compare"), (m) => m.Compare)
@@ -51,6 +53,12 @@ function DavinciInboxPage() {
       }
     />
   )
+}
+
+// The wallet's views are routes too: /wallet, /wallet/swap, /wallet/activity.
+function WalletPage() {
+  const [, section] = usePath()
+  return <Wallet view={(section ?? "home") as WalletView} onViewChange={(v) => navigate(v === "home" ? "/wallet" : `/wallet/${v}`)} />
 }
 
 // The ASCII backdrops share one example; its switch moves the URL too. One
@@ -82,6 +90,7 @@ const WIDGETS = {
   aurora: { label: "ASCII animations", component: Backdrop, full: true, hidden: true },
   "slime-mold": { label: "ASCII animations", component: Backdrop, full: true, hidden: true },
   bottega: { label: "Bottega", component: Bottega, full: true },
+  wallet: { label: "Wallet", component: WalletPage, full: true },
   davinci: { label: "davinci (one chat)", component: Davinci, full: true },
   davinci2: { label: "davinci (inbox)", component: DavinciInboxPage, full: true },
   surface: { label: "Agent-built screen", component: SurfaceExample, full: true },

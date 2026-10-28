@@ -134,6 +134,8 @@ const ITEMS: Item[] = [
   // Blocks: whole product views (data-driven widgets) with typed props. The same component
   // renders on a dashboard and, at size="sm", inside a chat reply.
   item("block-ai-spend", "registry:component", "AiSpend: a period's AI cost by model against a budget, projection, alert, models as the meter's legend.", ["registry/blocks/ai-spend.tsx"]),
+  item("block-portfolio", "registry:component", "Portfolio: a wallet's value over time (range switch, the number follows the cursor, amounts hide behind an eye), assets by value with price, 24h, balance and share, multi-network assets folding open, unpriced tokens listed on request.", ["registry/blocks/portfolio.tsx"]),
+  item("block-swap", "registry:component", "Swap: pay and receive with token selects, 50% / Max, flip, the cost spelled out (rate, network cost, fee, impact, slippage, minimum, route), a refreshing quote that holds during review, Review → Swap → Swapped.", ["registry/blocks/swap.tsx"]),
   item("block-purchase-orders", "registry:component", "PurchaseOrders: orders as a schedule (placed → delivery, filled as billed, today line), status tabs with counts, date chip, supplier, search, bulk Approve / Mark billed.", ["registry/blocks/purchase-orders.tsx"]),
   item("block-bills-filter", "registry:component", "BillsFilter: due-date range, amount range over a histogram, overdue switch, document types with counts, live \"Show N bills\".", ["registry/blocks/bills-filter.tsx"]),
   item("block-ground-station", "registry:component", "GroundStation: drag-to-turn globe with orbits, sky plot of the next pass or live downlink, onboard storage, satellites with their passes, book a pass.", ["registry/blocks/ground-station.tsx"]),
@@ -191,6 +193,10 @@ const ITEMS: Item[] = [
     "registry/examples/bottega/use-bottega.ts",
     "registry/examples/bottega/bottega-data.ts",
   ]),
+  item("example-wallet", "registry:block", "Example app: a crypto wallet with an assistant — Home (portfolio beside a swap, a 'needs you' strip), Swap, Activity (transactions, pending until confirmed) and Approvals (the assistant's rebalance and claim next to an app's allowance, each settling into a record); each view a route, every action changes the balances.", [
+    "registry/examples/wallet/wallet.tsx",
+    "registry/examples/wallet/wallet-data.ts",
+  ]),
   item("example-davinci", "registry:block", "Example app: an agent coordinator as an inbox — decisions grouped by urgency (the urgent one glows), threads per project, projects by stage that scale to dozens of tasks, a log of what was decided for you, rules with switches; each view a route. Plus the one-chat version it replaced.", [
     "registry/examples/davinci2/davinci2.tsx",
     "registry/examples/davinci2/davinci2-data.ts",
@@ -226,10 +232,10 @@ const BUNDLES = [
     "action-card", "ask-user", "confirmation", "draft-card", "preview-approval", "decision-chip", "part-transition", "tool-line", "decision-card", "status-card", "activity", "policy", "diff", "citation", "plan", "connect-prompt", "findings", "chart-card",
   ]),
   bundle("blocks", "Every product block (data-driven widget), ready to feed with your data.", [
-    "block-ai-spend", "block-fleet-health", "block-ground-station", "block-purchase-orders", "block-bills-filter", "block-merge-conflicts", "block-koi-pond", "block-ocean", "block-murmuration", "block-fireflies", "block-aurora", "block-slime-mold", "block-model-evals", "block-model-router", "block-agent-runtime",
+    "block-ai-spend", "block-portfolio", "block-swap", "block-fleet-health", "block-ground-station", "block-purchase-orders", "block-bills-filter", "block-merge-conflicts", "block-koi-pond", "block-ocean", "block-murmuration", "block-fireflies", "block-aurora", "block-slime-mold", "block-model-evals", "block-model-router", "block-agent-runtime",
   ]),
   bundle("examples", "Every reference widget, to read, run and adapt.", [
-    "example-assistant", "example-model-router", "example-agent-runtime", "example-ai-spend", "example-fleet-health", "example-ground-station", "example-purchase-orders", "example-merge-conflicts", "example-koi-pond", "example-ocean", "example-model-evals", "example-bottega", "example-davinci", "example-surface", "example-davinci-surface",
+    "example-assistant", "example-model-router", "example-agent-runtime", "example-ai-spend", "example-fleet-health", "example-ground-station", "example-purchase-orders", "example-merge-conflicts", "example-koi-pond", "example-ocean", "example-model-evals", "example-bottega", "example-wallet", "example-davinci", "example-surface", "example-davinci-surface",
   ]),
 ]
 

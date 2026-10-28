@@ -1474,6 +1474,63 @@
       ]
     },
     {
+      "name": "block-portfolio",
+      "type": "registry:component",
+      "title": "Block Portfolio",
+      "description": "Portfolio: a wallet's value over time (range switch, the number follows the cursor, amounts hide behind an eye), assets by value with price, 24h, balance and share, multi-network assets folding open, unpriced tokens listed on request.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react",
+        "recharts"
+      ],
+      "registryDependencies": [
+        "avatar",
+        "chart",
+        "franklinjavier/uia/button",
+        "franklinjavier/uia/segmented",
+        "franklinjavier/uia/stat",
+        "franklinjavier/uia/status",
+        "franklinjavier/uia/theme",
+        "franklinjavier/uia/widget",
+        "table",
+        "toggle"
+      ],
+      "files": [
+        {
+          "path": "registry/blocks/portfolio.tsx",
+          "type": "registry:component",
+          "target": "@components/blocks/portfolio.tsx"
+        }
+      ]
+    },
+    {
+      "name": "block-swap",
+      "type": "registry:component",
+      "title": "Block Swap",
+      "description": "Swap: pay and receive with token selects, 50% / Max, flip, the cost spelled out (rate, network cost, fee, impact, slippage, minimum, route), a refreshing quote that holds during review, Review → Swap → Swapped.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "avatar",
+        "franklinjavier/uia/button",
+        "franklinjavier/uia/select",
+        "franklinjavier/uia/spinner",
+        "franklinjavier/uia/theme",
+        "franklinjavier/uia/widget",
+        "input-group",
+        "separator"
+      ],
+      "files": [
+        {
+          "path": "registry/blocks/swap.tsx",
+          "type": "registry:component",
+          "target": "@components/blocks/swap.tsx"
+        }
+      ]
+    },
+    {
       "name": "block-purchase-orders",
       "type": "registry:component",
       "title": "Block Purchase Orders",
@@ -2340,6 +2397,45 @@
       ]
     },
     {
+      "name": "example-wallet",
+      "type": "registry:block",
+      "title": "Example Wallet",
+      "description": "Example app: a crypto wallet with an assistant — Home (portfolio beside a swap, a 'needs you' strip), Swap, Activity (transactions, pending until confirmed) and Approvals (the assistant's rebalance and claim next to an app's allowance, each settling into a record); each view a route, every action changes the balances.",
+      "author": "uia",
+      "dependencies": [
+        "lucide-react",
+        "motion"
+      ],
+      "registryDependencies": [
+        "avatar",
+        "franklinjavier/uia/action-card",
+        "franklinjavier/uia/app-nav",
+        "franklinjavier/uia/block-portfolio",
+        "franklinjavier/uia/block-swap",
+        "franklinjavier/uia/button",
+        "franklinjavier/uia/confirmation",
+        "franklinjavier/uia/decision-chip",
+        "franklinjavier/uia/motion",
+        "franklinjavier/uia/status",
+        "franklinjavier/uia/theme",
+        "franklinjavier/uia/theme-toggle",
+        "franklinjavier/uia/widget",
+        "table"
+      ],
+      "files": [
+        {
+          "path": "registry/examples/wallet/wallet.tsx",
+          "type": "registry:file",
+          "target": "~/src/examples/wallet/wallet.tsx"
+        },
+        {
+          "path": "registry/examples/wallet/wallet-data.ts",
+          "type": "registry:file",
+          "target": "~/src/examples/wallet/wallet-data.ts"
+        }
+      ]
+    },
+    {
       "name": "example-davinci",
       "type": "registry:block",
       "title": "Example Davinci",
@@ -2610,6 +2706,8 @@
       "author": "uia",
       "registryDependencies": [
         "franklinjavier/uia/block-ai-spend",
+        "franklinjavier/uia/block-portfolio",
+        "franklinjavier/uia/block-swap",
         "franklinjavier/uia/block-fleet-health",
         "franklinjavier/uia/block-ground-station",
         "franklinjavier/uia/block-purchase-orders",
@@ -2645,6 +2743,7 @@
         "franklinjavier/uia/example-ocean",
         "franklinjavier/uia/example-model-evals",
         "franklinjavier/uia/example-bottega",
+        "franklinjavier/uia/example-wallet",
         "franklinjavier/uia/example-davinci",
         "franklinjavier/uia/example-surface",
         "franklinjavier/uia/example-davinci-surface"

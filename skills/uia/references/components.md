@@ -286,7 +286,7 @@ Button language:
 Foundation: `theme`, `font-inter`, `font-geist-mono`, `typeset`.
 Primitives: `button`, `select`, `bubble`, `code-block`, `questionnaire`, `spinner`, `message-scroller`.
 System: `widget`, `stat`, `segmented`, `status`, `tick-meter`, `meter-bar`, `sparkline`, `bar-series`, `stepper`, `task-list`, `number-ticker`, `agent-orb`, `model-icons`.
-Blocks (product widgets): `block-ai-spend`, `block-fleet-health`, `block-ground-station`, `block-purchase-orders`, `block-bills-filter`, `block-merge-conflicts`, `block-koi-pond`, `block-ocean`, `block-murmuration`, `block-fireflies`, `block-aurora`, `block-slime-mold`, `block-model-evals`, `block-model-router`, `block-agent-runtime` (bundle: `blocks`).
+Blocks (product widgets): `block-ai-spend`, `block-portfolio`, `block-swap`, `block-fleet-health`, `block-ground-station`, `block-purchase-orders`, `block-bills-filter`, `block-merge-conflicts`, `block-koi-pond`, `block-ocean`, `block-murmuration`, `block-fireflies`, `block-aurora`, `block-slime-mold`, `block-model-evals`, `block-model-router`, `block-agent-runtime` (bundle: `blocks`).
 App shell: `app-nav`, `theme-toggle`, `theme-provider`.
 Surfaces (agent-composed UI, see `surfaces.md`): `surface` (runtime), `catalog`, `catalog-layout`, `catalog-display`, `catalog-data`, `catalog-input`, `catalog-patterns`, `catalog-blocks` (optional product layer) (bundle: `surfaces`).
 Examples (fixtures over the widgets): `example-assistant`, `example-model-router`, `example-agent-runtime`, `example-ai-spend`, `example-fleet-health`, `example-ground-station`, `example-purchase-orders`, `example-merge-conflicts`, `example-koi-pond`, `example-ocean`, `example-model-evals`, `example-bottega`, `example-davinci`, `example-surface` (bundle: `examples`).
@@ -313,6 +313,8 @@ The `example-*` files are only fixtures: data, simulation timers, and a
 | Widget | Item | Key props |
 | --- | --- | --- |
 | `AiSpend` | `block-ai-spend` | `models`, `periods`, `budget`, `alertAt`, `period`/`onPeriodChange`, `currency`, `locale`, `size` |
+| `Portfolio` | `block-portfolio` | `holdings` (networks, `price: null` = unpriced), `ranges` (one series per range, last point = now), `range`/`onRangeChange`, `actions`, `meta`, `live`, `formatTime`, `currency`, `locale`, `size` |
+| `Swap` | `block-swap` | `tokens`, `pay`, `receive`, `networkCost`, `fee`, `slippage`, `route`, `refresh`, `onSwap` (promise; the button waits), `currency`, `locale`, `size` |
 | `FleetHealth` | `block-fleet-health` | `nodes`, `tokens`, `queue`, `powerCap`, `interval`, `clusters`/`cluster`, `mode`, `onRebalance`, `rebalancing`, `live` |
 | `GroundStation` | `block-ground-station` | `stations`/`stationId`, `satellites` (orbit elements + onboard), `selectedId`, `time`, `speed`, `mask`, `horizon`, `onBook`; exports `look` and `passes` so the host computes the same visibility |
 | `PurchaseOrders` | `block-purchase-orders` | `orders` (status, amount, ordered/delivery dates, billed share), `today`, `period`, `onApprove(ids)`, `onMarkBilled(ids)`, `defaultSelected`; the verbs show only with a selection, the list cuts at whole rows and fades while more sit below |

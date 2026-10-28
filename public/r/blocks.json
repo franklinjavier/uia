@@ -6,6 +6,8 @@
   "description": "Every product block (data-driven widget), ready to feed with your data.",
   "registryDependencies": [
     "franklinjavier/uia/block-ai-spend",
+    "franklinjavier/uia/block-portfolio",
+    "franklinjavier/uia/block-swap",
     "franklinjavier/uia/block-fleet-health",
     "franklinjavier/uia/block-ground-station",
     "franklinjavier/uia/block-purchase-orders",
