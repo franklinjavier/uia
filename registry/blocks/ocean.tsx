@@ -7,9 +7,11 @@ import { hash, stroke, useAsciiCanvas, type AsciiGrid } from "@/hooks/use-ascii-
 // Bait fish are single strokes that school and scatter. Predators are
 // shaded with a glyph ramp: sparse glyphs where the light falls, dense ones
 // in shadow, so the texture reads as a body. Two kinds:
-//   shark   — a few long bodies cruising slowly, lunging at stragglers
+//   shark   — a few long bodies, shaded tiles with their glyphs, cruising and
+//             lunging at stragglers; every second one is a hammerhead
 //   piranha — a pack of short fast bodies that turn on prey together
-// Click to drop a school where you clicked. `onEat` reports the running total.
+// Click: sharks get a new school; piranhas get blood in the water and go into
+// a frenzy, tearing through it. `onEat` reports the fish eaten so far.
 //
 //   <Ocean predator="piranha" className="h-96" onEat={setEaten} />
 
@@ -29,8 +31,12 @@ type Hunter = {
   target: Bait | null
   /** Seconds left before it hunts again. */
   full: number
+  /** A hammerhead among the sharks. */
+  hammer: boolean
 }
 type Splash = { x: number; y: number; age: number; seed: number }
+/** A cloud of blood, for the piranhas. */
+type Blood = { x: number; y: number; age: number; seed: number }
 
 type Water = {
   width: number
@@ -38,6 +44,7 @@ type Water = {
   bait: Bait[]
   hunters: Hunter[]
   splashes: Splash[]
+  blood: Blood[]
   eaten: number
   onEat?: (eaten: number) => void
 }
@@ -46,14 +53,25 @@ const NODES = 16
 const RAMP = ":;t%SX8#@"
 const FIN = "%;tS:"
 const SPLASH_LIFE = 0.9
+const BLOOD_LIFE = 4.5
+
+/** A fin as a triangle in body space: leading root, trailing root, tip (s), and how far the tip reaches past the body (fraction of length). */
+type Fin = [number, number, number, number]
 
 type Profile = {
   /** Half-width of the body at s (0 snout → 1 tail), as a fraction of length. */
   body: (s: number) => number
-  /** Fin reach beyond the body at s, as a fraction of length (0: no fin). */
-  fin: (s: number) => number
+  fins: Fin[]
+  /** Where the dorsal fin rides on the back, drawn bright down the middle. */
+  ridge?: [number, number]
+  /** Where the gill slits cut across the flanks. */
+  gills?: [number, number]
+  /** The eyes: s along, and how far out (fraction of length). */
+  eye: [number, number]
   cruise: number
   chase: number
+  /** Speed in a frenzy (piranhas in blood). */
+  frenzy: number
   /** Max turn, rad/s. */
   agility: number
   reach: number
@@ -66,32 +84,61 @@ const smooth = (a: number, b: number, x: number) => {
 
 const PROFILES: Record<Kind, Profile> = {
   shark: {
+    // Blunt snout, widest behind the gills, a long taper to the tail.
     body: (s) =>
-      s < 0.16
-        ? 0.085 * Math.pow(Math.sin(((s / 0.16) * Math.PI) / 2), 0.9)
-        : s < 0.84
-          ? 0.085 - 0.07 * smooth(0.34, 0.84, s)
-          : 0.015,
-    // Pectorals swept back, and the tail's two lobes.
-    fin: (s) =>
-      s > 0.24 && s < 0.44
-        ? 0.17 * (1 - (s - 0.24) / 0.2) * smooth(0.24, 0.27, s)
-        : s > 0.86
-          ? 0.13 * ((s - 0.86) / 0.14)
-          : 0,
+      s < 0.13
+        ? 0.09 * Math.pow(Math.sin(((s / 0.13) * Math.PI) / 2), 0.95)
+        : s < 0.3
+          ? 0.09 + 0.016 * smooth(0.13, 0.3, s)
+          : s < 0.86
+            ? 0.019 + 0.087 * Math.pow(1 - (s - 0.3) / 0.56, 1.25)
+            : 0.016,
+    fins: [
+      [0.15, 0.43, 0.55, 0.26], // pectorals, swept back: what makes it a shark from above
+      [0.57, 0.65, 0.69, 0.085], // pelvics
+      [0.86, 0.99, 1.1, 0.11], // the forked tail
+    ],
+    ridge: [0.33, 0.47],
+    gills: [0.19, 0.29],
+    eye: [0.09, 0.055],
     cruise: 30,
     chase: 74,
+    frenzy: 74,
     agility: 1.4,
     reach: 0.12,
   },
   piranha: {
     body: (s) => (s < 0.8 ? 0.2 * Math.pow(Math.sin(((s + 0.04) / 0.84) * Math.PI), 0.7) : 0.03),
-    fin: (s) => (s > 0.32 && s < 0.5 ? 0.08 : s > 0.8 ? 0.2 * ((s - 0.8) / 0.2) : 0),
+    fins: [
+      [0.3, 0.45, 0.52, 0.08],
+      [0.8, 0.98, 1.12, 0.17],
+    ],
+    eye: [0.14, 0.13],
     cruise: 44,
     chase: 120,
+    frenzy: 230,
     agility: 5,
     reach: 0.3,
   },
+}
+
+/** The hammerhead: the same shark under a wide flat head, eyes out on its tips. */
+const HAMMER: Profile = {
+  ...PROFILES.shark,
+  body: (s) =>
+    Math.max(PROFILES.shark.body(s), s < 0.08 ? 0.2 * smooth(0, 0.012, s) * (1 - smooth(0.05, 0.08, s)) : 0),
+  eye: [0.035, 0.19],
+}
+
+/** Is (s, a) inside a fin triangle whose base sits on the spine? */
+function inFin([s0, s1, tip, reach]: Fin, body: (s: number) => number, s: number, a: number) {
+  const ax = s0, ay = 0
+  const bx = s1, by = 0
+  const cx = tip, cy = body(Math.min(1, tip)) + reach
+  const d = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy)
+  const u = ((by - cy) * (s - cx) + (cx - bx) * (a - cy)) / d
+  const v = ((cy - ay) * (s - cx) + (ax - cx) * (a - cy)) / d
+  return u >= 0 && v >= 0 && u + v <= 1
 }
 
 function spawnHunter(kind: Kind, width: number, height: number, i: number, n: number): Hunter {
@@ -114,6 +161,8 @@ function spawnHunter(kind: Kind, width: number, height: number, i: number, n: nu
     turnTo: 0,
     retarget: r(5) * 2,
     seed: r(6) * 100,
+    // Every second shark is a hammerhead.
+    hammer: kind === "shark" && i % 2 === 1,
     target: null,
     full: r(7) * 3,
   }
@@ -138,6 +187,8 @@ function step(kind: Kind, w: Water, dt: number, time: number) {
   const P = PROFILES[kind]
   for (const s of w.splashes) s.age += dt
   w.splashes = w.splashes.filter((s) => s.age < SPLASH_LIFE)
+  for (const b of w.blood) b.age += dt
+  w.blood = w.blood.filter((b) => b.age < BLOOD_LIFE)
 
   // Bait: separation, alignment, cohesion; scatter from any head close by.
   const live = w.bait.filter((b) => b.alive)
@@ -211,7 +262,7 @@ function step(kind: Kind, w: Water, dt: number, time: number) {
     h.full = Math.max(0, h.full - dt)
     h.retarget -= dt
     if (h.retarget < 0) {
-      h.turnTo = (hash(h.seed, time, 3) - 0.5) * (kind === "shark" ? 0.9 : 2.4)
+      h.turnTo = (hash(h.seed, time, 3) - 0.5) * (kind === "shark" ? 0.45 : 2.4)
       h.retarget = 1.5 + hash(h.seed, time, 4) * 2.5
     }
     let want = h.turnTo
@@ -238,7 +289,14 @@ function step(kind: Kind, w: Water, dt: number, time: number) {
     }
     const towards = (x: number, y: number) =>
       Math.max(-P.agility, Math.min(P.agility, wrapAngle(Math.atan2(y - hy, x - hx) - h.heading) * 3))
-    if (h.target) {
+    // Blood in the water: every piranha goes mad for it, tearing through the cloud.
+    const cloud = w.blood[w.blood.length - 1]
+    if (cloud) {
+      const spin = (h.seed % 2 > 1 ? 1 : -1) * (time * 5 + h.seed)
+      const rad = 8 + (h.seed % 1) * 34
+      want = towards(cloud.x + Math.cos(spin) * rad, cloud.y + Math.sin(spin) * rad) * 1.6
+      speed = P.frenzy
+    } else if (h.target) {
       want = towards(h.target.x, h.target.y)
       speed = P.chase
       if (Math.hypot(h.target.x - hx, h.target.y - hy) < Math.max(10, h.length * P.reach * 0.5)) {
@@ -266,15 +324,17 @@ function step(kind: Kind, w: Water, dt: number, time: number) {
       const d = Math.hypot(dx, dy)
       if (d < h.length * 0.9 && d > 0) want += wrapAngle(Math.atan2(dy, dx) - h.heading) * (1 - d / (h.length * 0.9)) * 2
     }
-    want = Math.max(-P.agility, Math.min(P.agility, want))
+    // Sharks always turn wide; a tight turn folds the body out of shape.
+    const cap = P.agility * (cloud ? 1.6 : 1) * (kind === "shark" ? (h.target ? 0.6 : 0.45) : 1)
+    want = Math.max(-cap, Math.min(cap, want))
     const m = h.length * 0.3
-    if (!h.target && (hx < m || hy < m || hx > w.width - m || hy > w.height - m))
+    if (!h.target && !cloud && (hx < m || hy < m || hx > w.width - m || hy > w.height - m))
       want = towards(w.width / 2, w.height / 2) * 0.8
 
-    h.turn += (want - h.turn) * Math.min(1, dt * (kind === "shark" ? 1.5 : 6))
-    h.speed += (speed - h.speed) * Math.min(1, dt * (kind === "shark" ? 0.8 : 3))
-    const beat = kind === "shark" ? 2.2 : 9
-    h.heading += (h.turn + Math.sin(time * beat + h.seed) * (kind === "shark" ? 0.18 : 0.6)) * dt
+    h.turn += (want - h.turn) * Math.min(1, dt * (kind === "shark" ? 1.5 : cloud ? 10 : 6))
+    h.speed += (speed - h.speed) * Math.min(1, dt * (kind === "shark" ? 0.8 : cloud ? 5 : 3))
+    const beat = kind === "shark" ? 2.2 : cloud ? 16 : 9
+    h.heading += (h.turn + Math.sin(time * beat + h.seed) * (kind === "shark" ? 0.07 : 0.6)) * dt
     h.spine[0] = [hx + Math.cos(h.heading) * h.speed * dt, hy + Math.sin(h.heading) * h.speed * dt]
     const seg = h.length / (NODES - 1)
     for (let i = 1; i < NODES; i++) {
@@ -297,7 +357,8 @@ function locate(spine: Vec[], x: number, y: number) {
     const vx = bx - ax
     const vy = by - ay
     const len2 = vx * vx + vy * vy || 1
-    const t = Math.max(0, Math.min(1, ((x - ax) * vx + (y - ay) * vy) / len2))
+    // The last segment runs on past the tail, so a tail fin can reach beyond it.
+    const t = Math.max(0, Math.min(i === NODES - 2 ? 2.5 : 1, ((x - ax) * vx + (y - ay) * vy) / len2))
     const d = Math.hypot(x - (ax + vx * t), y - (ay + vy * t))
     if (d < best) {
       best = d
@@ -320,7 +381,6 @@ function point(spine: Vec[], s: number, across: number) {
 
 function draw(kind: Kind, g: AsciiGrid, w: Water, accent: string) {
   const { cell } = g
-  const P = PROFILES[kind]
   const cellOf = (x: number, y: number): Vec => [Math.floor(x / cell), Math.floor(y / cell)]
 
   for (const b of w.bait) {
@@ -329,13 +389,30 @@ function draw(kind: Kind, g: AsciiGrid, w: Water, accent: string) {
     g.glyph(c, r, stroke(Math.atan2(b.vy, b.vx)), g.ink, 0.36 + b.alarm * 0.45)
   }
 
+  // Blood: a dense red bloom that thins and spreads as it fades.
+  for (const b of w.blood) {
+    const t = b.age / BLOOD_LIFE
+    const radius = cell * 1.5 + Math.sqrt(t) * cell * 7
+    const seen = new Set<string>()
+    for (let i = 0; i < 46; i++) {
+      const a = hash(b.seed, i, 1) * Math.PI * 2 + t * (hash(b.seed, i, 4) - 0.5)
+      const d = radius * Math.sqrt(hash(b.seed, i, 2))
+      const [c, r] = cellOf(b.x + Math.cos(a) * d, b.y + Math.sin(a) * d + t * cell * 2)
+      if (seen.has(`${c},${r}`)) continue
+      seen.add(`${c},${r}`)
+      const k = Math.min(RAMP.length - 1, Math.floor((1 - d / radius) * (1 - t) * RAMP.length))
+      g.glyph(c, r, RAMP[k], accent, Math.pow(1 - t, 0.7) * (0.5 + (1 - d / radius) * 0.5))
+    }
+  }
+
   for (const h of w.hunters) {
+    const P = h.hammer ? HAMMER : PROFILES[kind]
     const L = h.length
     let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity
     for (const [x, y] of h.spine) {
       x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y)
     }
-    const pad = L * 0.24
+    const pad = L * 0.42
     const [c0, r0] = cellOf(x0 - pad, y0 - pad)
     const [c1, r1] = cellOf(x1 + pad, y1 + pad)
     for (let r = Math.max(0, r0); r <= Math.min(g.rows, r1); r++)
@@ -350,20 +427,40 @@ function draw(kind: Kind, g: AsciiGrid, w: Water, accent: string) {
           const light = Math.max(0, Math.min(1, 0.62 - u * 0.32 - Math.abs(u) * Math.abs(u) * 0.3 + (n - 0.5) * 0.18))
           const char = RAMP[Math.min(RAMP.length - 1, Math.floor((1 - light) * RAMP.length))]
           const tail = smooth(0.6, 1, s)
-          g.glyph(c, r, char, g.ink, 0.95 - tail * 0.45)
+          // The dorsal fin, seen from above: a bright dense line down the back.
+          const ridge = P.ridge && s > P.ridge[0] && s < P.ridge[1] && Math.abs(u) < 0.12
+          // Sharks are tiles: a block shaded by the light with its glyph on top.
+          if (kind === "shark") g.block(c, r, g.ink, (0.1 + (1 - light) * 0.28) * (1 - tail * 0.5))
+          g.glyph(c, r, ridge ? "8" : char, g.ink, ridge ? 0.9 : 0.95 - tail * 0.3)
           continue
         }
-        const fin = P.fin(s) * L
-        if (fin > 0 && a <= body + fin && n > 0.2) {
+        if (P.fins.some((f) => inFin(f, P.body, s, a / L))) {
           const char = FIN[Math.floor(n * FIN.length)]
+
           // Piranhas wear their colour on the fins.
-          g.glyph(c, r, char, kind === "piranha" ? accent : g.ink, kind === "piranha" ? 0.9 : 0.55)
+          // Fins stay lighter than the body, so the silhouette reads.
+          g.glyph(c, r, kind === "piranha" ? char : ":;.'"[Math.floor(n * 4)], kind === "piranha" ? accent : g.ink, kind === "piranha" ? 0.9 : 0.5)
         }
       }
 
+    // Gill slits: short strokes across each flank.
+    if (P.gills) {
+      const [g0, g1] = P.gills
+      for (let k = 0; k < 4; k++) {
+        const gs = g0 + ((g1 - g0) * k) / 3
+        for (const side of [-1, 1])
+          for (const f of [0.55, 0.85]) {
+            const q = point(h.spine, gs, side * P.body(gs) * L * f)
+            const [qc, qr] = cellOf(q.x, q.y)
+            g.clear(qc, qr)
+            g.glyph(qc, qr, stroke(q.dir + Math.PI / 2), g.ink, 0.85)
+          }
+      }
+    }
+
     // Eyes; piranhas show their teeth.
     for (const side of [-1, 1]) {
-      const eye = point(h.spine, kind === "shark" ? 0.09 : 0.14, side * P.body(0.12) * L * 0.7)
+      const eye = point(h.spine, P.eye[0], side * P.eye[1] * L)
       const [ec, er] = cellOf(eye.x, eye.y)
       g.clear(ec, er)
       g.glyph(ec, er, kind === "shark" ? "." : "o", g.ink, 1)
@@ -371,7 +468,7 @@ function draw(kind: Kind, g: AsciiGrid, w: Water, accent: string) {
     if (kind === "piranha") {
       const jaw = point(h.spine, 0.01, 0)
       const [jc, jr] = cellOf(jaw.x + Math.cos(jaw.dir) * cell * 0.6, jaw.y + Math.sin(jaw.dir) * cell * 0.6)
-      g.glyph(jc, jr, "v", g.ink, h.target ? 1 : 0.6)
+      g.glyph(jc, jr, "v", g.ink, h.target || w.blood.length ? 1 : 0.6)
     }
   }
 
@@ -399,7 +496,7 @@ export function Ocean({
   predator?: Kind
   /** How many hunters; defaults to 3 sharks or a pack of 8 piranhas, fewer in a small ocean. */
   count?: number
-  /** The piranhas' fins and splashes; sharks stay in the ink. */
+  /** The piranhas' fins, splashes and blood; sharks stay in the ink. */
   accent?: string
   cell?: number
   onEat?: (eaten: number) => void
@@ -428,6 +525,7 @@ export function Ocean({
           school(width * (0.2 + hash(i, 1, 9) * 0.6), height * (0.2 + hash(i, 2, 9) * 0.6), 16, i + 1)
         ).flat(),
         splashes: [],
+        blood: [],
         eaten: prev?.eaten ?? 0,
         onEat: (k) => eat.current?.(k),
       }
@@ -445,8 +543,14 @@ export function Ocean({
         const w = scene.current
         if (!w) return
         const box = e.currentTarget.getBoundingClientRect()
-        // A new school where you clicked; the oldest fish make room.
-        const fresh = school(e.clientX - box.left, e.clientY - box.top, 12, Math.random() * 1000)
+        const x = e.clientX - box.left
+        const y = e.clientY - box.top
+        // Piranhas get blood; sharks get a new school, and the oldest fish make room.
+        if (w.kind === "piranha") {
+          w.blood.push({ x, y, age: 0, seed: Math.random() * 1000 })
+          return
+        }
+        const fresh = school(x, y, 12, Math.random() * 1000)
         w.bait.push(...fresh)
         if (w.bait.length > 160) w.bait.splice(0, w.bait.length - 160)
       }}

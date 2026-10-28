@@ -22,7 +22,9 @@ export function OceanExample({ predator: initial = "shark" }: { predator?: "shar
         <p className="font-mono text-sm text-muted-foreground">
           {predator === "shark" ? "the quiet ones circle the stragglers" : "nothing in the river stays whole for long"}
         </p>
-        <p className="max-w-md text-sm text-foreground">Click anywhere to drop a school of fish.</p>
+        <p className="max-w-md text-sm text-foreground">
+          {predator === "shark" ? "Click anywhere to drop a school of fish." : "Click anywhere to put blood in the water."}
+        </p>
         <div className="pointer-events-auto w-fit rounded-full bg-background/85 backdrop-blur-sm">
           <Segmented
             aria-label="Predator"
