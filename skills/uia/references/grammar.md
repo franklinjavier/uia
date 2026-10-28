@@ -134,7 +134,9 @@ the visual: MeterBar · TickMeter row · flow graph · scene
 - **ASCII animations are backdrops, not widgets.** Build them on
   `useAsciiCanvas` (one cell grid, ink read from CSS, sleeps off screen, a
   still frame under reduced motion). They sit behind the content, in the
-  ink plus at most one colour of their own, and never carry data or the
+  ink plus colour of their own: one accent, or a muted mix scattered as
+  texture (a few tinted tiles), never a colour that means something in the
+  UI, and never carry data or the
   only way to do something. The content on top stays readable and keeps
   its clicks; the backdrop may answer the pointer (food, ripples) but
   nothing depends on it. One per page.

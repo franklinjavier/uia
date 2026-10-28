@@ -33,6 +33,12 @@ type Hunter = {
   full: number
   /** A hammerhead among the sharks. */
   hammer: boolean
+  /** The spine as drawn: the swim path plus a wave that grows towards the tail. */
+  body: Vec[]
+  /** Tail-beat phase. */
+  phase: number
+  /** The muted hues scattered over a shark's tiles. */
+  tints: string[]
 }
 type Splash = { x: number; y: number; age: number; seed: number }
 /** A cloud of blood, for the piranhas. */
@@ -53,6 +59,8 @@ const NODES = 16
 const RAMP = ":;t%SX8#@"
 const FIN = "%;tS:"
 const SPLASH_LIFE = 0.9
+/** Hues for the tinted tiles, as in the reference: violet, rose, sage, olive, slate blue, teal, clay. */
+const HUES = [300, 350, 150, 110, 255, 200, 55]
 const BLOOD_LIFE = 4.5
 
 /** A fin as a triangle in body space: leading root, trailing root, tip (s), and how far the tip reaches past the body (fraction of length). */
@@ -163,6 +171,9 @@ function spawnHunter(kind: Kind, width: number, height: number, i: number, n: nu
     seed: r(6) * 100,
     // Every second shark is a hammerhead.
     hammer: kind === "shark" && i % 2 === 1,
+    body: [],
+    phase: r(8) * 10,
+    tints: [0, 1, 2].map((k) => `oklch(0.72 0.1 ${HUES[Math.floor(r(20 + k) * HUES.length)]})`),
     target: null,
     full: r(7) * 3,
   }
@@ -331,10 +342,10 @@ function step(kind: Kind, w: Water, dt: number, time: number) {
     if (!h.target && !cloud && (hx < m || hy < m || hx > w.width - m || hy > w.height - m))
       want = towards(w.width / 2, w.height / 2) * 0.8
 
-    h.turn += (want - h.turn) * Math.min(1, dt * (kind === "shark" ? 1.5 : cloud ? 10 : 6))
+    h.turn += (want - h.turn) * Math.min(1, dt * (kind === "shark" ? 0.9 : cloud ? 10 : 6))
     h.speed += (speed - h.speed) * Math.min(1, dt * (kind === "shark" ? 0.8 : cloud ? 5 : 3))
     const beat = kind === "shark" ? 2.2 : cloud ? 16 : 9
-    h.heading += (h.turn + Math.sin(time * beat + h.seed) * (kind === "shark" ? 0.07 : 0.6)) * dt
+    h.heading += (h.turn + Math.sin(time * beat + h.seed) * (kind === "shark" ? 0 : 0.6)) * dt
     h.spine[0] = [hx + Math.cos(h.heading) * h.speed * dt, hy + Math.sin(h.heading) * h.speed * dt]
     const seg = h.length / (NODES - 1)
     for (let i = 1; i < NODES; i++) {
@@ -343,6 +354,20 @@ function step(kind: Kind, w: Water, dt: number, time: number) {
       const d = Math.hypot(ax - bx, ay - by) || 1
       h.spine[i] = [ax - ((ax - bx) / d) * seg, ay - ((ay - by) / d) * seg]
     }
+
+    // The swim: a wave runs head to tail, small at the head and wide at the
+    // tail, faster when the fish is in a hurry. Drawn, not steered, so the
+    // path stays smooth.
+    h.phase += dt * beat * (0.55 + (0.45 * h.speed) / P.cruise)
+    const amp = h.length * (kind === "shark" ? 0.045 : 0.05)
+    h.body = h.spine.map(([x, y], i): Vec => {
+      const k = i / (NODES - 1)
+      const [ax, ay] = h.spine[Math.max(0, i - 1)]
+      const [bx, by] = h.spine[Math.min(NODES - 1, i + 1)]
+      const dir = Math.atan2(by - ay, bx - ax)
+      const off = amp * Math.pow(k, 1.6) * Math.sin(h.phase - k * 4.2)
+      return [x - Math.sin(dir) * off, y + Math.cos(dir) * off]
+    })
   }
 }
 
@@ -409,7 +434,8 @@ function draw(kind: Kind, g: AsciiGrid, w: Water, accent: string) {
     const P = h.hammer ? HAMMER : PROFILES[kind]
     const L = h.length
     let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity
-    for (const [x, y] of h.spine) {
+    const spine = h.body.length ? h.body : h.spine
+    for (const [x, y] of spine) {
       x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y)
     }
     const pad = L * 0.42
@@ -417,11 +443,18 @@ function draw(kind: Kind, g: AsciiGrid, w: Water, accent: string) {
     const [c1, r1] = cellOf(x1 + pad, y1 + pad)
     for (let r = Math.max(0, r0); r <= Math.min(g.rows, r1); r++)
       for (let c = Math.max(0, c0); c <= Math.min(g.cols, c1); c++) {
-        const { s, l } = locate(h.spine, (c + 0.5) * cell, (r + 0.5) * cell)
+        const { s, l } = locate(spine, (c + 0.5) * cell, (r + 0.5) * cell)
         const body = P.body(s) * L
-        const n = hash(c, r, h.seed)
+        // Texture lives in body space, so it travels with the fish instead
+        // of flickering as the body slides over the grid.
+        const bi = Math.round((s * L) / cell)
+        const bj = Math.round(l / cell)
+        const n = hash(bi, bj, h.seed)
         const a = Math.abs(l)
-        if (a <= body + (n - 0.5) * cell * 0.4) {
+        if (a <= body + cell * 0.45) {
+          // Soft edge: a cell half over the body is half there.
+          const cover = Math.max(0, Math.min(1, (body - a) / cell + 0.6))
+          if (cover <= 0.05) continue
           // Light from one side: bright flank sparse, far flank dense.
           const u = l / Math.max(1, body)
           const light = Math.max(0, Math.min(1, 0.62 - u * 0.32 - Math.abs(u) * Math.abs(u) * 0.3 + (n - 0.5) * 0.18))
@@ -429,9 +462,15 @@ function draw(kind: Kind, g: AsciiGrid, w: Water, accent: string) {
           const tail = smooth(0.6, 1, s)
           // The dorsal fin, seen from above: a bright dense line down the back.
           const ridge = P.ridge && s > P.ridge[0] && s < P.ridge[1] && Math.abs(u) < 0.12
-          // Sharks are tiles: a block shaded by the light with its glyph on top.
-          if (kind === "shark") g.block(c, r, g.ink, (0.1 + (1 - light) * 0.28) * (1 - tail * 0.5))
-          g.glyph(c, r, ridge ? "8" : char, g.ink, ridge ? 0.9 : 0.95 - tail * 0.3)
+          if (kind === "shark") {
+            // Sharks are tiles: a block shaded by the light with its glyph on
+            // top, and a few tiles in the shark's own muted hues that shift
+            // slowly, like light through water.
+            const t = hash(bi, bj, h.seed + Math.floor(g.time * 0.7 + n * 3))
+            const tint = t < 0.16 ? h.tints[Math.floor(t * 100) % h.tints.length] : null
+            g.block(c, r, tint ?? g.ink, (tint ? 0.42 : 0.1 + (1 - light) * 0.28) * (1 - tail * 0.5) * cover)
+          }
+          g.glyph(c, r, ridge ? "8" : char, g.ink, (ridge ? 0.9 : 0.95 - tail * 0.3) * cover)
           continue
         }
         if (P.fins.some((f) => inFin(f, P.body, s, a / L))) {
@@ -450,7 +489,7 @@ function draw(kind: Kind, g: AsciiGrid, w: Water, accent: string) {
         const gs = g0 + ((g1 - g0) * k) / 3
         for (const side of [-1, 1])
           for (const f of [0.55, 0.85]) {
-            const q = point(h.spine, gs, side * P.body(gs) * L * f)
+            const q = point(spine, gs, side * P.body(gs) * L * f)
             const [qc, qr] = cellOf(q.x, q.y)
             g.clear(qc, qr)
             g.glyph(qc, qr, stroke(q.dir + Math.PI / 2), g.ink, 0.85)
@@ -460,13 +499,13 @@ function draw(kind: Kind, g: AsciiGrid, w: Water, accent: string) {
 
     // Eyes; piranhas show their teeth.
     for (const side of [-1, 1]) {
-      const eye = point(h.spine, P.eye[0], side * P.eye[1] * L)
+      const eye = point(spine, P.eye[0], side * P.eye[1] * L)
       const [ec, er] = cellOf(eye.x, eye.y)
       g.clear(ec, er)
       g.glyph(ec, er, kind === "shark" ? "." : "o", g.ink, 1)
     }
     if (kind === "piranha") {
-      const jaw = point(h.spine, 0.01, 0)
+      const jaw = point(spine, 0.01, 0)
       const [jc, jr] = cellOf(jaw.x + Math.cos(jaw.dir) * cell * 0.6, jaw.y + Math.sin(jaw.dir) * cell * 0.6)
       g.glyph(jc, jr, "v", g.ink, h.target || w.blood.length ? 1 : 0.6)
     }
